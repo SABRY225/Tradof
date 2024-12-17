@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tradof.Comman\Tradof.Comman.csproj" />
+    <ProjectReference Include="..\Tradof.Data\Tradof.Data.csproj" />
+    <ProjectReference Include="..\Tradof.Repository\Tradof.Repository.csproj" />
+    <ProjectReference Include="..\Tradof.ResponseHandler\Tradof.ResponseHandler.csproj" />
+  </ItemGroup>
+
+</Project>
