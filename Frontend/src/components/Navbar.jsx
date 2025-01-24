@@ -6,14 +6,12 @@ import Button from '../UI/Button'
 export default function Navbar() {
     const btnStyle = {
         text: 'text-white',
-        bg: 'bg-[#ff6f61] hover:bg-[#ff6f61] dark:bg-[#6c63ff] dark:hover:bg-[#6c63ff]',
-        focus: 'focus:ring-4 focus:outline-none focus:ring-[#ff6f61] dark:focus:ring-[#6c63ff]',
+        bg: 'bg-[#ff6f61]',
         font: 'font-medium',
         rounded: 'rounded-lg',
         textSm: 'text-sm',
         px: 'px-4',
         py: 'py-2',
-        darkBg: 'dark:bg-[#6c63ff] dark:hover:bg-[#6c63ff] dark:focus:ring-[#6c63ff]',
     }
 
     return (
