@@ -1,0 +1,38 @@
+.diagonal-section {
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(135deg, #6c63ff, #9378ff);
+    clip-path: polygon(0 100%, 100% 0%, 100% 100%, 0% 100%);
+}
+  
+.overlay-section{
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(135deg, #E5E5FF, #B8B3FF);
+    clip-path: polygon(0 100%, 100% 0%, 100% 10%, 0% 100%);
+}
+.circle-section{
+    width: 30rem;
+    height: 30rem;
+    position: absolute;
+    z-index: 1;
+    right: 0;
+    border-radius: 50% 0 0 50%;
+    background-color: #ffffff35;
+    opacity: 1;
+}
+.dots-section {
+    position: absolute;
+    display: flex;
+    top: 6.5rem;
+    right: 1rem;
+    justify-content: space-between;
+}
+.dots-section div{
+ border-left: 10px dotted rgba(255, 255, 255, 0.408);
+ height: 60vh;
+ /* width: 0.5rem; */
+ margin: 1.5rem;
+ z-index: 1;
+}
+  
