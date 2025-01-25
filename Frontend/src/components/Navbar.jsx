@@ -7,6 +7,7 @@ export default function Navbar({isLanding}) {
     const btnStyle = {
         text: 'text-white',
         bg: 'bg-[#ff6f61]',
+        hover: 'hover:bg-orange-600',
         font: 'font-medium',
         rounded: 'rounded-lg',
         textSm: 'text-sm',
@@ -18,7 +19,7 @@ export default function Navbar({isLanding}) {
         <>
             <nav className="bg-white dark:bg-[#6c63ff] fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
                 <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-                    <a href="https://flowbite.com/" className="flex items-center space-x-3 rtl:space-x-reverse">
+                    <a className="flex items-center space-x-3 rtl:space-x-reverse">
                         <img src={logo} className="w-12" alt="Flowbite Logo" />
                         <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Tradof</span>
                     </a>
