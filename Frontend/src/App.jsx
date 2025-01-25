@@ -1,40 +1,41 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import './index.css';
-
-
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import "./index.css";
 
 // Import page components
-import LandingPage from './components/LandingPage';
-
+import LandingPage from "./components/LandingPage";
 
 // Import layout components
-import MainLayout from './layouts/MainLayout';
+import MainLayout from "./layouts/MainLayout";
+import NotFound from "./pages/NotFound";
 // import AuthLayout from './layouts/AuthLayout.jsx';
 
+// create routes
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <MainLayout />,
+    id: "root",
+    children: [
+      {
+        index: true,
+        element: <LandingPage />,
+      },
+    ],
+  },
+  {
+    path: "*",
+    element: <NotFound />,
+  },
+]);
+
 function App() {
-
   return (
-  <div className="App">
-    <Router>
-      <Routes>
-        {/* Main Layout Routes */}
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<LandingPage />} />
-        </Route>
-
-        {/* Auth Layout Routes */}
-
-        {/* Fallback Route for 404 */}
-        <Route path="*" element={<div>404 Not Found</div>} />
-      </Routes>
-    </Router>
-    </div>
-
-);
-
+    <>
+      <RouterProvider router={router} />
+    </>
+  );
 }
-
 
 export default App;
