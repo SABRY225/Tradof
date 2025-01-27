@@ -46,7 +46,7 @@ const router = createBrowserRouter([
     element: <LoginLayout />,
   },
   {
-    path: "/:email",
+    path: "/send-email/:email",
     element: <LoginLayout />,
   },
   {
