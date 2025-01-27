@@ -3,4 +3,5 @@
 @tailwind utilities;
 *{
     margin: 0px;
+    font-family: "Roboto";
 }

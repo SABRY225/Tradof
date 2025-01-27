@@ -1,0 +1,18 @@
+.form-template{
+    position: absolute;
+    top: 5rem;
+    z-index: 1;
+    left: 25rem;
+}
+@media (max-width: 768px) {
+    .form-template{
+        position: relative;
+        top: 0rem;
+        left: 0rem;
+        margin: 4rem;
+        margin-bottom: 10rem;
+    }
+    .title{
+        font-size: 1.57rem;
+    }
+  }
