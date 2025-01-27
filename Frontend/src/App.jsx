@@ -1,6 +1,6 @@
 // import { StrictMode } from 'react';
 // import { createRoot } from 'react-dom/client';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import './index.css';
 
 
@@ -14,35 +14,53 @@ import '@fontsource/roboto/700.css';
 
 
 // Import layout components
-import MainLayout from './layouts/MainLayout';
+import MainLayout from "./layouts/MainLayout";
+import NotFound from "./pages/NotFound";
+import Register from "./pages/Register";
 import {  LoginLayout } from './constants/Path';
 // import AuthLayout from './layouts/AuthLayout.jsx';
 
+// create routes
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <MainLayout />,
+    id: "root",
+    children: [
+      {
+        index: true,
+        element: <LandingPage />,
+      },
+    ],
+  },
+  {
+    path: "/sign-up",
+    element: <Register />,
+  },
+  {
+    path: "/auth",
+    element: <LoginLayout />,
+  },
+  {
+    path: "/send-email",
+    element: <LoginLayout />,
+  },
+  {
+    path: "/:email",
+    element: <LoginLayout />,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
+  },
+]);
+
 function App() {
-
   return (
-  <div className="App">
-    <Router>
-      <Routes>
-        {/* Main Layout Routes */}
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<LandingPage />} />
-        </Route>
-        <Route path="auth" element={<LoginLayout />} />
-        <Route path="send-email" element={<LoginLayout />} />
-        <Route path=":email" element={<LoginLayout />} />
-
-        {/* Auth Layout Routes */}
-
-        {/* Fallback Route for 404 */}
-        <Route path="*" element={<div>404 Not Found</div>} />
-      </Routes>
-    </Router>
-    </div>
-
-);
-
+    <>
+      <RouterProvider router={router} />
+    </>
+  );
 }
-
 
 export default App;

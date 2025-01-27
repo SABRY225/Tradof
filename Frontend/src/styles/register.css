@@ -1,0 +1,72 @@
+.steps-progress {
+  position: relative;
+}
+.steps-progress .line {
+  position: absolute;
+  height: 2px;
+  top: 15%;
+  width: 100%;
+  background-color: #C8C8D0;
+  z-index: 0;
+}
+
+.custom-radio {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 8px;
+}
+
+.custom-radio input[type="radio"] {
+  display: none;
+}
+
+.custom-radio .radio-mark {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #8000FF;
+  border-radius: 50%;
+  position: relative;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.custom-radio input[type="radio"]:checked + .radio-mark {
+  background-color: #8000FF;
+  border-color: #8000FF;
+}
+
+.custom-radio .radio-mark::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background-color: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.3s;
+}
+
+.custom-radio input[type="radio"]:checked + .radio-mark::after {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+
+/* In your global CSS or tailwind.config.js (via @layer) */
+
+.custom-phone-input .PhoneInputInput {
+  @apply border rounded p-2 w-full focus:border-[#CC99FF] focus:outline-none text-[#000];
+  @apply text-[#000];
+  outline: none; /* Remove outline from input field */
+}
+
+.custom-phone-input .PhoneInputCountry {
+  @apply text-[#000];
+}
+
+.custom-phone-input .PhoneInputCountryIcon {
+  @apply text-[#000];
+}
+
+
