@@ -9,6 +9,7 @@ import LandingPage from "./components/LandingPage";
 // Import layout components
 import MainLayout from "./layouts/MainLayout";
 import NotFound from "./pages/NotFound";
+import Register from "./pages/Register";
 // import AuthLayout from './layouts/AuthLayout.jsx';
 
 // create routes
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
         element: <LandingPage />,
       },
     ],
+  },
+  {
+    path: "/sign-up",
+    element: <Register />,
   },
   {
     path: "*",
