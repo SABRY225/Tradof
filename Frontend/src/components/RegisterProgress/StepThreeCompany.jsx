@@ -306,10 +306,11 @@ export default function StepThreeCompany({
                     <button
                       className="text-[#f00]"
                       onClick={() =>
-                        setCurrentSpecializations((prev) =>
+                        setCurrentIndustriesServed((prev) =>
                           prev.filter((lst) => lst !== ob)
                         )
                       }
+                      onC
                     >
                       Delete
                     </button>
