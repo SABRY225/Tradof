@@ -1,13 +1,9 @@
-
 // Pages
-export {default as ErrorPage} from "../pages/ErrorPage"
-
-
+export { default as ErrorPage } from "../pages/ErrorPage";
 
 // UI
-export {default as Footer} from "../UI/Footer"
-export {default as Divider} from "../UI/Divider"
-
+export { default as Footer } from "../components/shared/Footer";
+export { default as Divider } from "../UI/Divider";
 
 //Layout
-export {default as LoginLayout} from "../layouts/LoginLayout"
+export { default as LoginLayout } from "../layouts/LoginLayout";

@@ -27,7 +27,7 @@ export default function Register() {
             }}
           ></div>
           <div
-            className="z-[-1] absolute bg-[#fff] w-[30em] h-[30rem] bottom-[0] left-[-12rem] opacity-[5%]"
+            className="z-[-1] absolute bg-[#fff] w-[30rem] h-[30rem] bottom-[0] left-[-12rem] opacity-[5%]"
             style={{
               clipPath: "circle(50% at 50% 50%)",
             }}

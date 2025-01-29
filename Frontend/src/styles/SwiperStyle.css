@@ -1,0 +1,31 @@
+.swiper-slide:not(.swiper-slide-active) > div {
+  backdrop-filter: blur(5px);
+  box-shadow: 1px;
+}
+
+/* Custom pagination positioning at the top */
+.swiper-pagination {
+  position: absolute;
+  top: 100%; /* Position it at the top of the swiper container */
+  left: 50%;
+  transform: translateX(-50%); /* Center it horizontally */
+  z-index: 10; /* Ensure it is on top of other elements */
+  padding: 20px 0; /* Optional: Add some padding */
+}
+
+/* Custom bullet styling */
+.swiper-pagination-bullet {
+  background: #6c63ff !important; /* Change bullet color */
+  width: 12px;
+  height: 12px;
+  opacity: 0.6;
+  transition: width 0.3s ease, height 0.3s ease; /* Smooth transition */
+}
+
+.swiper-pagination-bullet-active {
+  background: #CE5BEB !important; /* Active bullet color */
+  opacity: 1;
+  width: 16px;
+  height: 16px;
+}
+

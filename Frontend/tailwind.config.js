@@ -1,15 +1,15 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,jsx,ts,tsx}", 
-  ],
+  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
       fontFamily: {
         "roboto-condensed": ['"Roboto Condensed"', "serif"], // Add the font family
         poppins: ['"Poppins"', "serif"], // Adding Poppins font family
         epilogue: ['"Epilogue"', "serif"],
+        "markazi-text": ['"Markazi Text"', "serif"], // for logo
+        roboto: ['"Roboto"', "serif"],
+        chivo: ['"Chivo"', "serif"],
       },
       fontWeight: {
         thin: 100,
@@ -43,6 +43,13 @@ module.exports = {
         "second-color": "#FF6F61",
         "main-color": "#6C63FF",
         "border-color": "#D9D9D9",
+        "background-color": "#F5F5FF",
+      },
+      width: {
+        "width-section": "1440px",
+      },
+      height: {
+        "height-section": "800px",
       },
     },
   },

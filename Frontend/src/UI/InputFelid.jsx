@@ -25,7 +25,7 @@ export default function InputFelid({
   };
 
   return (
-    <div className="font-epilogue text-[14px] text-left mb-3">
+    <div className="font-epilogue text-[14px] text-left mb-[20px]">
       <label className="font-medium">{title}</label>
       <Controller
         name={name}
@@ -93,7 +93,7 @@ export default function InputFelid({
             {type === "textarea" && (
               <textarea
                 {...field}
-                className="border rounded p-2 w-full"
+                className={`border rounded p-2 w-full ${classes || ""}`}
                 placeholder={placeholder}
               />
             )}
@@ -109,7 +109,7 @@ export default function InputFelid({
           </>
         )}
       />
-      {notes && <p className="mt-[5px] text-[#A4A4AD] text-[12px]">{notes} </p>}
+      {notes && <p className="mt-[5px] text-[#141414] text-[12px]">{notes} </p>}
       {errors.firstName && (
         <p className="text-red-500">{errors.firstName.message}</p>
       )}

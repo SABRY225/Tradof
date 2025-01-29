@@ -1,14 +1,14 @@
-import { Outlet } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-// import Navbar from '../components/Navbar/Navbar.jsx';
-// import Footer from '../components/Footer/Footer.jsx';
+import { Outlet } from "react-router-dom";
+
+import Footer from "../components/shared/Footer";
+import LandingNav from "../components/shared/LandingNav";
 
 export default function MainLayout() {
-    return (
-        <div className="w-full">
-            <Navbar isLanding />
-            <Outlet /> 
-            {/* <Footer /> */}
-        </div>
-    );
+  return (
+    <>
+      <LandingNav />
+      <Outlet />
+      <Footer color="#6C63FF" />
+    </>
+  );
 }
