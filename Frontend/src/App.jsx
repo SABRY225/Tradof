@@ -12,8 +12,6 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
-
-// Import layout components
 import MainLayout from "./layouts/MainLayout";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/Register";
