@@ -1,9 +1,7 @@
 // import React from 'react'
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-
 import logo from "../../assets/icons/lightlogo.svg";
-
 import ButtonFelid from "../../UI/ButtonFelid";
 
 export default function LandingNav() {
@@ -43,20 +41,19 @@ export default function LandingNav() {
   const navItems = ["Home", "Plans", "Features", "Rated", "Contact Us"];
 
   return (
-    <nav className="bg-[#6c63ff] w-full px-[170px] py-[30px]">
-      <div className="flex items-center justify-between text-white">
+    <nav className="bg-[#6c63ff] flex items-center justify-between w-full md:px-[145px] px-[40px] py-[20px] text-white">
         <Link className="flex items-center space-x-3" to="landing#Home">
-          <img src={logo} className="w-[50px]" alt="Logo" />
-          <span className="text-[36px] font-markazi-text font-semibold">
+          <img src={logo} className="w-[40px]" alt="Logo" />
+          <span className="text-[31px] font-markazi-text font-semibold">
             Tradof
           </span>
         </Link>
         <div className="flex md:order-2 space-x-3">
           <ButtonFelid
             text="Get Start"
-            classes="text-[20px] px-[20px] py-[7px] bg-second-color"
+            classes="text-[15px] px-[15px] py-[8px] bg-second-color"
             onClick={() => navigate("/auth")}
-            style={{ width: "154px" }}
+            style={{ width: "124px" }}
           />
           <button
             type="button"
@@ -84,7 +81,7 @@ export default function LandingNav() {
             <li key={index}>
               <Link
                 to={`#${item}`}
-                className={`text-[20px] text-white ${
+                className={`text-[15px] font-semibold text-white ${
                   activeHash === item ? "text-[25px] font-medium" : ""
                 }`}
                 aria-current={activeHash === item ? "page" : undefined}
@@ -94,7 +91,6 @@ export default function LandingNav() {
             </li>
           ))}
         </ul>
-      </div>
     </nav>
   );
 }

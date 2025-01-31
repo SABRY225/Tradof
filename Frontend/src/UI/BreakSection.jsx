@@ -1,16 +1,18 @@
-import React from "react";
+import React from 'react'
 
-export default function BreakSection({ text, label }) {
-  return (
-    <>
-      <div className="font-roboto-condensed w-full flex justify-center items-center px-[170px] gap-10">
-        <div className="flex-grow h-[3px] bg-[#6c63ff]"></div>
-        <div className="text-black flex flex-col items-center justify-center w-fit">
-          <span className="font-extrabold text-[56px]">{text}</span>
-          <span className="font-medium text-[28px]">{label}</span>
-        </div>
-        <div className="flex-grow h-[3px] bg-[#6c63ff]"></div>
-      </div>
-    </>
-  );
+export default function BreakSection({id,text,label}) {
+    return (
+        <>
+            <div id={id} className="w-full flex justify-between items-center my-10 lg:px-32 px-16 gap-12">
+                <div className="md:w-full md:h-[2px]  md:p-0 p-2 bg-[#6c63ff] rounded-full md:rounded-none"></div>
+                <div className="text-black flex flex-col items-center justify-center w-full">
+                    <span className="font-bold md:text-4xl text-xl">{text}</span>
+                    <span className="font-bold md:text-base text-xs">
+                        {label}
+                    </span>
+                </div>
+                <div className="md:w-full md:h-[2px]  md:p-0 p-2  bg-[#6c63ff] rounded-full md:rounded-none"></div>
+            </div>
+        </>
+    )
 }
