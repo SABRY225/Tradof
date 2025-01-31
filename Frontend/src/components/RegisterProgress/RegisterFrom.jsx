@@ -8,39 +8,42 @@ import StepThreeFreelancer from "./StepThreeFreelancer";
 
 import "../../styles/register.css";
 import StepThreeCompany from "./StepThreeCompany";
+import { useMutation } from "@tanstack/react-query";
+import { registerCompanies, registerFreelancers } from "../../Util/http";
+import { data } from "react-router-dom";
 
 // constants
 const defaultLanguagePairs = [
-  { from: "fr-FR", to: "en-US" },
-  { from: "en-US", to: "sp-ES" },
+  {
+    from: { id: 2, name: "English", code: "en" },
+    to: { id: 5, name: "French", code: "fr" },
+  },
 ];
 
 export default function RegisterFrom() {
   const [step, setStep] = useState(1);
   const [prevStep, setPrevStep] = useState(0); // Store the previous step
-
-  const [accountType, setAccountType] = useState(null);
+  const [stepOneData, setStepOneData] = useState({
+    accountType: null,
+    acceptPolicy: false,
+    errors: [],
+  });
   const [currentPhoto, setCurrentPhoto] = useState(null);
   const [languagePair, setLanguagePair] = useState(defaultLanguagePairs);
-  const [specializations, setSpecializations] = useState([
-    "Medical",
-    "Engineering",
+  const [specializations, setSpecializations] = useState([]);
+  const [preferredLanguage, setPreferredLanguage] = useState([
+    { id: 2, name: "English", code: "en" },
   ]);
-  const [preferredLanguage, setPreferredLanguage] =
-    useState(defaultLanguagePairs);
-  const [industriesServed, setIndustriesServed] = useState([
-    "Medical",
-    "Engineering",
-  ]);
+  const [industriesServed, setIndustriesServed] = useState([]);
   const {
     control,
     handleSubmit,
     watch,
+    setError,
+    clearErrors,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      type: "",
-      username: "",
       firstName: "",
       lastName: "",
       phoneNumber: "",
@@ -48,12 +51,51 @@ export default function RegisterFrom() {
       password: "",
       confirmPassword: "",
       country: "",
-      specializations: "",
       jopTitle: "",
-      location: "u",
+      location: "",
     },
   });
-  const formData = watch();
+  const { mutate: registerFreelancer } = useMutation({
+    mutationFn: registerFreelancers,
+    onSuccess: (data) => alert("Success send daa", data),
+    onError: (error) => {
+      console.error("Mutation Error:", error);
+      if (error.errors) {
+        Object.entries(error.errors).forEach(([field, messages]) => {
+          setError(field, {
+            type: "server",
+            message: messages[0], // Show the first error message for each field
+          });
+        });
+      } else {
+        setError("general", {
+          type: "server",
+          message: error.message || "Something went wrong. Please try again.",
+        });
+      }
+    },
+  });
+  const { mutate: registerCompany } = useMutation({
+    mutationFn: registerCompanies,
+    onSuccess: (data) => alert("Success send daa", data),
+    onError: (error) => {
+      console.error("Mutation Error:", error);
+      if (error.errors) {
+        Object.entries(error.errors).forEach(([field, messages]) => {
+          setError(field, {
+            type: "server",
+            message: messages[0], // Show the first error message for each field
+          });
+        });
+      } else {
+        setError("general", {
+          type: "server",
+          message: error.message || "Something went wrong. Please try again.",
+        });
+      }
+    },
+  });
+  const stepTwoData = watch();
   const isStepIncreasing = step > prevStep;
 
   const onSubmit = (data) => {
@@ -61,11 +103,150 @@ export default function RegisterFrom() {
     alert("Registration Complete!");
   };
 
+  const nextStep = () => {
+    if (step == 1) {
+      if (stepOneData.accountType === null) {
+        setStepOneData((prev) => ({
+          ...prev,
+          errors: ["Must Choose account type"],
+        }));
+        return;
+      }
+      if (stepOneData.acceptPolicy === false) {
+        setStepOneData((prev) => ({
+          ...prev,
+          errors: ["You must accept policy"],
+        }));
+        return;
+      }
+    } else {
+      let hasError = false;
+      if (!stepTwoData.firstName.trim()) {
+        setError("firstName", {
+          type: "manual",
+          message: "First name is required.",
+        });
+        hasError = true;
+      } else clearErrors("firstName");
+
+      if (!stepTwoData.lastName.trim()) {
+        setError("lastName", {
+          type: "manual",
+          message: "Last name is required.",
+        });
+        hasError = true;
+      } else clearErrors("lastName");
+
+      const phoneRegex = /^\+?[1-9]\d{6,14}$/;
+      if (!stepTwoData.phoneNumber.trim()) {
+        setError("phoneNumber", {
+          type: "manual",
+          message: "Phone number is required.",
+        });
+        hasError = true;
+      } else if (!phoneRegex.test(stepTwoData.phoneNumber)) {
+        setError("phoneNumber", {
+          type: "manual",
+          message: "Phone number must be 10-15 digits.",
+        });
+        hasError = true;
+      } else clearErrors("phoneNumber");
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!stepTwoData.email.trim()) {
+        setError("email", { type: "manual", message: "Email is required." });
+        hasError = true;
+      } else if (!emailRegex.test(stepTwoData.email)) {
+        setError("email", { type: "manual", message: "Invalid email format." });
+        hasError = true;
+      } else clearErrors("email");
+
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/;
+      if (!stepTwoData.password.trim()) {
+        setError("password", {
+          type: "manual",
+          message: "Password is required.",
+        });
+        hasError = true;
+      } else if (stepTwoData.password.length < 6) {
+        setError("password", {
+          type: "manual",
+          message: "Password must be at least 6 characters long.",
+        });
+        hasError = true;
+      } else if (!passwordRegex.test(stepTwoData.password)) {
+        setError("password", {
+          type: "manual",
+          message:
+            "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+        });
+        hasError = true;
+      } else {
+        clearErrors("password");
+      }
+
+      if (!stepTwoData.confirmPassword.trim()) {
+        setError("confirmPassword", {
+          type: "manual",
+          message: "Please confirm your password.",
+        });
+        hasError = true;
+      } else if (stepTwoData.password !== stepTwoData.confirmPassword) {
+        setError("confirmPassword", {
+          type: "manual",
+          message: "Passwords do not match.",
+        });
+        hasError = true;
+      } else clearErrors("confirmPassword");
+
+      if (hasError) return;
+    }
+    setPrevStep(step);
+    setStep((prev) => prev + 1);
+  };
+  const onSendData = (e) => {
+    e.preventDefault();
+    if (stepOneData.accountType === "freelancer") {
+      const freelancerData = {
+        email: stepTwoData.email.trim(),
+        password: stepTwoData.password.trim(),
+        firstName: stepTwoData.firstName.trim(),
+        lastName: stepTwoData.lastName.trim(),
+        countryId: +stepTwoData.country,
+        phoneNumber: stepTwoData.phoneNumber.trim(),
+        specializationIds: specializations.map(
+          (specialization) => specialization.id
+        ),
+        languagePairs: languagePair.map((lang) => ({
+          languageFromId: lang.from.id,
+          languageToId: lang.to.id,
+        })),
+        profileImageUrl: currentPhoto.trim(),
+      };
+      registerFreelancer({ data: freelancerData });
+    } else {
+      const companyData = {
+        email: stepTwoData.email.trim(),
+        password: stepTwoData.password.trim(),
+        firstName: stepTwoData.firstName.trim(),
+        lastName: stepTwoData.lastName.trim(),
+        companyAddress: stepTwoData.location.trim(),
+        jobTitle: stepTwoData.jopTitle.trim(),
+        countryId: +stepTwoData.country,
+        phoneNumber: stepTwoData.phoneNumber.trim(),
+        specializationIds: industriesServed.map((industries) => industries.id),
+        preferredLanguageIds: preferredLanguage.map((lang) => lang.id),
+        profileImageUrl: currentPhoto.trim(),
+      };
+      registerCompany({ data: companyData });
+    }
+  };
+
   const renderStep = () => {
-    if (step === 1) return <StepOne Type={setAccountType} />;
+    if (step === 1) return <StepOne data={stepOneData} edit={setStepOneData} />;
     if (step === 2) return <StepTwo control={control} errors={errors} />;
     if (step === 3) {
-      if (accountType === "freelancer")
+      if (stepOneData.accountType === "freelancer")
         return (
           <StepThreeFreelancer
             currentPhoto={currentPhoto}
@@ -200,10 +381,7 @@ export default function RegisterFrom() {
           {step < 3 ? (
             <button
               type="button"
-              onClick={() => {
-                setPrevStep(step);
-                setStep((prev) => prev + 1);
-              }}
+              onClick={nextStep}
               className="bg-second-color text-white px-4 py-2 rounded"
             >
               Next
@@ -212,6 +390,7 @@ export default function RegisterFrom() {
             <button
               type="submit"
               className="bg-second-color text-white px-4 py-2 rounded"
+              onClick={onSendData}
             >
               Submit
             </button>

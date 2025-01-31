@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { Controller } from "react-hook-form";
-
-import countries from "world-countries";
+import { useQuery } from "@tanstack/react-query";
 
 import camera from "../../assets/icons/camera.svg";
 import person from "../../assets/icons/person.svg";
 import InputFelid from "../../UI/InputFelid";
 import container from "../../assets/icons/container.svg";
+import {
+  getAllCountries,
+  getAllLanguages,
+  getAllSpecializations,
+} from "../../Util/http";
 export default function StepThreeCompany({
   control,
   errors,
@@ -17,71 +21,75 @@ export default function StepThreeCompany({
   currentIndustriesServed,
   setCurrentIndustriesServed,
 }) {
-  const [ctz, setCountries] = useState([]);
-  const [languagesCountries, setLanguagesCountries] = useState([]);
   const [preferred, setPreferred] = useState("");
   const [industriesServed, setIndustriesServed] = useState("");
   const [openModel, setOpenModel] = useState(0);
-  useEffect(() => {
-    const data = [];
-    const countryDate = [];
-    countries.forEach((country) => {
-      const countryName = country.name.common;
-      const languages = country.languages;
-      if (languages) {
-        Object.entries(languages).forEach(([code, language]) => {
-          const countryCode = country.cca2
-            .toLowerCase()
-            .slice(0, 2)
-            .toUpperCase();
-
-          const langCode = `${
-            code.length === 2 ? code : code.slice(0, 2).toLowerCase()
-          }-${countryCode.toUpperCase()}`; // Generate language code (e.g., 'en-US')
-
-          // Add language and country info to the data array
-          data.push({
-            language: language,
-            country: countryName,
-            langCode: langCode,
-          });
-          countryDate.push({
-            id: country.cca2,
-            name: countryName,
-          });
-        });
-      }
-    });
-    // Set the state with the gathered data
-    setLanguagesCountries(data);
-    setCountries(countryDate);
-  }, []);
+  const {
+    data: countries,
+    isError: isErrorCountries,
+    error: errorCountries,
+    isLoading: isLoadingCountries,
+  } = useQuery({
+    queryKey: ["countries"],
+    queryFn: getAllCountries,
+    staleTime: 10000,
+  });
+  const {
+    data: languages,
+    isError: isErrorLanguages,
+    error: errorLanguages,
+    isLoading: isLoadingLanguages,
+  } = useQuery({
+    queryKey: ["Languages"],
+    queryFn: getAllLanguages,
+    staleTime: 10000,
+  });
+  const {
+    data: industries,
+    isError: isErrorIndustries,
+    error: errorIndustries,
+    isLoading: isLoadingIndustries,
+  } = useQuery({
+    queryKey: ["specialization"],
+    queryFn: getAllSpecializations,
+    staleTime: 10000,
+  });
 
   const onDeletePreferredLanguage = ({ ietf }) => {
     setCurrentPreferredLanguage((pref) =>
-      pref.filter((lang) => lang.from !== ietf.from && lang.to !== ietf.to)
+      pref.filter((lang) => lang.id !== ietf.id)
     );
   };
 
   const onAddPreferredLanguage = (e) => {
     e.preventDefault(); // Prevent form submission and page reload
     if (preferred) {
-      if (
-        currentPreferredLanguage.find(
-          (p) => p.from === preferred 
-        )
-      ) {
-        alert("Language pair already selected");
+      if (currentPreferredLanguage.find((p) => p.id === +preferred)) {
+        alert("Language already selected");
+        return;
       }
       setCurrentPreferredLanguage((prev) => [
         ...prev,
-        { from: preferred },
+        languages.find((lang) => lang.id === +preferred),
       ]);
-      setFromSelected("");
-      setToSelected("");
+      setPreferred("");
     } else {
-      console.log("Please select both From and To languages");
+      console.log("Please select Language");
     }
+  };
+
+  const onAddIndustrial = (e) => {
+    e.preventDefault();
+    if (currentIndustriesServed.find((x) => x === +industriesServed)) {
+      alert("industriesServed already exist");
+      return;
+    }
+    console.log(industries.find((option) => option.id === +industriesServed));
+    setCurrentIndustriesServed((prev) => [
+      ...prev,
+      industries.find((option) => option.id === +industriesServed),
+    ]);
+    setIndustriesServed("");
   };
 
   return (
@@ -146,7 +154,7 @@ export default function StepThreeCompany({
         classes="outline-none border-[1px] border-[#D6D7D7] text-customGray focus:text-black rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF] "
         errors={errors}
         type="select"
-        options={ctz}
+        options={countries}
         placeholder="Country"
       />
       {/* location */}
@@ -157,8 +165,7 @@ export default function StepThreeCompany({
         control={control}
         classes="outline-none border-[1px] border-[#D6D7D7] text-customGray focus:text-black rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF] "
         errors={errors}
-        type="select"
-        options={ctz}
+        type="text"
         placeholder="location"
       />
 
@@ -174,7 +181,7 @@ export default function StepThreeCompany({
           </button>
         </div>
         {openModel === 1 && (
-          <from
+          <form
             className="flex gap-5 mt-5"
             onSubmit={(e) => e.preventDefault()}
           >
@@ -185,13 +192,13 @@ export default function StepThreeCompany({
                 className="outline-none border-[1px] border-[#D6D7D7] text-customGray focus:text-black rounded p-2 appearance-none border p-2 w-full block px-4 py-2 shadow-sm focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]"
               >
                 <option value="">Language</option>
-                {languagesCountries.map((option, index) => (
+                {languages.map((option, index) => (
                   <option
-                    key={index}
-                    value={option.langCode}
+                    key={option.id}
+                    value={option.id}
                     className="text-black"
                   >
-                    {`${option.language} (${option.country}) / ${option.langCode}`}
+                    {`${option.name} / ${option.code}`}
                   </option>
                 ))}
               </select>
@@ -202,7 +209,7 @@ export default function StepThreeCompany({
             <button className="text-[#f00]" onClick={onAddPreferredLanguage}>
               Add
             </button>
-          </from>
+          </form>
         )}
         <table className="w-full mt-4">
           <thead className="text-main-color font-poppins text-[14px]">
@@ -215,31 +222,23 @@ export default function StepThreeCompany({
             </tr>
           </thead>
           <tbody className="text-[14px]">
-            {languagesCountries.length &&
-              currentPreferredLanguage.map((pair, index) => {
-                const rowClass = index % 2 !== 0 ? "" : "bg-[#F5F5FF]"; // If index is odd, apply bg color
-                const lang = languagesCountries.find(
-                  (lang) => lang.langCode === pair.from
-                );
-                return (
-                  <tr key={index} className={rowClass}>
-                    <td className="border border-gray-200 p-2">
-                      {`${lang.language}(${lang.country})`}
-                    </td>
-                    <td className="border border-gray-200 p-2">{`${lang.langCode}`}</td>
-                    <td className="border border-gray-200 p-2">
-                      <button
-                        className="text-[#f00]"
-                        onClick={() =>
-                          onDeletePreferredLanguage({ ietf: pair })
-                        }
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
+            {currentPreferredLanguage.map((lang, index) => {
+              const rowClass = index % 2 !== 0 ? "" : "bg-[#F5F5FF]"; // If index is odd, apply bg color
+              return (
+                <tr key={lang.id} className={rowClass}>
+                  <td className="border border-gray-200 p-2">{lang.name}</td>
+                  <td className="border border-gray-200 p-2">{`${lang.code}`}</td>
+                  <td className="border border-gray-200 p-2">
+                    <button
+                      className="text-[#f00]"
+                      onClick={() => onDeletePreferredLanguage({ ietf: lang })}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -255,37 +254,32 @@ export default function StepThreeCompany({
           </button>
         </div>
         {openModel === 2 && (
-          <from
+          <form
             className="flex gap-5 mt-5"
             onSubmit={(e) => e.preventDefault()}
           >
             <div className="relative w-full">
-              <InputFelid
-                name="industriesServed"
-                type="text"
-                control={control}
-                requires={["Username is required"]}
-                classes="outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF] "
-                placeholder="Industries Served"
-                errors={errors}
+              <select
                 value={industriesServed}
-                onChange={(e) => setIndustriesServed(e.target.value)}
-              />
+                onChange={(e) => setIndustriesServed(+e.target.value)}
+                className="outline-none border-[1px] border-[#D6D7D7] text-customGray focus:text-black rounded p-2 appearance-none border p-2 w-full block px-4 py-2 shadow-sm focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]"
+              >
+                <option value="">Industries Served</option>
+                {industries.map((option) => (
+                  <option
+                    key={option.id}
+                    value={option.id}
+                    className="text-black"
+                  >
+                    {option.name}
+                  </option>
+                ))}
+              </select>
             </div>
-            <button
-              className="text-[#f00]"
-              onClick={() => {
-                if (currentIndustriesServed.find((x) => x === industriesServed)) {
-                  alert("Specializations already exist");
-                  return;
-                }
-                setCurrentIndustriesServed((prev) => [...prev, industriesServed]); // Add to the list
-                setIndustriesServed("");
-              }}
-            >
+            <button className="text-[#f00]" onClick={onAddIndustrial}>
               Add
             </button>
-          </from>
+          </form>
         )}
         <table className="w-full mt-4">
           <thead className="text-main-color font-poppins text-[14px]">
@@ -297,20 +291,19 @@ export default function StepThreeCompany({
             </tr>
           </thead>
           <tbody className="text-[14px]">
-            {currentIndustriesServed.map((ob, index) => {
+            {currentIndustriesServed.map((option, index) => {
               const rowClass = index % 2 !== 0 ? "" : "bg-[#F5F5FF]"; // If index is odd, apply bg color
               return (
-                <tr key={ob} className={rowClass}>
-                  <td className="border border-gray-200 p-2">{ob}</td>
+                <tr key={option.id} className={rowClass}>
+                  <td className="border border-gray-200 p-2">{option.name}</td>
                   <td className="border border-gray-200 p-2  max-w-[20px]">
                     <button
                       className="text-[#f00]"
                       onClick={() =>
                         setCurrentIndustriesServed((prev) =>
-                          prev.filter((lst) => lst !== ob)
+                          prev.filter((lst) => lst.id !== option.id)
                         )
                       }
-                      onC
                     >
                       Delete
                     </button>
