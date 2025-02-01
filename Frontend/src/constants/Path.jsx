@@ -1,5 +1,5 @@
 // Pages
-export { default as ErrorPage } from "../pages/ErrorPage";
+// export { default as ErrorPage } from "../pages/ErrorPage";
 
 // UI
 export { default as Footer } from "../components/shared/Footer";

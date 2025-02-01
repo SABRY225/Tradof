@@ -10,7 +10,8 @@ import "../../styles/register.css";
 import StepThreeCompany from "./StepThreeCompany";
 import { useMutation } from "@tanstack/react-query";
 import { registerCompanies, registerFreelancers } from "../../Util/http";
-import { data } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import Loading from "../../pages/Loading";
 
 // constants
 const defaultLanguagePairs = [
@@ -35,6 +36,7 @@ export default function RegisterFrom() {
     { id: 2, name: "English", code: "en" },
   ]);
   const [industriesServed, setIndustriesServed] = useState([]);
+  const navigate = useNavigate();
   const {
     control,
     handleSubmit,
@@ -55,9 +57,9 @@ export default function RegisterFrom() {
       location: "",
     },
   });
-  const { mutate: registerFreelancer } = useMutation({
+  const { mutate: registerFreelancer, isPending: Loading1 } = useMutation({
     mutationFn: registerFreelancers,
-    onSuccess: (data) => alert("Success send daa", data),
+    onSuccess: () => navigate("/confirm-email"),
     onError: (error) => {
       console.error("Mutation Error:", error);
       if (error.errors) {
@@ -75,9 +77,9 @@ export default function RegisterFrom() {
       }
     },
   });
-  const { mutate: registerCompany } = useMutation({
+  const { mutate: registerCompany, isPending: Loading2 } = useMutation({
     mutationFn: registerCompanies,
-    onSuccess: (data) => alert("Success send daa", data),
+    onSuccess: () => navigate("/confirm-email"),
     onError: (error) => {
       console.error("Mutation Error:", error);
       if (error.errors) {
@@ -97,11 +99,6 @@ export default function RegisterFrom() {
   });
   const stepTwoData = watch();
   const isStepIncreasing = step > prevStep;
-
-  const onSubmit = (data) => {
-    console.log("Form Submitted:", data);
-    alert("Registration Complete!");
-  };
 
   const nextStep = () => {
     if (step == 1) {
@@ -275,6 +272,9 @@ export default function RegisterFrom() {
     }
   };
 
+  console.log(Loading1);
+  if (Loading1 || Loading2) return <Loading />;
+
   return (
     <div
       className="flex gap-5 flex-col bg-[#fff] max-w-lg mx-auto p-10 rounded text-center font-roboto-condensed"
@@ -287,10 +287,7 @@ export default function RegisterFrom() {
         </div>
       </div>
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-5 mt-2"
-      >
+      <form className="flex flex-col gap-5 mt-2" onSubmit={onSendData}>
         <ul className="steps-progress flex w-full justify-around font-poppins">
           <p className="line z-[0]"></p>
           <motion.p
@@ -390,7 +387,7 @@ export default function RegisterFrom() {
             <button
               type="submit"
               className="bg-second-color text-white px-4 py-2 rounded"
-              onClick={onSendData}
+              // onClick={onSendData}
             >
               Submit
             </button>

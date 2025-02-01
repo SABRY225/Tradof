@@ -18,6 +18,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ForgetPassword from "./pages/ForgetPassword";
 import RestPassword from "./pages/RestPassword";
+import ConfirmEmail from "./pages/ConfirmEmail";
 // import AuthLayout from './layouts/AuthLayout.jsx';
 
 // create routes
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
   {
     path: "/sign-up",
     element: <Register />,
+  },
+  {
+    path: "/confirm-email",
+    element: <ConfirmEmail />,
   },
   {
     path: "/auth",

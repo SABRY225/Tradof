@@ -168,6 +168,7 @@ export default function StepThreeFreelancer({
           <button
             className="bg-second-color text-[12px] text-white py-1 px-2 rounded font-roboto-condensed"
             onClick={() => setOpenModel((prev) => (prev !== 1 ? 1 : 0))}
+            type="button"
           >
             {openModel !== 1 ? "New Language pair" : "Cancel"}
           </button>
@@ -262,6 +263,7 @@ export default function StepThreeFreelancer({
           <button
             className="bg-second-color text-[12px] text-white py-1 px-2 rounded font-roboto-condensed"
             onClick={() => setOpenModel((prev) => (prev !== 2 ? 2 : 0))}
+            type="button"
           >
             {openModel !== 2 ? "New Specializations" : "Cancel"}
           </button>
