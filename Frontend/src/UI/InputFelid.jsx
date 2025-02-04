@@ -110,8 +110,8 @@ export default function InputFelid({
         )}
       />
       {notes && <p className="mt-[5px] text-[#141414] text-[12px]">{notes} </p>}
-      {errors.firstName && (
-        <p className="text-red-500">{errors.firstName.message}</p>
+      {errors[`${name}`] && (
+        <p className="text-red-500 text-[12px]">{errors[`${name}`].message}</p>
       )}
     </div>
   );

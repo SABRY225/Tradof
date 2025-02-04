@@ -1,6 +1,8 @@
 // import { StrictMode } from 'react';
 // import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./Util/http";
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -16,6 +18,11 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ForgetPassword from "./pages/ForgetPassword";
 import RestPassword from "./pages/RestPassword";
+import ConfirmEmail from "./pages/ConfirmEmail";
+import Payment from "./pages/Freelancer/Payment";
+import Loading from "./pages/Loading";
+import CreateProject from "./pages/Client/CreateProject";
+import UserLayout from "./layouts/UserLayout";
 // import AuthLayout from './layouts/AuthLayout.jsx';
 
 // create routes
@@ -23,12 +30,8 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
-    id: "root",
     children: [
-      {
-        path: "landing",
-        element: <LandingPage />,
-      },
+      { index: true, element: <LandingPage /> }, // Default route
     ],
   },
   {
@@ -36,21 +39,31 @@ const router = createBrowserRouter([
     element: <Register />,
   },
   {
+    path: "/confirm-email",
+    element: <ConfirmEmail />,
+  },
+  {
+    path: "/loading",
+    element: <Loading />,
+  },
+  {
     path: "/auth",
     element: <LoginLayout />,
     children: [
-      {
-        index: true,
-        element: <Login />,
-      },
-      {
-        path: "send-otp",
-        element: <ForgetPassword />,
-      },
-      {
-        path: "reset-password/:email",
-        element: <RestPassword />,
-      },
+      { index: true, element: <Login /> },
+      { path: "send-otp", element: <ForgetPassword /> },
+      { path: "reset-password/:email", element: <RestPassword /> },
+    ],
+  },
+  {
+    path: "/payment",
+    element: <Payment />,
+  },
+  {
+    path: "/user",
+    element: <UserLayout />,
+    children: [
+      { path: "project/create", element: <CreateProject /> }, // Direct path
     ],
   },
   {
@@ -62,7 +75,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-      <RouterProvider router={router} />
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
     </>
   );
 }

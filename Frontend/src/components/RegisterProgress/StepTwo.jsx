@@ -3,15 +3,6 @@ import InputFelid from "../../UI/InputFelid";
 export default function StepTwo({ control, errors }) {
   const inputFields = [
     {
-      title: "Username",
-      name: "username",
-      type: "text",
-      requires: ["Username is required"],
-      notes:
-        "Username should contain at least 6 characters. Allowed characters: English letters, digits and dot (.)",
-      placeholder: "enter username",
-    },
-    {
       title: "First Name",
       name: "firstName",
       type: "text",
@@ -35,24 +26,22 @@ export default function StepTwo({ control, errors }) {
     {
       title: "Email Address",
       name: "email",
-      type: "email",
+      type: "text",
       requires: ["Email Address is required"],
-      placeholder: "example.gmail.com",
+      placeholder: "example@gmail.com",
     },
     {
       title: "Password",
       name: "password",
       type: "password",
       requires: ["password is required"],
-      notes:
-        "Must be at least 8 characters, Does not contain your email address",
+      
     },
     {
       title: "Confirm Password",
       name: "confirmPassword",
       type: "password",
       requires: ["Password must match is required"],
-      notes: "Must match a password",
     },
   ];
 
