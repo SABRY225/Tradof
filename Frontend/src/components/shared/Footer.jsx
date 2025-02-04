@@ -1,6 +1,6 @@
 import lightLogo from "../../assets/icons/lightlogo.svg";
 import logo from "../../assets/icons/logo.svg";
-function Footer({ color }) {
+function Footer({ color, borderColor, borderSize }) {
   return (
     <div
       className="font-roboto-condensed relative flex flex-col md:flex-row items-center justify-around text-center pt-10 pb-10"
@@ -8,7 +8,11 @@ function Footer({ color }) {
     >
       {/* Add the before pseudo-element */}
       <div
-        className="absolute inset-x-0 top-0 before:content-[''] before:block before:h-[3px] before:bg-white before:ml-[15rem] before:md:ml-[15rem] before:rounded"
+        className={`absolute inset-x-0 top-0 before:content-[''] before:block before:h-[3px] before:ml-${
+          borderSize ? "0" : "[15rem]"
+        } before:md:ml-${
+          borderSize ? "0" : "[15rem]"
+        } before:rounded before:bg-${borderColor ? "main-color" : "white"}`}
         style={{ backgroundColor: color }}
       ></div>
 
