@@ -1,7 +1,7 @@
 import lightLogo from "../../assets/icons/lightlogo.svg";
 import logo from "../../assets/icons/logo.svg";
 function Footer({ color, borderColor, borderSize }) {
-  console.log(borderSize);
+
   return (
     <div
       className="font-roboto-condensed relative flex flex-col md:flex-row items-center justify-around text-center pt-10 pb-10"

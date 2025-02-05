@@ -1,11 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import logo from "../../assets/icons/lightlogo.svg";
-import profilePhoto from "../../assets/images/1560a64114a9372e.jpg";
-import calender from "../../assets/icons/whiteCalender.svg";
-import notification from "../../assets/icons/notification.svg";
-import droplist from "../../assets/icons/droplist.svg";
+import {logo , profilePhoto, calender, notification, droplist} from "../../assets/paths.js";
 import DropList from "../../components/Navbar/DropList";
 
 export default function UserNavbar() {

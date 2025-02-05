@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "./Util/http";
 import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css"; // Import default styles
@@ -10,9 +9,13 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import "./index.css";
 
-import { LoginLayout } from "./constants/Path";
-import LandingPage from "./pages/LandingPage";
+import { queryClient } from "./Util/http";
+import { AuthProvider } from "./context/AuthContext";
+
+import LoginLayout from "./layouts/LoginLayout";
 import MainLayout from "./layouts/MainLayout";
+
+import LandingPage from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -23,7 +26,6 @@ import Payment from "./pages/Freelancer/Payment";
 import Loading from "./pages/Loading";
 import CreateProject from "./pages/Client/CreateProject";
 import UserLayout from "./layouts/UserLayout";
-import { AuthProvider } from "./context/AuthContext";
 import SendOTP from "./pages/SendOTP";
 import VerifyEmail from "./pages/VerifyEmail";
 

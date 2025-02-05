@@ -72,6 +72,13 @@ export const getAllSpecializations = async ({ signal }) => {
 // register for freelancers
 export const registerFreelancers = async ({ signal, data }) => {
   try {
+    console.log(data.profileImageUrl);
+    try {
+      const imageUrl = await axios.post(
+        "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload",
+        data.profileImageUrl
+      );
+    } catch (error) {}
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}/auth/register-freelancer`,
       data,
@@ -140,14 +147,12 @@ export const loginUser = async ({ signal, data }) => {
       }
     );
     console.log(response);
-    
+
     return response.data;
   } catch (error) {
     if (error.response) {
       console.log(error);
-      const err = new Error(
-        "An error occurred while Login"
-      );
+      const err = new Error("An error occurred while Login");
       err.code = error.response.status;
       err.message = error.response.data;
       throw err;
