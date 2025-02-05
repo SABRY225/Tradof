@@ -1,9 +1,9 @@
-// import { StrictMode } from 'react';
-// import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./Util/http";
+import { ToastContainer } from "react-toastify";
 
+import "react-toastify/dist/ReactToastify.css"; // Import default styles
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
@@ -23,7 +23,9 @@ import Payment from "./pages/Freelancer/Payment";
 import Loading from "./pages/Loading";
 import CreateProject from "./pages/Client/CreateProject";
 import UserLayout from "./layouts/UserLayout";
-// import AuthLayout from './layouts/AuthLayout.jsx';
+import { AuthProvider } from "./context/AuthContext";
+import SendOTP from "./pages/SendOTP";
+import VerifyEmail from "./pages/VerifyEmail";
 
 // create routes
 const router = createBrowserRouter([
@@ -35,14 +37,6 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/sign-up",
-    element: <Register />,
-  },
-  {
-    path: "/confirm-email",
-    element: <ConfirmEmail />,
-  },
-  {
     path: "/loading",
     element: <Loading />,
   },
@@ -51,8 +45,12 @@ const router = createBrowserRouter([
     element: <LoginLayout />,
     children: [
       { index: true, element: <Login /> },
-      { path: "send-otp", element: <ForgetPassword /> },
-      { path: "reset-password/:email", element: <RestPassword /> },
+      { path: "forget-password", element: <ForgetPassword /> },
+      { path: "send-otp/:email", element: <SendOTP /> },
+      { path: "reset-password/:email/:resetToken", element: <RestPassword /> },
+      { path: "sign-up", element: <Register /> },
+      { path: "confirm-email", element: <ConfirmEmail /> },
+      { path: "verify-email", element: <VerifyEmail /> },
     ],
   },
   {
@@ -75,9 +73,12 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-      </QueryClientProvider>
+      <ToastContainer stacked position="top-center" autoClose={3000} />
+      <AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
+      </AuthProvider>
     </>
   );
 }
