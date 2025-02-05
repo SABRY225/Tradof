@@ -59,7 +59,7 @@ export default function RegisterFrom() {
   });
   const { mutate: registerFreelancer, isPending: Loading1 } = useMutation({
     mutationFn: registerFreelancers,
-    onSuccess: () => navigate("/confirm-email"),
+    onSuccess: () => navigate("../confirm-email"),
     onError: (error) => {
       console.error("Mutation Error:", error);
       if (error.errors) {
