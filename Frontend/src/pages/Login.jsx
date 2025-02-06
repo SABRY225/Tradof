@@ -73,7 +73,7 @@ export default function Login() {
       </div>
       <div className="subTitle text-[17px] font-light text-sm m-5">
         Don't have an account?{" "}
-        <Link className="text-[#6C63FF] font-semibold" to="/sign-up">
+        <Link className="text-[#6C63FF] font-semibold" to="sign-up">
           Sign Up
         </Link>
       </div>
