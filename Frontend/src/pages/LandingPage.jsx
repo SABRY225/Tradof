@@ -16,8 +16,8 @@ export default function LandingPage() {
       <Features />
       <BreakSection id="Rated" text='Top 5 Rated' label='check top 5 rated companies and translators' />
       <TopRatedSection />
-      <BreakSection id="Contact Us" text='Contact Us' label='Get in touch with our support team' />
-      <ContactUs/>
+      {/* <BreakSection id="Contact Us" text='Contact Us' label='Get in touch with our support team' /> */}
+      <ContactUs id="Contact Us"/>
     </div>
 
   )

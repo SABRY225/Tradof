@@ -8,7 +8,7 @@ export default function MainLayout() {
     <>
       <LandingNav />
       <Outlet />
-      <Footer color="#6C63FF" />
+      <Footer color="#6C63FF" borderColor="#fff" borderSize="true" />
     </>
   );
 }
