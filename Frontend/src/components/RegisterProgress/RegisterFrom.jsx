@@ -12,6 +12,7 @@ import { useMutation } from "@tanstack/react-query";
 import { registerCompanies, registerFreelancers } from "../../Util/http";
 import { useNavigate } from "react-router-dom";
 import Loading from "../../pages/Loading";
+import { toast } from "react-toastify";
 
 // constants
 const defaultLanguagePairs = [
@@ -59,9 +60,8 @@ export default function RegisterFrom() {
   });
   const { mutate: registerFreelancer, isPending: Loading1 } = useMutation({
     mutationFn: registerFreelancers,
-    onSuccess: () => navigate("/confirm-email"),
+    onSuccess: () => navigate("../confirm-email"),
     onError: (error) => {
-      console.error("Mutation Error:", error);
       if (error.errors) {
         Object.entries(error.errors).forEach(([field, messages]) => {
           setError(field, {
@@ -79,9 +79,8 @@ export default function RegisterFrom() {
   });
   const { mutate: registerCompany, isPending: Loading2 } = useMutation({
     mutationFn: registerCompanies,
-    onSuccess: () => navigate("/confirm-email"),
+    onSuccess: () => navigate("../confirm-email"),
     onError: (error) => {
-      console.error("Mutation Error:", error);
       if (error.errors) {
         Object.entries(error.errors).forEach(([field, messages]) => {
           setError(field, {
@@ -203,7 +202,56 @@ export default function RegisterFrom() {
   };
   const onSendData = (e) => {
     e.preventDefault();
+
     if (stepOneData.accountType === "freelancer") {
+      if (currentPhoto.trim() === "") {
+        toast.error("Please choose account photo", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+        return;
+      }
+      if (stepTwoData.country.trim() === "") {
+        toast.error("Please choose Country", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+        return;
+      }
+      if (specializations.length == 0) {
+        toast.error("Please choose at least one specialization", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+        return;
+      }
+      if (languagePair.length == 0) {
+        toast.error("Please choose at least one language pair", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+        return;
+      }
       const freelancerData = {
         email: stepTwoData.email.trim(),
         password: stepTwoData.password.trim(),
@@ -222,6 +270,78 @@ export default function RegisterFrom() {
       };
       registerFreelancer({ data: freelancerData });
     } else {
+      if (currentPhoto.trim() === "") {
+        toast.error("Please choose account photo", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+        return;
+      }
+      if (stepTwoData.country.trim() === "") {
+        toast.error("Please choose Country", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+        return;
+      }
+      if (stepTwoData.location.trim() === "") {
+        toast.error("Please choose location", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+        return;
+      }
+      if (stepTwoData.jopTitle.trim() === "") {
+        toast.error("Please write jop title", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+        return;
+      }
+      if (industriesServed.length == 0) {
+        toast.error("Please choose at least one industries served", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+        return;
+      }
+      if (preferredLanguage.length == 0) {
+        toast.error("Please choose at least one preferred language", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+        return;
+      }
       const companyData = {
         email: stepTwoData.email.trim(),
         password: stepTwoData.password.trim(),

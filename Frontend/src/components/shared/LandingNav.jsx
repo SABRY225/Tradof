@@ -1,10 +1,13 @@
-// import React from 'react'
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import logo from "../../assets/icons/lightlogo.svg";
+import { motion } from "motion/react";
+
+import { logo, droplist } from "../../assets/paths.js";
 import ButtonFelid from "../../UI/ButtonFelid";
 
 export default function LandingNav() {
+  const [isOpen, setIsOpen] = useState(false);
+
   const [activeHash, setActiveHash] = useState(
     decodeURIComponent(window.location.hash).replace("#", "")
   );
@@ -18,7 +21,7 @@ export default function LandingNav() {
       );
       if (cleanHash !== activeHash) {
         setActiveHash(cleanHash);
-        console.log("Detected Hash Change:", cleanHash);
+        // console.log("Detected Hash Change:", cleanHash);
       }
     };
 
@@ -41,56 +44,66 @@ export default function LandingNav() {
   const navItems = ["Home", "Plans", "Features", "Rated", "Contact Us"];
 
   return (
-    <nav className="bg-[#6c63ff] flex items-center justify-between w-full md:px-[145px] px-[40px] py-[20px] text-white">
-        <Link className="flex items-center space-x-3" to="landing#Home">
-          <img src={logo} className="w-[40px]" alt="Logo" />
-          <span className="text-[31px] font-markazi-text font-semibold">
+    <motion.nav
+      initial={{ y: "-15rem" }}
+      animate={{ y: "0" }}
+      transition={{ type: "keyframes", duration: 1.2 }}
+      className="bg-main-color border-gray-200 text-white"
+    >
+      <motion.div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+        <Link to="/" className="flex items-center space-x-3">
+          <img src={logo} className="h-8" alt="Tradof Logo" />
+          <span className=" font-markazi-text text-2xl font-semibold whitespace-nowrap">
             Tradof
           </span>
         </Link>
-        <div className="flex md:order-2 space-x-3">
+        <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
           <ButtonFelid
+            type="button"
             text="Get Start"
             classes="text-[15px] px-[15px] py-[8px] bg-second-color"
             onClick={() => navigate("/auth")}
             style={{ width: "124px" }}
           />
           <button
+            onClick={() => setIsOpen(!isOpen)}
             type="button"
-            className="md:hidden p-2 w-10 h-10 text-gray-500 rounded-lg hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden focus:ring-2"
+            aria-controls="navbar-cta"
+            aria-expanded={isOpen}
           >
             <span className="sr-only">Open main menu</span>
-            <svg
-              className="w-5 h-5"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 17 14"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M1 1h15M1 7h15M1 13h15"
-              />
-            </svg>
+            <img src={droplist} alt="drop list icon" />
           </button>
         </div>
-        <ul className="hidden md:flex justify-center items-center gap-[35px] p-4 md:p-0 ">
-          {navItems.map((item, index) => (
-            <li key={index}>
-              <Link
-                to={`#${item}`}
-                className={`text-[15px] font-semibold text-white ${
-                  activeHash === item ? "text-[25px] font-medium" : ""
-                }`}
-                aria-current={activeHash === item ? "page" : undefined}
+        <div
+          className={`items-center justify-between ${
+            isOpen ? "flex" : "hidden"
+          } w-full md:flex md:w-auto md:order-1 bg-background-color md:bg-main-color mt-5`}
+          id="navbar-cta"
+        >
+          <ul className="flex flex-col p-4 md:p-0 md:space-x-8 md:flex-row md:mt-0">
+            {navItems.map((item, index) => (
+              <motion.li
+                key={index}
+                whileHover={{ scale: 1.15, fontWeight: 500 }}
+                transition={{ type: "keyframes", stiffness: 300 }}
+                className="py-2 px-3 md:p-0"
               >
-                {item}
-              </Link>
-            </li>
-          ))}
-        </ul>
-    </nav>
+                <Link
+                  to={`#${item}`}
+                  className={`text-black md:text-white font-roboto-condensed block ${
+                    activeHash === item ? "text-[18px] font-medium" : ""
+                  }`}
+                  aria-current={activeHash === item ? "page" : undefined}
+                >
+                  {item}
+                </Link>
+              </motion.li>
+            ))}
+          </ul>
+        </div>
+      </motion.div>
+    </motion.nav>
   );
 }

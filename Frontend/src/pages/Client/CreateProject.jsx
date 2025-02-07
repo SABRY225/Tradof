@@ -54,8 +54,7 @@ export default function CreateProject() {
   const selectedFrom = watch("languagePair.from");
   const selectedTo = watch("languagePair.to");
 
-  console.log(selectedFrom);
-  console.log(selectedTo);
+
   const onSubmit = (data) => {
     console.log(data);
     if (!data.languagePair.from) {
@@ -99,8 +98,8 @@ export default function CreateProject() {
     window.open(fileURL, "_blank");
   };
 
-  console.log(errors);
 
+  
   return (
     <>
       <PageTitle title="Create Project" />
