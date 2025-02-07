@@ -1,16 +1,31 @@
+import { motion } from "motion/react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import {logo , profilePhoto, calender, notification, droplist} from "../../assets/paths.js";
+import {
+  logo,
+  profilePhoto,
+  calender,
+  notification,
+  droplist,
+} from "../../assets/paths.js";
 import DropList from "../../components/Navbar/DropList";
 
 export default function UserNavbar() {
+    const [activeHash, setActiveHash] = useState(
+      decodeURIComponent(window.location.hash).replace("#", "")
+    );
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false);
   return (
-    <nav className="bg-main-color text-white border-gray-200">
-      <div className="max-w-screen-xl flex flex-wrap items-center md:gap-[50px] mx-auto p-4 w-full">
-        <Link to="" className="flex items-center space-x-3">
+    <motion.nav
+      initial={{ y: "-15rem" }}
+      animate={{ y: "0" }}
+      transition={{ type: "keyframes", duration: 1.2 }}
+      className="bg-main-color text-white border-gray-200"
+    >
+      <motion.div className="max-w-screen-xl flex flex-wrap items-center md:gap-[50px] mx-auto p-4 w-full">
+        <Link to="/" className="flex items-center space-x-3">
           <img src={logo} className="h-8" alt="Tradof Logo" />
           <span className=" font-markazi-text text-2xl font-semibold whitespace-nowrap">
             Tradof
@@ -63,18 +78,26 @@ export default function UserNavbar() {
               "Finances",
               "Settings",
             ].map((item, index) => (
-              <li key={index}>
+              <motion.li
+                key={index}
+                whileHover={{ scale: 1.1, fontWeight: 500 }}
+                transition={{ stiffness: 300, type: "keyframes" }}
+                className="py-2 px-3 md:p-0"
+              >
                 <Link
                   to="#"
-                  className="font-roboto-condensed block py-2 px-3 rounded-sm md:p-0 hover:font-semibold transform hover:scale-[1.2]"
+                  className={`text-black md:text-white font-roboto-condensed block ${
+                    activeHash === item ? "text-[18px] font-medium" : ""
+                  }`}
+                  aria-current={activeHash === item ? "page" : undefined}
                 >
                   {item}
                 </Link>
-              </li>
+              </motion.li>
             ))}
           </ul>
         </div>
-      </div>
-    </nav>
+      </motion.div>
+    </motion.nav>
   );
 }

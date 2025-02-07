@@ -51,7 +51,7 @@ export default function LandingNav() {
       className="bg-main-color border-gray-200 text-white"
     >
       <motion.div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <Link to="" className="flex items-center space-x-3">
+        <Link to="/" className="flex items-center space-x-3">
           <img src={logo} className="h-8" alt="Tradof Logo" />
           <span className=" font-markazi-text text-2xl font-semibold whitespace-nowrap">
             Tradof

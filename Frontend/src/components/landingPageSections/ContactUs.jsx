@@ -1,18 +1,254 @@
-import { Email } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
-import { Controller } from "react-hook-form";
+import emailjs from "emailjs-com";
+import { toast } from "react-toastify";
 
 import InputFelid from "../../UI/InputFelid";
 import ButtonFelid from "../../UI/ButtonFelid";
 import GooglePlay from "../../assets/icons/googlePlay.svg";
 import iphone from "../../assets/icons/iphone.svg";
-import team from "../../assets/icons/team.svg";
+import { profilePhoto } from "../../assets/paths";
+import PersonCard from "@/UI/PersonCard";
+
+const teamsData = [
+  {
+    name: "Mohamed Abdalrazek",
+    image: profilePhoto,
+    subtitle: "Full Stack Developer (MERN)",
+    media: [
+      {
+        facebook: "https://www.facebook.com/mohamed.abdalrazek.942/",
+        linkedin: "https://www.linkedin.com/in/mohamed-abdalrazek-6515a0232/",
+        gmail: "abdalrazekmohmed6@gmail.com",
+        github: "https://github.com/Dr-Rabi3",
+        phone: "+20 1030666109",
+      },
+    ],
+    profile:
+      "I am studying Computer Science and focusing on Data Structures, Object-Oriented Programming (OOP), Algorithms, and Web Development. Learning a variety of skills enables me to approach challenges from multiple perspectives. I am currently available for a full-time position.",
+    skills: [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "React",
+      "Node.js",
+      "Express",
+      "Monogo.db",
+      "OOP",
+      "Algorithms",
+      "Data Structures",
+    ],
+    experience: [
+      "52th place out of +200 team in the 2022 ECPC Qualifications Collegiate Programming Contest.",
+      "19th place out of +200 team in the 2023 ECPC Qualifications Collegiate Programming Contest.",
+      "Qualified to 2023 ACPC Arab Collegiate Programming Contest.",
+    ],
+  },
+  {
+    name: "Mohamed Abdalrazek",
+    image: profilePhoto,
+    subtitle: "Full Stack Developer (MERN)",
+    media: [
+      {
+        facebook: "https://www.facebook.com/mohamed.abdalrazek.942/",
+        linkedin: "https://www.linkedin.com/in/mohamed-abdalrazek-6515a0232/",
+        gmail: "abdalrazekmohmed6@gmail.com",
+        github: "https://github.com/Dr-Rabi3",
+        phone: "+20 1030666109",
+      },
+    ],
+    profile:
+      "I am studying Computer Science and focusing on Data Structures, Object-Oriented Programming (OOP), Algorithms, and Web Development. Learning a variety of skills enables me to approach challenges from multiple perspectives. I am currently available for a full-time position.",
+    skills: [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "React",
+      "Node.js",
+      "Express",
+      "Monogo.db",
+      "OOP",
+      "Algorithms",
+      "Data Structures",
+    ],
+    experience: [
+      "52th place out of +200 team in the 2022 ECPC Qualifications Collegiate Programming Contest.",
+      "19th place out of +200 team in the 2023 ECPC Qualifications Collegiate Programming Contest.",
+      "Qualified to 2023 ACPC Arab Collegiate Programming Contest.",
+    ],
+  },
+  {
+    name: "Mohamed Abdalrazek",
+    image: profilePhoto,
+    subtitle: "Full Stack Developer (MERN)",
+    media: [
+      {
+        facebook: "https://www.facebook.com/mohamed.abdalrazek.942/",
+        linkedin: "https://www.linkedin.com/in/mohamed-abdalrazek-6515a0232/",
+        gmail: "abdalrazekmohmed6@gmail.com",
+        github: "https://github.com/Dr-Rabi3",
+        phone: "+20 1030666109",
+      },
+    ],
+    profile:
+      "I am studying Computer Science and focusing on Data Structures, Object-Oriented Programming (OOP), Algorithms, and Web Development. Learning a variety of skills enables me to approach challenges from multiple perspectives. I am currently available for a full-time position.",
+    skills: [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "React",
+      "Node.js",
+      "Express",
+      "Monogo.db",
+      "OOP",
+      "Algorithms",
+      "Data Structures",
+    ],
+    experience: [
+      "52th place out of +200 team in the 2022 ECPC Qualifications Collegiate Programming Contest.",
+      "19th place out of +200 team in the 2023 ECPC Qualifications Collegiate Programming Contest.",
+      "Qualified to 2023 ACPC Arab Collegiate Programming Contest.",
+    ],
+  },
+  {
+    name: "Mohamed Abdalrazek",
+    image: profilePhoto,
+    subtitle: "Full Stack Developer (MERN)",
+    media: [
+      {
+        facebook: "https://www.facebook.com/mohamed.abdalrazek.942/",
+        linkedin: "https://www.linkedin.com/in/mohamed-abdalrazek-6515a0232/",
+        gmail: "abdalrazekmohmed6@gmail.com",
+        github: "https://github.com/Dr-Rabi3",
+        phone: "+20 1030666109",
+      },
+    ],
+    profile:
+      "I am studying Computer Science and focusing on Data Structures, Object-Oriented Programming (OOP), Algorithms, and Web Development. Learning a variety of skills enables me to approach challenges from multiple perspectives. I am currently available for a full-time position.",
+    skills: [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "React",
+      "Node.js",
+      "Express",
+      "Monogo.db",
+      "OOP",
+      "Algorithms",
+      "Data Structures",
+    ],
+    experience: [
+      "52th place out of +200 team in the 2022 ECPC Qualifications Collegiate Programming Contest.",
+      "19th place out of +200 team in the 2023 ECPC Qualifications Collegiate Programming Contest.",
+      "Qualified to 2023 ACPC Arab Collegiate Programming Contest.",
+    ],
+  },
+  {
+    name: "Mohamed Abdalrazek",
+    image: profilePhoto,
+    subtitle: "Full Stack Developer (MERN)",
+    media: [
+      {
+        facebook: "https://www.facebook.com/mohamed.abdalrazek.942/",
+        linkedin: "https://www.linkedin.com/in/mohamed-abdalrazek-6515a0232/",
+        gmail: "abdalrazekmohmed6@gmail.com",
+        github: "https://github.com/Dr-Rabi3",
+        phone: "+20 1030666109",
+      },
+    ],
+    profile:
+      "I am studying Computer Science and focusing on Data Structures, Object-Oriented Programming (OOP), Algorithms, and Web Development. Learning a variety of skills enables me to approach challenges from multiple perspectives. I am currently available for a full-time position.",
+    skills: [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "React",
+      "Node.js",
+      "Express",
+      "Monogo.db",
+      "OOP",
+      "Algorithms",
+      "Data Structures",
+    ],
+    experience: [
+      "52th place out of +200 team in the 2022 ECPC Qualifications Collegiate Programming Contest.",
+      "19th place out of +200 team in the 2023 ECPC Qualifications Collegiate Programming Contest.",
+      "Qualified to 2023 ACPC Arab Collegiate Programming Contest.",
+    ],
+  },
+  {
+    name: "Mohamed Abdalrazek",
+    image: profilePhoto,
+    subtitle: "Full Stack Developer (MERN)",
+    media: [
+      {
+        facebook: "https://www.facebook.com/mohamed.abdalrazek.942/",
+        linkedin: "https://www.linkedin.com/in/mohamed-abdalrazek-6515a0232/",
+        gmail: "abdalrazekmohmed6@gmail.com",
+        github: "https://github.com/Dr-Rabi3",
+        phone: "+20 1030666109",
+      },
+    ],
+    profile:
+      "I am studying Computer Science and focusing on Data Structures, Object-Oriented Programming (OOP), Algorithms, and Web Development. Learning a variety of skills enables me to approach challenges from multiple perspectives. I am currently available for a full-time position.",
+    skills: [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "React",
+      "Node.js",
+      "Express",
+      "Monogo.db",
+      "OOP",
+      "Algorithms",
+      "Data Structures",
+    ],
+    experience: [
+      "52th place out of +200 team in the 2022 ECPC Qualifications Collegiate Programming Contest.",
+      "19th place out of +200 team in the 2023 ECPC Qualifications Collegiate Programming Contest.",
+      "Qualified to 2023 ACPC Arab Collegiate Programming Contest.",
+    ],
+  },
+  {
+    name: "Mohamed Abdalrazek",
+    image: profilePhoto,
+    subtitle: "Full Stack Developer (MERN)",
+    media: [
+      {
+        facebook: "https://www.facebook.com/mohamed.abdalrazek.942/",
+        linkedin: "https://www.linkedin.com/in/mohamed-abdalrazek-6515a0232/",
+        gmail: "abdalrazekmohmed6@gmail.com",
+        github: "https://github.com/Dr-Rabi3",
+        phone: "+20 1030666109",
+      },
+    ],
+    profile:
+      "I am studying Computer Science and focusing on Data Structures, Object-Oriented Programming (OOP), Algorithms, and Web Development. Learning a variety of skills enables me to approach challenges from multiple perspectives. I am currently available for a full-time position.",
+    skills: [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "React",
+      "Node.js",
+      "Express",
+      "Monogo.db",
+      "OOP",
+      "Algorithms",
+      "Data Structures",
+    ],
+    experience: [
+      "52th place out of +200 team in the 2022 ECPC Qualifications Collegiate Programming Contest.",
+      "19th place out of +200 team in the 2023 ECPC Qualifications Collegiate Programming Contest.",
+      "Qualified to 2023 ACPC Arab Collegiate Programming Contest.",
+    ],
+  },
+];
 
 export default function ContactUs({ ...prams }) {
   const {
     control,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -21,7 +257,62 @@ export default function ContactUs({ ...prams }) {
     },
   });
   const formData = watch();
-
+  const sendMessage = () => {
+    const { email, message } = formData;
+    if (email.trim() === "") {
+      toast.error("Please enter a valid email", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+      return;
+    }
+    if (message.trim() === "") {
+      toast.error("Please enter a valid message", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+      return;
+    }
+    const serviceID = import.meta.env.VITE_SEND_MESSAGE_SERVICE_KEY;
+    const templateID = import.meta.env.VITE_SEND_MESSAGE_TEMPLATE_KEY;
+    const userID = import.meta.env.VITE_SEND_MESSAGE_USER_KEY;
+    emailjs
+      .send(serviceID, templateID, { email, message }, userID)
+      .then((response) => {
+        toast.success("Message sent successfully! ✅", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+        reset(); // Clear fields after submission
+      })
+      .catch((error) => {
+        toast.error("Failed to send message ❌", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+        console.error(error);
+      });
+  };
   return (
     <>
       <div
@@ -62,20 +353,15 @@ export default function ContactUs({ ...prams }) {
               </p>
             </div>
           </div>
-          <div className="team flex flex-wrap max-w-[300px] gap-[30px]">
-            <img src={team} alt="" width="50px" />
-            <img src={team} alt="" width="50px" />
-            <img src={team} alt="" width="50px" />
-            <img src={team} alt="" width="50px" />
-            <img src={team} alt="" width="50px" />
-            <img src={team} alt="" width="50px" />
-            <img src={team} alt="" width="50px" />
-            <img src={team} alt="" width="50px" />
+          <div className="team flex flex-wrap max-w-[300px] gap-[10px]">
+            {teamsData.map((member, index) => (
+              <PersonCard key={index} member={member} />
+            ))}
           </div>
         </div>
         <form
           className="flex-grow w-[380px] flex flex-col items-center"
-          onSubmit={(e) => e.preventDefault()}
+          onSubmit={handleSubmit(sendMessage)}
         >
           <h2 className="relative font-roboto-condensed font-semibold md:text-[40px] text-[30px] text-white text-center my-[15px]">
             Contact technical support
@@ -109,8 +395,6 @@ export default function ContactUs({ ...prams }) {
             text="Send"
             type="submit"
             classes="text-[18px] py-[8px] bg-second-color min-w-[450px]"
-            onClick={() => alert("click")}
-            // style={{ width: "154px" }}
           />
         </form>
       </div>
