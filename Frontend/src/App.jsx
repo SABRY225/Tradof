@@ -23,6 +23,8 @@ import Payment from "./pages/Freelancer/Payment";
 import Loading from "./pages/Loading";
 import CreateProject from "./pages/Client/CreateProject";
 import UserLayout from "./layouts/UserLayout";
+import Profile from "./pages/Client/Profile";
+import Setting from "./pages/Client/Setting";
 // import AuthLayout from './layouts/AuthLayout.jsx';
 
 // create routes
@@ -64,6 +66,8 @@ const router = createBrowserRouter([
     element: <UserLayout />,
     children: [
       { path: "project/create", element: <CreateProject /> }, // Direct path
+      { path: "profile", element: <Profile /> },
+      { path: "settings", element: <Setting /> },
     ],
   },
   {

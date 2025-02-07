@@ -1,17 +1,19 @@
 import React from "react";
+import image from "../assets/images/image2.png";
 
 export default function ButtonFelid({ icon, type, text, classes, ...prams }) {
   return (
     <>
       <button
         type={type}
-        className={`
-          flex gap-1 justify-center items-center font-roboto font-extrabold text-[16px] text-white rounded-[8px] 
-          ${classes || ""}`}
+        className={
+          `flex gap-1 justify-center items-center font-roboto font-extrabold text-[16px] text-white rounded-[8px] 
+          ${classes || ""}`
+        }
         {...prams}
       >
+        {icon && <img src={image} className="w-[24px] h-[24px]" />}
         {text}
-        {icon && <img src={icon} />}
       </button>
     </>
   );
