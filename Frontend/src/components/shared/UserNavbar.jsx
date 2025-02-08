@@ -21,7 +21,7 @@ export default function UserNavbar() {
     <motion.nav
       initial={{ y: "-15rem" }}
       animate={{ y: "0" }}
-      transition={{ type: "keyframes", duration: 1.2 }}
+      transition={{ type: "keyframes", duration: 1 }}
       className="bg-main-color text-white border-gray-200"
     >
       <motion.div className="max-w-screen-xl flex flex-wrap items-center md:gap-[50px] mx-auto p-4 w-full">
