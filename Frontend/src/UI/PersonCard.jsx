@@ -90,7 +90,7 @@ export default function PersonCard({ member }) {
                       target="_blank"
                       rel="noopener noreferrer"
                       key={index}
-                      className="flex gap-3 my-3"
+                      className="flex gap-3 my-3 w-fit"
                     >
                       <img src={links[key]} alt={`${key} icon`} />
                       <div className="underline">

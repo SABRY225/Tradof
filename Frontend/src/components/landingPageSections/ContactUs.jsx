@@ -388,7 +388,7 @@ export default function ContactUs({ ...prams }) {
               control={control}
               placeholder="enter your message"
               type="textarea"
-              classes="min-w-[450px] outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]"
+              classes="min-w-[450px] h-[100px] max-h-[200px] outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]"
             />
           </div>
           <ButtonFelid

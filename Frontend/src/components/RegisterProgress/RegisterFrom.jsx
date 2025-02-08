@@ -10,7 +10,7 @@ import "../../styles/register.css";
 import StepThreeCompany from "./StepThreeCompany";
 import { useMutation } from "@tanstack/react-query";
 import { registerCompanies, registerFreelancers } from "../../Util/http";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Loading from "../../pages/Loading";
 import { toast } from "react-toastify";
 
@@ -404,6 +404,12 @@ export default function RegisterFrom() {
         <h1 className="font-bold text-3xl">Registration Form</h1>
         <div className="text-customGray font-poppins">
           Please fill out this form with the required information
+        </div>
+        <div className="font-poppins text-[13px]">
+          Do you have an account? {" "}
+          <Link className="text-[#6C63FF] font-semibold" to="../">
+            Sign In
+          </Link>
         </div>
       </div>
 

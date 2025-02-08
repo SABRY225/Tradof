@@ -1,6 +1,13 @@
+import { motion } from "motion/react";
+
 export default function PageTitle({ title, subtitle }) {
   return (
-    <header className="relative">
+    <motion.header
+      initial={{ y: "-50rem" }}
+      animate={{ y: "0rem" }}
+      transition={{ type: "keyframes", duration: 1 }}
+      className="relative"
+    >
       <div className="title font-namdhinggo font-extrabold text-center text-[50px] text-white max-w-screen-xl md:py-[60px] mx-auto p-4 w-full">
         {title}
         <div className="subtitle font-roboto-condensed text-[20px] font-regular">
@@ -20,6 +27,6 @@ export default function PageTitle({ title, subtitle }) {
           fill="#6C63FF"
         />
       </svg>
-    </header>
+    </motion.header>
   );
 }

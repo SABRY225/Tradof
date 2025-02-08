@@ -3,27 +3,18 @@ import { useQuery } from "@tanstack/react-query";
 import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
 
+import getLanguages from "@/Util/getLanguage";
 import Combobox from "../../components/ui/Combobox";
-
-import { getAllLanguages } from "../../Util/http";
-import PageTitle from "../../UI/PageTitle";
 import ButtonFelid from "@/UI/ButtonFelid";
+import PageTitle from "../../UI/PageTitle";
 
 const commonClasses =
   "font-epilogue outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]";
 
+const languages = getLanguages();
+
 export default function CreateProject() {
   const [files, setFiles] = useState([]);
-  const {
-    data: languages,
-    isError: isErrorLanguages,
-    error: errorLanguages,
-    isLoading: isLoadingLanguages,
-  } = useQuery({
-    queryKey: ["Languages"],
-    queryFn: getAllLanguages,
-    staleTime: 10000,
-  });
   const {
     handleSubmit,
     control,
@@ -53,7 +44,6 @@ export default function CreateProject() {
   // Watch selected values
   const selectedFrom = watch("languagePair.from");
   const selectedTo = watch("languagePair.to");
-
 
   const onSubmit = (data) => {
     console.log(data);
@@ -90,7 +80,7 @@ export default function CreateProject() {
     const selectedFiles = Array.from(event.target.files);
     setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
     setValue("attachments", [...files, ...selectedFiles]);
-    clearErrors("attachments");;
+    clearErrors("attachments");
   };
 
   const handleOpenFile = (file) => {
@@ -98,8 +88,6 @@ export default function CreateProject() {
     window.open(fileURL, "_blank");
   };
 
-
-  
   return (
     <>
       <PageTitle title="Create Project" />

@@ -9,7 +9,7 @@ export default function LandingNav() {
   const [isOpen, setIsOpen] = useState(false);
 
   const [activeHash, setActiveHash] = useState(
-    decodeURIComponent(window.location.hash).replace("#", "")
+    decodeURIComponent(window.location.hash).replace("#", "") || "Home"
   );
   const navigate = useNavigate();
 
@@ -20,7 +20,7 @@ export default function LandingNav() {
         ""
       );
       if (cleanHash !== activeHash) {
-        setActiveHash(cleanHash);
+        setActiveHash(cleanHash || "Home");
         // console.log("Detected Hash Change:", cleanHash);
       }
     };
@@ -41,6 +41,7 @@ export default function LandingNav() {
     }
   }, [activeHash]);
 
+  console.log(activeHash);
   const navItems = ["Home", "Plans", "Features", "Rated", "Contact Us"];
 
   return (
