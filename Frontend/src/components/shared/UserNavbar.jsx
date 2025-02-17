@@ -12,16 +12,16 @@ import {
 import DropList from "../../components/Navbar/DropList";
 
 export default function UserNavbar() {
-    const [activeHash, setActiveHash] = useState(
-      decodeURIComponent(window.location.hash).replace("#", "")
-    );
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [activeHash, setActiveHash] = useState(
+    decodeURIComponent(window.location.hash).replace("#", "")
+  );
+  const [isDropdownOpen, setIsDropdownOpen] = useState(null);
   const [isNavOpen, setIsNavOpen] = useState(false);
   return (
     <motion.nav
       initial={{ y: "-15rem" }}
       animate={{ y: "0" }}
-      transition={{ type: "keyframes", duration: 1 }}
+      transition={{ type: "keyframes", duration: 1.5 }}
       className="bg-main-color text-white border-gray-200"
     >
       <motion.div className="max-w-screen-xl flex flex-wrap items-center md:gap-[50px] mx-auto p-4 w-full">
@@ -41,7 +41,9 @@ export default function UserNavbar() {
           <button
             type="button"
             className="flex text-sm rounded-full border-2"
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            onClick={() =>
+              setIsDropdownOpen((prev) => (prev ? null : "profileMenu"))
+            }
           >
             <span className="sr-only">Open user menu</span>
             <img
@@ -50,7 +52,7 @@ export default function UserNavbar() {
               alt="user photo"
             />
           </button>
-          {isDropdownOpen && (
+          {isDropdownOpen === "profileMenu" && (
             <DropList
               name="Mohamed Abdalrazek"
               email="abdalrazekmohamed6@gmail.com"

@@ -1,7 +1,10 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
+import { MantineProvider } from "@mantine/core";
 
+import "@mantine/core/styles.css";
+import "@mantine/core/styles/global.css";
 import "react-toastify/dist/ReactToastify.css"; // Import default styles
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -26,11 +29,11 @@ import Payment from "./pages/Freelancer/Payment";
 import Loading from "./pages/Loading";
 import CreateProject from "./pages/Client/CreateProject";
 import UserLayout from "./layouts/UserLayout";
-import Profile from "./pages/Client/Profile";
-import Setting from "./pages/Client/Setting";
-// import AuthLayout from './layouts/AuthLayout.jsx';
+import Profile from "./pages/shared/Profile";
+import Setting from "./pages/shared/Setting";
 import SendOTP from "./pages/SendOTP";
 import VerifyEmail from "./pages/VerifyEmail";
+import Dashboard from "./pages/Dashboard";
 
 // create routes
 const router = createBrowserRouter([
@@ -69,6 +72,7 @@ const router = createBrowserRouter([
       { path: "project/create", element: <CreateProject /> }, // Direct path
       { path: "profile", element: <Profile /> },
       { path: "settings", element: <Setting /> },
+      { path: "dashboard", element: <Dashboard /> },
     ],
   },
   {
@@ -80,12 +84,14 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-      <ToastContainer stacked position="top-center" autoClose={3000} />
-      <AuthProvider>
-        <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
-        </QueryClientProvider>
-      </AuthProvider>
+      <MantineProvider withGlobalStyles withNormalizeCSS>
+        <ToastContainer stacked position="top-center" autoClose={3000} />
+        <AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </AuthProvider>
+      </MantineProvider>
     </>
   );
 }

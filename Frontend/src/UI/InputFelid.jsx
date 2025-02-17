@@ -15,6 +15,7 @@ export default function InputFelid({
   notes,
   placeholder,
   type,
+  icon,
   options, // For dropdown options like countries
   ...props
 }) {
@@ -32,7 +33,8 @@ export default function InputFelid({
         control={control}
         rules={{ required: requires }}
         render={({ field }) => (
-          <>
+          <div className={`${icon ? "flex bg-white rounded" : ""}`}>
+            {icon && <img src={icon} alt="icon" className="p-2 text-main-color" />}
             {type === "phone" && (
               <PhoneInput
                 {...field}
@@ -106,7 +108,7 @@ export default function InputFelid({
                 {...props}
               />
             )}
-          </>
+          </div>
         )}
       />
       {notes && <p className="mt-[5px] text-[#141414] text-[12px]">{notes} </p>}

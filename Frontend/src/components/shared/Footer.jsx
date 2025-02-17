@@ -4,7 +4,7 @@ function Footer({ color, borderColor, borderSize }) {
   // console.log(color,borderColor,borderSize)
   return (
     <div
-      className="font-roboto-condensed relative flex flex-col md:flex-row items-center justify-around text-center py-5"
+      className="font-roboto-condensed bg-background-color relative flex flex-col md:flex-row items-center justify-around text-center py-5"
       style={{ backgroundColor: color }}
     >
       {/* Add the before pseudo-element */}

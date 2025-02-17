@@ -1,5 +1,4 @@
 import React from "react";
-import image from "../assets/images/image2.png";
 
 export default function ButtonFelid({ icon, type, text, classes, ...prams }) {
   return (
@@ -12,7 +11,7 @@ export default function ButtonFelid({ icon, type, text, classes, ...prams }) {
         }
         {...prams}
       >
-        {icon && <img src={image} className="w-[24px] h-[24px]" />}
+        {icon && <img src={icon} className="w-[24px] h-[24px]" />}
         {text}
       </button>
     </>
