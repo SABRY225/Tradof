@@ -13,7 +13,7 @@ import ButtonFelid from "../UI/ButtonFelid";
 import Loading from "./Loading";
 
 import { useState } from "react";
-import { restPassword, verifyEmail } from "@/Util/http";
+import { restPassword, verifyEmail } from "@/Util/Https/http";
 import { toast } from "react-toastify";
 
 const felidStyle =

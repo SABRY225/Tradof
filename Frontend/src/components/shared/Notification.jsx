@@ -77,6 +77,7 @@ export default function Notification({ classes }) {
     <motion.div
       initial={{ x: "50rem" }}
       animate={{ x: "0rem" }}
+      exit={{ x: "50rem" }}
       transition={{ type: "keyframes", duration: 0.8 }}
       className={`bg-card-color rounded-lg w-[350px] py-[20px] px-[14px] ${classes}`}
     >

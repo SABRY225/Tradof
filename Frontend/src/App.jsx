@@ -12,13 +12,13 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import "./index.css";
 
-import { queryClient } from "./Util/http";
+import { queryClient } from "./Util/Https/http";
 import { AuthProvider } from "./context/AuthContext";
 
 import LoginLayout from "./layouts/LoginLayout";
 import MainLayout from "./layouts/MainLayout";
 
-import LandingPage from "./pages/LandingPage";
+import LandingPage, { subscriptionsLoader } from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -30,7 +30,7 @@ import Loading from "./pages/Loading";
 import CreateProject from "./pages/Client/CreateProject";
 import UserLayout from "./layouts/UserLayout";
 import Profile from "./pages/shared/Profile";
-import Setting from "./pages/shared/Setting";
+import Setting, { settingsLoader } from "./pages/shared/Setting";
 import SendOTP from "./pages/SendOTP";
 import VerifyEmail from "./pages/VerifyEmail";
 import Dashboard from "./pages/Dashboard";
@@ -41,7 +41,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <MainLayout />,
     children: [
-      { index: true, element: <LandingPage /> }, // Default route
+      { index: true, element: <LandingPage />, loader: subscriptionsLoader }, // Default route
     ],
   },
   {
@@ -69,9 +69,12 @@ const router = createBrowserRouter([
     path: "/user",
     element: <UserLayout />,
     children: [
-      { path: "project/create", element: <CreateProject /> }, // Direct path
+      {
+        path: "project",
+        children: [{ path: "create", element: <CreateProject /> }],
+      },
       { path: "profile", element: <Profile /> },
-      { path: "settings", element: <Setting /> },
+      { path: "settings", element: <Setting />, loader: settingsLoader },
       { path: "dashboard", element: <Dashboard /> },
     ],
   },

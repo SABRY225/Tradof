@@ -48,6 +48,7 @@ export default function Reviews({ rating, reviews }) {
         <AlertDialog>
           <AlertDialogTrigger>
             <ButtonFelid
+              as="span"
               icon={share}
               text="Share your profile"
               type="button"
@@ -58,11 +59,12 @@ export default function Reviews({ rating, reviews }) {
             <AlertDialogHeader>
               <AlertDialogTitle>Share your profile like</AlertDialogTitle>
               <AlertDialogDescription className="text-black flex flex-col gap-10 font-roboto-condensed">
-                <div className="font-roboto-condensed text-gray-800">
+                <span className="font-roboto-condensed text-gray-800">
                   Now you can share your account with different sites and just
                   click on the link below
-                </div>
+                </span>
                 <button
+                  type="button"
                   onClick={handleCopy}
                   className="bg-[#eef4ff] w-full flex justify-between px-4 py-2 border-2 border-[#a5c1ff] rounded-full"
                 >

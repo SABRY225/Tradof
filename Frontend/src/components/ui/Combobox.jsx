@@ -19,7 +19,7 @@ import {
 
 export default function Combobox({ List, initial, value, onChange }) {
   const [open, setOpen] = React.useState(false);
-
+  // console.log(List, value);
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -29,25 +29,23 @@ export default function Combobox({ List, initial, value, onChange }) {
           aria-expanded={open}
           className="w-full justify-between flex flex-wrap h-fit"
         >
-          {value ? List.find((item) => item.name === value)?.name : initial}
+          {value ? List.find((item) => item.id === value)?.name : initial}
           {/* Display name */}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="max-w-[400px] p-0">
         <Command>
-          <CommandInput
-            placeholder="Search item..."
-          />
+          <CommandInput placeholder="Search item..." />
           <CommandList>
             <CommandEmpty>No item found.</CommandEmpty>
             <CommandGroup>
               {List.map((item) => (
                 <CommandItem
-                  key={item.name}
-                  value={item.name} // Use id as value for selection logic
+                  key={item.id}
+                  value={item.id} // Use id as value for selection logic
                   onSelect={(currentValue) => {
-                    onChange(item.name); // Pass selected ID
+                    onChange(item.id); // Pass selected ID
                     setOpen(false);
                   }}
                 >

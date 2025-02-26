@@ -3,13 +3,22 @@ import ButtonFelid from "@/UI/ButtonFelid";
 import { Controller, useForm } from "react-hook-form";
 import InputFelid from "@/UI/InputFelid";
 import Combobox from "../ui/Combobox";
-import { useQuery } from "@tanstack/react-query";
-import { getAllCountries } from "@/Util/http";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getAllCountries, queryClient } from "@/Util/Https/http.js";
+import { editProfile as editCompany } from "@/Util/Https/companyHttp.js";
+import { settingsLoader } from "@/pages/shared/Setting.jsx";
+import { useAuth } from "@/context/AuthContext.jsx";
+import { toast } from "react-toastify";
+import { FadeLoader } from "react-spinners";
+import { editProfile as editFreelancer } from "@/Util/Https/freelancerHttp.js";
 
 const commonClasses =
   "min-w-[300px] text-[16px] outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]";
 
 export default function EditProfile({ profileData }) {
+  const {
+    user: { userId, token, role },
+  } = useAuth();
   const { data: countries } = useQuery({
     queryKey: ["counters"],
     queryFn: getAllCountries,
@@ -31,14 +40,63 @@ export default function EditProfile({ profileData }) {
       phone: profileData.phone,
       location: profileData.location,
       country: profileData.country,
+      jopTitle: profileData.jopTitle,
+      companyName: profileData.companyName,
+    },
+  });
+  const { mutate: edit, isPending } = useMutation({
+    mutationKey: ["editProfile"],
+    mutationFn: role === "CompanyAdmin" ? editCompany : editFreelancer,
+    onError: (error) => {
+      toast.error(error.message, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+    },
+    onSuccess: () => {
+      toast.success("Edit Profile Successfully", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
     },
   });
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const url = URL.createObjectURL(file); // Create a preview URL
-      setImageURL(url);
+  const handleEditProfile = () => {
+    let data = {};
+    if (role === "CompanyAdmin") {
+      data = {
+        id: userId,
+        firstName: watch("firstName") || profileData.firstName,
+        lastName: watch("lastName") || profileData.lastName,
+        email: watch("email") || profileData.email,
+        phoneNumber: watch("phone") || profileData.phone,
+        companyAddress: watch("location") || profileData.location,
+        countryId: watch("country") || profileData.country,
+        profileImageUrl: watch("image") || profileData.image,
+        jobTitle: watch("jopTitle") || profileData.jopTitle,
+        companyName: watch("companyName") || profileData.companyName,
+      };
+      edit({ data, token });
+    } else {
+      data = {
+        countryId: watch("country") || profileData.country,
+        firstName: watch("firstName") || profileData.firstName,
+        lastName: watch("lastName") || profileData.lastName,
+        email: watch("email") || profileData.email,
+        profileImageUrl: watch("image") || profileData.image,
+        phoneNumber: watch("phone") || profileData.phone,
+      };
+      edit({ data, id: userId, token });
     }
   };
 
@@ -47,9 +105,34 @@ export default function EditProfile({ profileData }) {
       <h1 className="text-[20px] font-roboto-condensed font-medium italic border-b-2 border-main-color w-fit mt-5 pl-5 ml-5">
         Edit Profile
       </h1>
-      <form className="flex flex-col bg-card-color rounded-[8px] p-[30px]">
+      <form
+        onSubmit={handleSubmit(handleEditProfile)}
+        className="flex flex-col bg-card-color rounded-[8px] p-[30px]"
+      >
         <div className="flex flex-col-reverse md:flex-row gap-5 justify-between">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-[50px]">
+            {role === "CompanyAdmin" && (
+              <InputFelid
+                title="Company name"
+                name="companyName"
+                requires={["company name cannot be empty"]}
+                type="text"
+                classes={commonClasses}
+                control={control}
+                errors={errors}
+              />
+            )}
+            {role === "CompanyAdmin" && (
+              <InputFelid
+                title="Jop title"
+                name="jopTitle"
+                requires={["jop title cannot be empty"]}
+                type="text"
+                classes={commonClasses}
+                control={control}
+                errors={errors}
+              />
+            )}
             <InputFelid
               title="First name"
               name="firstName"
@@ -86,15 +169,17 @@ export default function EditProfile({ profileData }) {
               control={control}
               errors={errors}
             />
-            <InputFelid
-              title="Location"
-              name="location"
-              requires={["location cannot be empty"]}
-              type="text"
-              classes={commonClasses}
-              control={control}
-              errors={errors}
-            />
+            {role === "CompanyAdmin" && (
+              <InputFelid
+                title="Location"
+                name="location"
+                requires={["location cannot be empty"]}
+                type="text"
+                classes={commonClasses}
+                control={control}
+                errors={errors}
+              />
+            )}
             {countries && (
               <div className="flex flex-col font-epilogue text-[14px] text-left mb-[20px]">
                 <label className="font-medium">Country</label>
@@ -147,12 +232,25 @@ export default function EditProfile({ profileData }) {
             />
           </div>
         </div>
-        <ButtonFelid
-          text="Save"
-          type="submit"
-          classes="text-[12px] px-[30px] py-[7px] bg-second-color rounded-full m-auto"
-          onClick={() => alert("click")}
-        />
+        <div className="flex gap-5 items-center w-fit m-auto">
+          {isPending && (
+            <FadeLoader
+              color="#000"
+              cssOverride={{ width: "0px", height: "0px" }}
+              height={3}
+              width={3}
+              loading
+              margin={-11}
+              radius={15}
+              speedMultiplier={1}
+            />
+          )}
+          <ButtonFelid
+            text="Save"
+            type="submit"
+            classes="text-[12px] px-[30px] py-[7px] bg-second-color rounded-full m-auto"
+          />
+        </div>
       </form>
     </div>
   );

@@ -8,14 +8,14 @@ export default function PageTitle({ title, subtitle }) {
       transition={{ type: "keyframes", duration: 1 }}
       className="relative"
     >
-      <div className="title font-namdhinggo font-extrabold text-center text-[50px] text-white max-w-screen-xl md:py-[60px] mx-auto p-4 w-full">
+      <div className="relative z-[1] title font-namdhinggo font-extrabold text-center text-[50px] text-white max-w-screen-xl md:py-[60px] mx-auto p-4 w-full">
         {title}
         <div className="subtitle font-roboto-condensed text-[20px] font-regular opacity-[80%]">
           {subtitle}
         </div>
       </div>
       <svg
-        className="w-full absolute top-[-1px] lg:top-[-100px] left-0 z-[-1]"
+        className="w-full absolute top-[-1px] lg:top-[-100px] left-0 z-[0]"
         // width="1440"
         // height="323"
         viewBox="0 0 1440 323"

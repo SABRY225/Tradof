@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import InputFelid from "../UI/InputFelid";
 import ButtonFelid from "../UI/ButtonFelid";
 import { useMutation } from "@tanstack/react-query";
-import { changePassword } from "@/Util/http";
+import { changePassword } from "@/Util/Https/http";
 import { toast } from "react-toastify";
 import Loading from "./Loading";
 import { Password } from "@mui/icons-material";

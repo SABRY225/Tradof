@@ -24,7 +24,7 @@ const projects = [
     },
   },
   {
-    id: 1,
+    id: 2,
     description: "Translation of an article about medical tools",
     owner: {
       image: photo,
@@ -38,7 +38,7 @@ const projects = [
     },
   },
   {
-    id: 2,
+    id: 3,
     description: "Translation of an article about medical tools",
     owner: {
       image: photo,
@@ -67,10 +67,14 @@ const projects = [
   },
 ];
 
-export default function DiscoverProject() {
+export default function DiscoverProject({ classes }) {
   return (
-    <motion.div initial={{ x: "-50rem" }} animate={{ x: "0rem" }}
-    transition={{type:"keyframes" , duration:0.8}}>
+    <motion.div
+      initial={{ x: "-50rem" }}
+      animate={{ x: "0rem" }}
+      transition={{ type: "keyframes", duration: 0.8 }}
+      className={classes}
+    >
       <h1 className="flex justify-between font-semibold text-[20px]">
         Discover more projects
         <button type="button">
@@ -96,7 +100,7 @@ export default function DiscoverProject() {
               {project.owner.name}
             </p>
           </div>
-          <div className="flex gap-[30px]">
+          <div className="flex flex-col md:flex-row md:gap-[30px]">
             <div className="flex gap-2">
               <img src={timer} alt="icon" width={15} />
               <p className="text-gray-500 text-[12px]">

@@ -9,15 +9,14 @@ import support from "../../assets/icons/technicalSupport.svg";
 import feedback from "../../assets/icons/feedback.svg";
 import settings from "../../assets/icons/settings.svg";
 import logout from "../../assets/icons/logout.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 export default function DropList({ name, email }) {
+  const { logout: leave } = useAuth();
+  const navigate = useNavigate();
   const [list, setList] = useState([
     {
       items: [
-        {
-          icon: profile,
-          text: "Your Profile",
-        },
         {
           icon: offers,
           text: "Your Offers",
@@ -57,10 +56,15 @@ export default function DropList({ name, email }) {
         {
           icon: settings,
           text: "Settings",
+          link:"/user/settings"
         },
         {
           icon: logout,
           text: "Log out",
+          link: "/auth",
+          onClick: () => {
+            leave();
+          },
         },
       ],
     },
@@ -70,32 +74,33 @@ export default function DropList({ name, email }) {
       className="z-50 my-6 list-none bg-main-color text-white divide-y divide-gray-300 rounded-lg shadow-sm absolute right-4 top-14"
       style={{ boxShadow: "#5050504d 0px 0px 3px 1px" }}
     >
-      <div className="flex flex-col items-center gap-2 px-4 py-3 text-center">
+      <Link to="/user/profile" className="flex items-center gap-2 px-4 py-3">
         <img
           src={photoImage}
           alt="profile image"
-          width="40px"
-          className="object-cover rounded-full h-[40px] border-2"
+          width="30px"
+          className="object-cover rounded-full h-[30px] border-1"
         />
-        <span className="block text-sm">{name}</span>
-        <span className="block text-sm truncate">{email}</span>
-      </div>
-      <ul className="py-2">
+        <p className="text-[11px]">
+          <span className="block">{name}</span>
+          <span className="block truncate">{email}</span>
+        </p>
+      </Link>
+      <ul className="pt-2 pb-5">
         {list.map(({ items }, index) => (
-          <li
-            key={index}
-            className={`block mx-4 py-2 text-sm ${
-              index !== list.length - 1 ? "border-b border-customGray" : ""
-            }`}
-          >
+          <li key={index} className="block mx-4">
             <ul>
               {items.map((item, index) => (
                 <li key={index} className="mt-2">
-                  <Link className="flex gap-2 ">
+                  <Link
+                    onClick={item.onClick}
+                    to={item.link}
+                    className="flex gap-5 text-[12px]"
+                  >
                     <img
                       src={item.icon}
                       alt="icon"
-                      className="w-[22px] font-bold font-white font-bold"
+                      className="w-[15px] font-bold font-white font-bold"
                     />
                     {item.text}
                   </Link>
@@ -104,13 +109,6 @@ export default function DropList({ name, email }) {
             </ul>
           </li>
         ))}
-        {/* {["Dashboard", "Settings", "Earnings", "Sign out"].map((item) => (
-          <li key={item}>
-            <a href="#" className="block px-4 py-2 text-sm">
-              {item}
-            </a>
-          </li>
-        ))} */}
       </ul>
     </div>
   );

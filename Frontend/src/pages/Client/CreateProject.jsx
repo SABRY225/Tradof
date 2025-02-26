@@ -1,19 +1,73 @@
 import { useForm } from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Minus, Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import getLanguages from "@/Util/getLanguage";
 import Combobox from "../../components/ui/Combobox";
 import ButtonFelid from "@/UI/ButtonFelid";
 import PageTitle from "../../UI/PageTitle";
+import { getAllLanguages, getAllSpecializations } from "@/Util/Https/http";
+import { createProject } from "@/Util/Https/companyHttp";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "react-toastify";
+import { FadeLoader } from "react-spinners";
 
 const commonClasses =
   "font-epilogue outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]";
 
-const languages = getLanguages();
-
 export default function CreateProject() {
+  const {
+    user: { userId, token },
+  } = useAuth();
+  const [handleLanguage, setHandleLanguage] = useState([]);
+  const {
+    data: languages,
+    isError: isErrorLanguages,
+    error: errorLanguages,
+    isLoading: isLoadingLanguages,
+  } = useQuery({
+    queryKey: ["Languages"],
+    queryFn: getAllLanguages,
+    staleTime: 10000,
+  });
+  const { data: specializations } = useQuery({
+    queryKey: ["specializations"],
+    queryFn: getAllSpecializations,
+  });
+
+  const {
+    mutate: create,
+    isPending,
+    isError,
+    error,
+  } = useMutation({
+    mutationKey: ["CreateProject"],
+    mutationFn: createProject,
+    onError: (error) => {
+      console.log(error);
+      toast.error(error.message, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+    },
+    onSuccess: () => {
+      toast.success("Create Project Successfully", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+    },
+  });
+
   const [files, setFiles] = useState([]);
   const {
     handleSubmit,
@@ -38,8 +92,19 @@ export default function CreateProject() {
       },
       deliveryTime: "", // in days
       attachments: [], // URLs for attachments
+      specializationId: null,
     },
   });
+
+  useEffect(() => {
+    if (languages) {
+      let editing = languages.map((lang) => ({
+        id: lang.id,
+        name: `${lang.languageName}(${lang.countryName}) / ${lang.languageCode}(${lang.countryCode})`,
+      }));
+      setHandleLanguage(editing);
+    }
+  }, [languages]);
 
   // Watch selected values
   const selectedFrom = watch("languagePair.from");
@@ -65,7 +130,32 @@ export default function CreateProject() {
         message: "At least one attachment file is required",
       });
     }
-    console.log("Project Data:", data);
+    if (data.specializationId === null) {
+      setError("specializationId", {
+        type: "manual",
+        message: "specialization is required",
+      });
+    }
+    const submitData = new FormData();
+
+    submitData.append("name", data.title);
+    submitData.append("description", data.details);
+    submitData.append("languageFromId", data.languagePair.from);
+    submitData.append("languageToId", data.languagePair.to);
+    submitData.append("minPrice", data.budget.min);
+    submitData.append("maxPrice", data.budget.max);
+    submitData.append("days", data.deliveryTime);
+    submitData.append("specializationId", data.specializationId);
+
+    // Append each file individually
+    if (data.attachments?.length) {
+      data.attachments.forEach((file) => {
+        submitData.append("files", file); // or "files[]" if the backend expects an array
+      });
+    }
+
+    // Send the request
+    create({ data: submitData, id: userId, token });
   };
 
   const handleBudgetChange = (type, field, value, setValue) => {
@@ -79,6 +169,7 @@ export default function CreateProject() {
   const handleFileChange = (event) => {
     const selectedFiles = Array.from(event.target.files);
     setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
+    console.log("Files:", [...files, ...selectedFiles]);
     setValue("attachments", [...files, ...selectedFiles]);
     clearErrors("attachments");
   };
@@ -140,9 +231,9 @@ export default function CreateProject() {
             <h1 className="font-medium font-epilogue">Language Pair </h1>
             <div className="grid md:grid-cols-2 gap-4">
               <div className="max-w-[300px] md:w-full">
-                {languages && (
+                {handleLanguage && (
                   <Combobox
-                    List={languages}
+                    List={handleLanguage}
                     initial="From language"
                     value={selectedFrom}
                     onChange={(val) => {
@@ -158,9 +249,9 @@ export default function CreateProject() {
                 )}
               </div>
               <div className="max-w-[300px] md:w-full">
-                {languages && (
+                {handleLanguage && (
                   <Combobox
-                    List={languages}
+                    List={handleLanguage}
                     initial="To language"
                     value={selectedTo}
                     onChange={(val) => {
@@ -282,56 +373,76 @@ export default function CreateProject() {
           </div>
 
           {/* Delivery Time */}
-          <div className="flex flex-col font-epilogue text-[14px] text-left mb-[20px] max-w-[300px]">
-            <label className="font-medium font-epilogue">
-              Delivery Time (Days)
-            </label>
-            <div className="relative w-full">
-              <input
-                type="number"
-                {...register("deliveryTime", {
-                  required: "Required",
-                  min: 0,
-                })}
-                className={`w-full pr-10 ${commonClasses} ${
-                  errors.deliveryTime ? "bg-[#ffe7e7] border-[#FA9EA1]" : ""
-                }`}
-                placeholder="Days"
-              />
-              <button
-                type="button"
-                onClick={() =>
-                  handleBudgetChange(
-                    "decrease",
-                    "deliveryTime",
-                    watch("deliveryTime"),
-                    setValue
-                  )
-                }
-                className="outlet-none absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-500 text-main-color"
-              >
-                <Minus className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  handleBudgetChange(
-                    "increase",
-                    "deliveryTime",
-                    watch("deliveryTime"),
-                    setValue
-                  )
-                }
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-main-color"
-              >
-                <Plus className="w-4 h-4" />
-              </button>
+          <div className="grid md:grid-cols-2 gap-4 items-center">
+            <div className="flex flex-col font-epilogue text-[14px] text-left mb-[20px] max-w-[300px]">
+              <label className="font-medium font-epilogue">
+                Delivery Time (Days)
+              </label>
+              <div className="relative w-full">
+                <input
+                  type="number"
+                  {...register("deliveryTime", {
+                    required: "Required",
+                    min: 0,
+                  })}
+                  className={`w-full pr-10 ${commonClasses} ${
+                    errors.deliveryTime ? "bg-[#ffe7e7] border-[#FA9EA1]" : ""
+                  }`}
+                  placeholder="Days"
+                />
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleBudgetChange(
+                      "decrease",
+                      "deliveryTime",
+                      watch("deliveryTime"),
+                      setValue
+                    )
+                  }
+                  className="outlet-none absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-500 text-main-color"
+                >
+                  <Minus className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleBudgetChange(
+                      "increase",
+                      "deliveryTime",
+                      watch("deliveryTime"),
+                      setValue
+                    )
+                  }
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-main-color"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+              {errors.deliveryTime && (
+                <p className="text-red-500 text-sm">
+                  {errors.deliveryTime.message}
+                </p>
+              )}
             </div>
-            {errors.deliveryTime && (
-              <p className="text-red-500 text-sm">
-                {errors.deliveryTime.message}
-              </p>
-            )}
+            <div className="max-w-[300px]">
+              {specializations && (
+                <Combobox
+                  List={specializations}
+                  initial="Select Specialization"
+                  value={watch("specializationId")}
+                  onChange={(val) => {
+                    setValue("specializationId", val);
+                    clearErrors("specializationId");
+                  }}
+                />
+              )}
+              {errors.specializationId && (
+                <p className="text-red-500 text-sm">
+                  {errors.specializationId.message}
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Attachments */}
@@ -365,9 +476,14 @@ export default function CreateProject() {
                   </button>
                   <button
                     type="button"
-                    onClick={() =>
-                      setFiles(files.filter((_, i) => i !== index))
-                    }
+                    onClick={() => {
+                      setFiles(files.filter((_, i) => i !== index));
+                      setValue(
+                        "attachments",
+                        files.filter((_, i) => i !== index)
+                      );
+                      clearErrors("attachments");
+                    }}
                     className="text-red-500 text-sm"
                   >
                     ✖
@@ -383,12 +499,26 @@ export default function CreateProject() {
           </div>
 
           {/* Submit Button */}
-          <ButtonFelid
-            type="submit"
-            classes="bg-second-color py-[10px] px-[50px] font-roboto-condensed text-[16px] text-medium m-auto"
-            text="Create Project"
-            // onClick={onSubmit}
-          />
+          <div className="flex w-fit m-auto items-center gap-5 justify-center">
+            {isPending && (
+              <FadeLoader
+                color="#000"
+                cssOverride={{ width: "0px", height: "0px" }}
+                height={3}
+                width={3}
+                loading
+                margin={-11}
+                radius={15}
+                speedMultiplier={1}
+              />
+            )}
+            <ButtonFelid
+              type="submit"
+              classes="bg-second-color py-[10px] px-[50px] font-roboto-condensed text-[16px] text-medium m-auto"
+              text="Create Project"
+              // onClick={onSubmit}
+            />
+          </div>
         </form>
       </div>
     </>

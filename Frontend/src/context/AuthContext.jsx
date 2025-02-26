@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
     const role = Cookies.get("role");
 
     if (token && userId && role) {
-      setUser({ userId, role });
+      setUser({ userId, role, token });
     }
   }, []);
 
@@ -31,7 +31,8 @@ export const AuthProvider = ({ children }) => {
     });
     Cookies.set("role", role, { expires: 7, secure: true, sameSite: "Strict" });
 
-    setUser({ userId, role });
+    setUser({ userId, role, token });
+    console.log(user);
   };
 
   // Logout function (Clear cookies & user state)
@@ -41,7 +42,7 @@ export const AuthProvider = ({ children }) => {
     Cookies.remove("role");
 
     setUser(null);
-    window.location.href = "/login"; // Redirect to login page
+    // window.location.href = "/login"; // Redirect to login page
   };
 
   return (

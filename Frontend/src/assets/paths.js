@@ -35,7 +35,8 @@ import rabash from "./icons/rabash.svg";
 import timer from "./icons/timer.svg";
 import grayOffers from './icons/grayOffers.svg';
 import grayBudget from './icons/grayBudget.svg';
-import whitePlus from './icons/whitePlus.svg' ;
+import whitePlus from './icons/whitePlus.svg';
+import closeWhite from './icons/closeWhite.svg';
 
 export {
   // a
@@ -53,6 +54,7 @@ export {
   copy,
   checkedCopy,
   chat,
+  closeWhite,
   // d
   droplist,
   darkFacebook,

@@ -1,3 +1,5 @@
+import { getCountryById } from "@/Util/Https/http";
+import { useQuery } from "@tanstack/react-query";
 
 const DisableInput = ({ label, value }) => {
   return (
@@ -14,10 +16,15 @@ const DisableInput = ({ label, value }) => {
 };
 
 export default function ProfileInformation({ profileData }) {
+  const { data: country } = useQuery({
+    queryKey: ["country"],
+    queryFn: ({ signal }) =>
+      getCountryById({ signal, id: profileData.country }),
+  });
+
   return (
     <div>
-      <h1
-        className="text-[20px] font-roboto-condensed font-medium italic border-b-2 border-main-color w-fit mt-5 pl-5 ml-5">
+      <h1 className="text-[20px] font-roboto-condensed font-medium italic border-b-2 border-main-color w-fit mt-5 pl-5 ml-5">
         Profile Information
       </h1>
       <form className="flex flex-col items-center md:items-start space-y-[20px] bg-card-color rounded-[8px] px-[50px] py-[30px]">
@@ -27,8 +34,7 @@ export default function ProfileInformation({ profileData }) {
               src={profileData.image}
               alt="Profile"
               width={140}
-              height={140}
-              className="rounded-full border-4 border-white shadow-lg"
+              className="h-[140px] rounded-full border-4 border-white shadow-lg"
             />
             <div className="space-y-1">
               <h3 className="text-xl font-bold font-poppins">
@@ -36,7 +42,7 @@ export default function ProfileInformation({ profileData }) {
               </h3>
               <p className="text-[16px] text-gray-600">{profileData.role}</p>
               <p className="text-[14px] text-gray-500">
-                {profileData.country + " " + profileData.location}
+                {country && country.name + " " + profileData.location}
               </p>
             </div>
           </div>
@@ -44,7 +50,9 @@ export default function ProfileInformation({ profileData }) {
         <div className="grid md:grid-cols-2 gap-5 md:w-full font-epilogue text-[14px] items-center text-left">
           <DisableInput label="First name" value={profileData.firstName} />
           <DisableInput label="Last name" value={profileData.lastName} />
-          <DisableInput label="Jop title" value={profileData.jopTitle} />
+          {profileData.jopTitle && (
+            <DisableInput label="Jop title" value={profileData.jopTitle} />
+          )}
           {profileData.className && (
             <DisableInput
               label="Company name"

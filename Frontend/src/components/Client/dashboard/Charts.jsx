@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import {
   AreaChart,
@@ -37,7 +37,6 @@ const data = [
   { date: "Dec 27", projects: 23, cost: 159000 },
 ];
 
-
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     const item = payload[0];
@@ -54,9 +53,18 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 const Charts = ({ classes }) => {
+  const scrollRef = useRef(null);
   const [filter, setFilter] = useState("yearly");
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth; // Move to right end
+    }
+  }, []);
   return (
-    <div className={`bg-white p-[30px] rounded-lg shadow-lg min-h-[500px] ${classes}`}>
+    <div
+      className={`bg-white p-[30px] rounded-lg shadow-lg min-h-[500px] ${classes}`}
+    >
       <div className="flex justify-between">
         <h1 className="text-[#9291A5] text-[16px]">Number of projects</h1>
         <div className="relative filters bg-[#F8F8FF] py-[10px] px-[20px] rounded-full flex gap-[30px]">
@@ -87,43 +95,48 @@ const Charts = ({ classes }) => {
           </button>
         </div>
       </div>
-      <ResponsiveContainer width="100%" height={500}>
-        <AreaChart
-          data={data}
-          margin={{ top: 20, right: 30, left: 0, bottom: 10 }}
-        >
-          {/* Gradient Definition */}
-          <defs>
-            <linearGradient id="colorProjects" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="15%" stopColor="#4A3AFF" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#4A3AFF" stopOpacity={0.2} />
-            </linearGradient>
-          </defs>
+      <div
+        ref={scrollRef}
+        className="max-w-[350px] md:max-w-full overflow-x-auto custom-scrollbar"
+      >
+        <ResponsiveContainer width="100%" minWidth="1000px" height={500}>
+          <AreaChart
+            data={data}
+            margin={{ top: 20, right: 30, left: 0, bottom: 10 }}
+          >
+            {/* Gradient Definition */}
+            <defs>
+              <linearGradient id="colorProjects" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="15%" stopColor="#4A3AFF" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#4A3AFF" stopOpacity={0.2} />
+              </linearGradient>
+            </defs>
 
-          <CartesianGrid strokeDasharray="15 3" vertical={false} />
-          <XAxis dataKey="date" tickMargin={10} />
-          <YAxis tickMargin={15} orientation="right" />
-          <Tooltip
-            content={<CustomTooltip />}
-            animationDuration={500}
-            cursor={{
-              stroke: "#B6B0FF",
-              strokeWidth: 2,
-              strokeDasharray: "10 0",
-            }}
-          />
+            <CartesianGrid strokeDasharray="15 3" vertical={false} />
+            <XAxis dataKey="date" tickMargin={10} />
+            <YAxis tickMargin={15} orientation="right" />
+            <Tooltip
+              content={<CustomTooltip />}
+              animationDuration={500}
+              cursor={{
+                stroke: "#B6B0FF",
+                strokeWidth: 2,
+                strokeDasharray: "10 0",
+              }}
+            />
 
-          <Area
-            type="monotone"
-            dataKey="projects"
-            stroke="#4A3AFF"
-            fill="url(#colorProjects)"
-            strokeWidth={3}
-            dot={{ r: 5, strokeWidth: 2, stroke: "#fff", fill: "#6c63ff" }}
-            connectNulls
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+            <Area
+              type="monotone"
+              dataKey="projects"
+              stroke="#4A3AFF"
+              fill="url(#colorProjects)"
+              strokeWidth={3}
+              dot={{ r: 5, strokeWidth: 2, stroke: "#fff", fill: "#6c63ff" }}
+              connectNulls
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };

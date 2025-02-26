@@ -10,7 +10,8 @@ import {
   getAllCountries,
   getAllLanguages,
   getAllSpecializations,
-} from "../../Util/http";
+} from "../../Util/Https/http";
+import { toast } from "react-toastify";
 
 export default function StepThreeFreelancer({
   control,
@@ -24,7 +25,7 @@ export default function StepThreeFreelancer({
 }) {
   const [fromSelected, setFromSelected] = useState("");
   const [toSelected, setToSelected] = useState("");
-  const [specializations, setSpecializations] = useState("");
+  const [specializations, setSpecializations] = useState(null);
   const [openModel, setOpenModel] = useState(0);
   const {
     data: countries,
@@ -92,8 +93,11 @@ export default function StepThreeFreelancer({
 
   const onAddSpecialization = (e) => {
     e.preventDefault();
+    console.log(specializations);
+    if (!specializations) {
+      return;
+    }
     if (currentSpecializations.find((x) => x.id === specializations)) {
-      alert("Specializations already exist");
       return;
     }
     setCurrentSpecializations((prev) => [
@@ -102,7 +106,6 @@ export default function StepThreeFreelancer({
     ]); // Add to the list
     setSpecializations("");
   };
-
 
   return (
     <div>
@@ -191,7 +194,7 @@ export default function StepThreeFreelancer({
                     value={option.id}
                     className="text-black"
                   >
-                    {`${option.name} / ${option.code}`}
+                    {`${option.languageName}(${option.countryName}) / ${option.languageCode}(${option.countryCode})`}
                   </option>
                 ))}
               </select>
@@ -212,7 +215,7 @@ export default function StepThreeFreelancer({
                     value={option.id}
                     className="text-black"
                   >
-                    {`${option.name} / ${option.code}`}
+                    {`${option.languageName}(${option.countryName}) / ${option.languageCode}(${option.countryCode})`}
                   </option>
                 ))}
               </select>
@@ -220,7 +223,11 @@ export default function StepThreeFreelancer({
                 <img src={container} alt="arrow" />
               </div>
             </div>
-            <button className="text-[#f00]" onClick={onAddLanguagePair}>
+            <button
+              type="submit"
+              className="text-[#f00]"
+              onClick={onAddLanguagePair}
+            >
               Add
             </button>
           </form>
@@ -238,12 +245,13 @@ export default function StepThreeFreelancer({
               const rowClass = index % 2 !== 0 ? "" : "bg-[#F5F5FF]"; // If index is odd, apply bg color
               return (
                 <tr key={index} className={rowClass}>
-                  <td className="border border-gray-200 p-2">
-                    {`${lang.from.name} - ${lang.to.name}`}
+                  <td className="border border-gray-200 p-2 text-[12px]">
+                    {`${lang.from.languageName}(${lang.from.countryName}) - ${lang.to.languageName}(${lang.from.countryName})`}
                   </td>
-                  <td className="border border-gray-200 p-2">{`${lang.from.code}-${lang.to.code}`}</td>
-                  <td className="border border-gray-200 p-2">
+                  <td className="border border-gray-200 p-2 text-[12px]">{`${lang.from.languageCode}(${lang.from.countryCode}) - ${lang.to.languageCode}(${lang.to.countryCode})`}</td>
+                  <td className="border border-gray-200 p-2 text-[12px]">
                     <button
+                      type="button"
                       className="text-[#f00]"
                       onClick={() => onDeleteLanguagePair({ ietf: lang })}
                     >

@@ -1,5 +1,3 @@
-import profile from "../../assets/images/prof2.jpeg";
-
 import ChangePassword from "@/components/Setting/ChangePassword";
 import CompanyEmployees from "@/components/Setting/CompanyEmployees";
 import EditProfile from "@/components/Setting/EditProfile";
@@ -8,67 +6,11 @@ import SocialMedia from "@/components/Setting/SocialMedia";
 import Subscription from "@/components/Setting/Subscription";
 import { useAuth } from "@/context/AuthContext";
 import PageTitle from "@/UI/PageTitle";
-import { duration } from "@mui/material";
-
-const profileData = {
-  image: "https://userpic.codeforces.org/2369964/title/ee54ef592a88f2c9.jpg",
-  firstName: "Ahmed",
-  lastName: "Nady",
-  email: "abdaraz@gmail.com",
-  phone: "+201030666109",
-  location: "Qena",
-  country: "Egypt",
-};
-
-const socialMedia = {
-  facebook: "",
-  linkedin: "",
-  gmail: "",
-};
-
-const employees = [
-  {
-    name: "Ahmed Nady",
-    jobTitle: "HR",
-    email: "dev.ahmed.nady@gmail.com",
-    password: "12345678910ma",
-    phone: "01023536355",
-    city: "Qena",
-    country: "Egypt",
-    permission: "Project Management",
-  },
-  // Duplicate entries to match the provided table structure
-  {
-    name: "Ahmed Nady",
-    jobTitle: "HR",
-    email: "dev.ahmed.nady@gmail.com",
-    password: "12345678910ma",
-    phone: "01023536355",
-    city: "Qena",
-    country: "Egypt",
-    permission: "Project Management",
-  },
-  {
-    name: "Ahmed Nady",
-    jobTitle: "HR",
-    email: "dev.ahmed.nady@gmail.com",
-    password: "12345678910ma",
-    phone: "01023536355",
-    city: "Qena",
-    country: "Egypt",
-    permission: "Project Management",
-  },
-  {
-    name: "Ahmed Nady",
-    jobTitle: "HR",
-    email: "dev.ahmed.nady@gmail.com",
-    password: "12345678910ma",
-    phone: "01023536355",
-    city: "Qena",
-    country: "Egypt",
-    permission: "Project Management",
-  },
-];
+import { getCompany, getEmployeeToCompany } from "@/Util/Https/companyHttp";
+import { getFreelancer } from "@/Util/Https/freelancerHttp";
+import { useQuery } from "@tanstack/react-query";
+import Cookies from "js-cookie";
+import { useLoaderData } from "react-router-dom";
 
 const subscriptionData = {
   name: "1 Year",
@@ -79,20 +21,41 @@ const subscriptionData = {
 
 export default function Setting() {
   const {
-    user: { role },
+    user: { userId, token },
   } = useAuth();
+  const { data, role } = useLoaderData();
+  const { data: employees, isLoading } = useQuery({
+    queryKey: ["employees"],
+    queryFn: ({ signal }) =>
+      getEmployeeToCompany({ signal, id: userId, token }),
+  });
+
+  const profileData = {
+    image: data?.profileImageUrl,
+    firstName: data?.firstName,
+    lastName: data?.lastName,
+    email: data?.email,
+    phone: data?.phone,
+    location: data?.companyAddress,
+    country: data?.countryId,
+    companyName: data?.companyName,
+    jopTitle: data?.jobTitle,
+  };
+
+  const socialMedia = data?.socialMedia || data?.freelancerSocialMedias;
+  console.log(socialMedia);
   return (
-    <>
+    <div className="bg-background-color py-[50px]">
       <PageTitle title="Settings" subtitle="Edit your data" />
-      <div className="container max-w-screen-xl mx-auto my-[50px]">
+      <div className="container max-w-screen-xl mx-auto">
         {/* Edit Profile */}
         <EditProfile profileData={profileData} />
         {/* Social Media */}
         <SocialMedia socialMedia={socialMedia} />
         {/* Company Employees */}
-        {role === "company" && (
+        {role === "CompanyAdmin" && (
           <>
-            <CompanyEmployees employees={employees} />
+            <CompanyEmployees employees={employees || []} />
             <Subscription subscriptionData={subscriptionData} />
           </>
         )}
@@ -102,6 +65,23 @@ export default function Setting() {
         {/* Notifications */}
         <Notifications />
       </div>
-    </>
+    </div>
   );
+}
+
+export async function settingsLoader({ request }) {
+  const token = Cookies.get("token");
+  const userId = Cookies.get("userId");
+  const role = Cookies.get("role");
+
+  if (!token) {
+    throw new Response("Unauthorized", { status: 401 });
+  }
+
+  const data =
+    role === "Freelancer"
+      ? await getFreelancer({ token, id: userId })
+      : await getCompany({ token, id: userId });
+
+  return { data, role };
 }

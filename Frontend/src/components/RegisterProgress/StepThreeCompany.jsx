@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Controller } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 
@@ -10,7 +10,7 @@ import {
   getAllCountries,
   getAllLanguages,
   getAllSpecializations,
-} from "../../Util/http";
+} from "../../Util/Https/http";
 export default function StepThreeCompany({
   control,
   errors,
@@ -133,7 +133,17 @@ export default function StepThreeCompany({
           />
         </div>
       </div>
-
+      {/* Company name */}
+      <InputFelid
+        title="Company name"
+        name="companyName"
+        requires={true}
+        control={control}
+        classes="outline-none border-[1px] border-[#D6D7D7] text-customGray focus:text-black rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF] "
+        errors={errors}
+        type="text"
+        placeholder="company name"
+      />
       {/* Jop title */}
       <InputFelid
         title="Job title"

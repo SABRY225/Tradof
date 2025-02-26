@@ -7,79 +7,87 @@ import OperationalInfo from "@/components/Profile/OperationalInfo";
 import { useAuth } from "@/context/AuthContext";
 import TranslationServices from "@/components/Profile/TranslationServices";
 import ProfessionalDetails from "@/components/Profile/ProfessionalDetails";
+import { useQuery } from "@tanstack/react-query";
+import { getFreelancer } from "@/Util/Https/freelancerHttp";
+import Loading from "../Loading";
+import { getCompany } from "@/Util/Https/companyHttp";
 
-const profileData = {
-  image: ProfileImage,
-  firstName: "Ahmed",
-  lastName: "Nady",
-  role: "Freelancer",
-  country: "Egypt",
-  companyName: "",
-  location: "",
-  jopTitle: "CEO",
-};
 
-const contactData = {
-  email: "abdalraz@gmail.com",
-  phone: "+20 1030666109",
-  location: "Egypt",
-};
-
-const preferredLanguages = [
-  {
-    lang: "French",
-    country: "France",
-    langCode: "fr",
-    countryCode: "FR",
-  },
-  {
-    lang: "English",
-    country: "United States",
-    langCode: "en",
-    countryCode: "US",
-  },
-];
-
-const industriesServed = ["Medical", "Engineering"];
-
-const languagePairs = [
-  {
-    from: {
-      lang: "English",
-      langCode: "en",
-      country: "United States",
-      countryCode: "US",
-    },
-    to: {
-      lang: "French",
-      langCode: "fr",
-      country: "France",
-      countryCode: "FR",
-    },
-  },
-];
-
-const professionalDetails = {
-  cv: "cv.pdf",
-  certifications: ["certifications1.pdf", "certifications2.pdf"],
-};
 export default function Profile() {
   const {
-    user: { role },
+    user: { role, userId, token },
   } = useAuth();
-  console.log(role);
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: [role],
+    queryFn: ({ signal }) =>
+      role === "Freelancer"
+        ? getFreelancer({
+            signal,
+            token,
+            id: userId,
+          })
+        : getCompany({ signal, token, id: userId }),
+  });
+  // console.log(role);
+  if (isLoading) return <Loading />;
+
+  const profileData = {
+    image: data?.profileImageUrl,
+    firstName: data?.firstName,
+    lastName: data?.lastName,
+    role: role,
+    country: data?.countryId,
+    companyName: data?.companyName,
+    jopTitle: data?.jobTitle,
+    location: data?.companyAddress,
+  };
+
+  const contactData = {
+    email: data?.email,
+    phone: data?.phone,
+    location: data?.companyAddress,
+  };
+
+  const languagePairs = data?.freelancerLanguagePairs?.map((lang) => ({
+    id: lang.id,
+    from: {
+      id: lang.languageFromId,
+      lang: lang.languageFromName,
+      langCode: lang.languageFromCode,
+      country: lang.countryFromName,
+      countryCode: lang.countryFromCode,
+    },
+    to: {
+      id: lang.languageToId,
+      lang: lang.languageToName,
+      langCode: lang.languageToCode,
+      country: lang.countryToName,
+      countryCode: lang.countryToCode,
+    },
+  }));
+
+  const professionalDetails = {
+    cv: data?.cvFilePath,
+    certifications: data?.freelancerSpecializations,
+  };
+
+  const preferredLanguages = data?.preferredLanguages;
+
+  const industriesServed = data?.specializations;
+
+  console.log(data);
   return (
     <>
       <PageTitle title="Your Profile" />
       <div className="container max-w-screen-xl mx-auto p-4 w-full my-[50px]">
         {/* Rating & Reviews */}
-        <Reviews rating={1000} reviews={3000} />
+        <Reviews rating={data?.ratingSum} reviews={data?.reviewCount} />
         {/* Profile Information */}
         <ProfileInformation profileData={profileData} />
         {/* Contact Info */}
         <ContactInfo contactData={contactData} />
         {/* Operational Info */}
-        {role === "company" && (
+        {role === "CompanyAdmin" && (
           <OperationalInfo
             preferredLanguages={preferredLanguages}
             industriesServed={industriesServed}

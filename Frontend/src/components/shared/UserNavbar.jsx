@@ -1,6 +1,6 @@
-import { motion } from "motion/react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import {
   logo,
@@ -10,22 +10,85 @@ import {
   droplist,
 } from "../../assets/paths.js";
 import DropList from "../../components/Navbar/DropList";
+import { useAuth } from "@/context/AuthContext.jsx";
+import Notification from "./Notification.jsx";
+
+const CompanyList = [
+  {
+    name: "Dashboard",
+    link: "/user/dashboard",
+  },
+  { name: "Create Project", link: "/user/project/create" },
+  {
+    name: "Start Projects",
+    link: "user/project/start",
+  },
+  {
+    name: "Upcoming Projects",
+    link: "user/project/upcoming",
+  },
+  { name: "Finances", link: "/user/finances" },
+  { name: "Settings", link: "/user/settings" },
+];
+
+const FreelancerList = [
+  {
+    name: "Dashboard",
+    link: "/user/dashboard",
+  },
+  {
+    name: "Projects",
+    link: "user/project/available",
+  },
+  {
+    name: "Offers",
+    link: "/user/offers",
+  },
+  { name: "Finances", link: "/user/finances" },
+  { name: "Settings", link: "/user/settings" },
+];
 
 export default function UserNavbar() {
-  const [activeHash, setActiveHash] = useState(
-    decodeURIComponent(window.location.hash).replace("#", "")
-  );
+  const {
+    user: { role },
+  } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(null);
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const location = useLocation();
+  const dropdownRef = useRef(null);
+  const dropdownRefNotification = useRef(null);
+  const [activePath, setActivePath] = useState(location.pathname);
+  useEffect(() => {
+    setIsDropdownOpen(null);
+    setIsNavOpen(false);
+    setActivePath(location.pathname);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(null);
+      }if (
+        dropdownRefNotification.current &&
+        !dropdownRefNotification.current.contains(event.target)
+      ) {
+        setIsDropdownOpen(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  console.log(isDropdownOpen);
   return (
-    <motion.nav
+    <nav
       initial={{ y: "-15rem" }}
       animate={{ y: "0" }}
       transition={{ type: "keyframes", duration: 1.5 }}
-      className="bg-main-color text-white border-gray-200"
+      className="sticky top-0 bg-main-color text-white border-gray-200 z-[10]"
     >
       <motion.div className="max-w-screen-xl flex flex-wrap items-center md:gap-[50px] mx-auto p-4 w-full">
-        <Link to="/" className="flex items-center space-x-3">
+        <Link to="/user/dashboard" className="flex items-center space-x-3">
           <img src={logo} className="h-8" alt="Tradof Logo" />
           <span className=" font-markazi-text text-2xl font-semibold whitespace-nowrap">
             Tradof
@@ -35,29 +98,50 @@ export default function UserNavbar() {
           <button type="button">
             <img src={calender} alt="calender icon" />
           </button>
-          <button type="button">
-            <img src={notification} alt="notification icon" />
-          </button>
-          <button
-            type="button"
-            className="flex text-sm rounded-full border-2"
-            onClick={() =>
-              setIsDropdownOpen((prev) => (prev ? null : "profileMenu"))
-            }
-          >
-            <span className="sr-only">Open user menu</span>
-            <img
-              className="rounded-full w-[40px] h-[40px] object-cover"
-              src={profilePhoto}
-              alt="user photo"
-            />
-          </button>
-          {isDropdownOpen === "profileMenu" && (
-            <DropList
-              name="Mohamed Abdalrazek"
-              email="abdalrazekmohamed6@gmail.com"
-            />
-          )}
+          <div ref={dropdownRefNotification}>
+            <button
+              type="button"
+              onClick={() =>
+                setIsDropdownOpen((prev) => (prev ? null : "notification"))
+              }
+            >
+              <img src={notification} alt="notification icon" />
+            </button>
+          </div>
+          <div ref={dropdownRef}>
+            <button
+              type="button"
+              className="flex text-sm rounded-full border-2"
+              onClick={() =>
+                setIsDropdownOpen((prev) => (prev ? null : "profileMenu"))
+              }
+            >
+              <span className="sr-only">Open user menu</span>
+              <img
+                className="rounded-full w-[40px] h-[40px] object-cover"
+                src={profilePhoto}
+                alt="user photo"
+              />
+            </button>
+            <AnimatePresence>
+              {isDropdownOpen === "notification" && (
+                <Notification classes="md:hidden text-black absolute right-[10px] top-[100px] shadow-lg " />
+              )}
+              {isDropdownOpen === "profileMenu" && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <DropList
+                    name="Mohamed Abdalrazek"
+                    email="abdalrazekmohamed6@gmail.com"
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
           <button
             onClick={() => setIsNavOpen(!isNavOpen)}
             className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden focus:ring-2"
@@ -72,34 +156,29 @@ export default function UserNavbar() {
           } w-full md:flex md:w-auto md:order-1`}
         >
           <ul className="flex flex-col p-4 md:p-0 md:space-x-8 md:flex-row md:mt-0">
-            {[
-              "Dashboard",
-              "Create Project",
-              "Projects",
-              "Offers",
-              "Finances",
-              "Settings",
-            ].map((item, index) => (
-              <motion.li
-                key={index}
-                whileHover={{ scale: 1.1, fontWeight: 500 }}
-                transition={{ stiffness: 300, type: "keyframes" }}
-                className="py-2 px-3 md:p-0"
-              >
-                <Link
-                  to="#"
-                  className={`text-black md:text-white font-roboto-condensed block ${
-                    activeHash === item ? "text-[18px] font-medium" : ""
-                  }`}
-                  aria-current={activeHash === item ? "page" : undefined}
+            {(role === "CompanyAdmin" ? CompanyList : FreelancerList).map(
+              (item, index) => (
+                <motion.li
+                  key={index}
+                  whileHover={{ scale: 1.1, fontWeight: 500 }}
+                  transition={{ stiffness: 300, type: "keyframes" }}
+                  className="py-2 px-3 md:p-0"
                 >
-                  {item}
-                </Link>
-              </motion.li>
-            ))}
+                  <Link
+                    to={item.link}
+                    className={`text-white font-roboto-condensed block ${
+                      activePath === item.link ? "text-[18px] font-medium" : ""
+                    }`}
+                    aria-current={activePath === item.link ? "page" : undefined}
+                  >
+                    {item.name}
+                  </Link>
+                </motion.li>
+              )
+            )}
           </ul>
         </div>
       </motion.div>
-    </motion.nav>
+    </nav>
   );
 }

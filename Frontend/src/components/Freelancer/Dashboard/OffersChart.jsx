@@ -40,11 +40,15 @@ const commonClasses =
 
 const OffersChart = ({ classes }) => {
   const [year, setYear] = useState("2024");
-  const filteredData = chartData.filter((item) => item.date.startsWith(year));
+  const filteredData =
+    chartData.filter((item) => item.date.startsWith(year)) || [];
 
+  console.log(filteredData);
   return (
-    <div className={`max-h-fit bg-card-color rounded-lg flex flex-grow ${classes}`}>
-      <Card className="w-full">
+    <div
+      className={`max-h-fit bg-card-color rounded-lg flex flex-grow ${classes}`}
+    >
+      <Card className="w-full ">
         <CardHeader className="flex flex-row justify-between">
           <div>
             <CardTitle>Offers Chart</CardTitle>
@@ -61,8 +65,10 @@ const OffersChart = ({ classes }) => {
         </CardHeader>
         <CardContent>
           <ChartContainer config={chartConfig}>
-            {filteredData.length === 0 && <p className="text-center">No Found data</p>}
-            {filteredData.length > 0 &&  (
+            {filteredData?.length === 0 && (
+              <p className="text-center">No Found data</p>
+            )}
+            {filteredData?.length > 0 && (
               <BarChart accessibilityLayer data={filteredData}>
                 <XAxis
                   dataKey="date"

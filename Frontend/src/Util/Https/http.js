@@ -3,6 +3,27 @@ import axios from "axios";
 
 export const queryClient = new QueryClient();
 
+// get all subscriptions
+export const getAllSubscriptions = async ({ signal }) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/package`,
+      {
+        signal,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching the packages");
+      err.code = error.response.status;
+      err.info = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
 // get all counters for register
 export const getAllCountries = async ({ signal }) => {
   try {
@@ -12,11 +33,32 @@ export const getAllCountries = async ({ signal }) => {
         signal,
       }
     );
-    // console.log(response);
     return response.data;
   } catch (error) {
     if (error.response) {
       const err = new Error("An error occurred while fetching the countries");
+      err.code = error.response.status;
+      err.info = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// get country by id
+export const getCountryById = async ({ signal, id }) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/country/${id}`,
+      {
+        signal,
+      }
+    );
+    // console.log(response);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching the country");
       err.code = error.response.status;
       err.info = error.response.data;
       throw err;
@@ -69,19 +111,47 @@ export const getAllSpecializations = async ({ signal }) => {
   }
 };
 
+async function urlToFile(imageUrl, filename = "downloaded-image.jpg") {
+  const response = await fetch(imageUrl);
+  const blob = await response.blob();
+  return new File([blob], filename, { type: blob.type });
+}
+
+// upload image in cloudinary
+export const uploadImage = async ({ imageURL }) => {
+  try {
+    const image = await urlToFile(imageURL, "user-image.jpg");
+    // console.log("Converted File:", image);
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("upload_preset", "user_photo"); // Change this to your preset
+    try {
+      const { data } = await axios.post(
+        "https://api.cloudinary.com/v1_1/dolzghrv6/image/upload",
+        formData
+      );
+      // console.log(data);
+      return data.secure_url;
+    } catch (error) {
+      console.error("Upload failed", error);
+    }
+  } catch (error) {
+    console.error("Error converting URL to file", error);
+  }
+};
+
 // register for freelancers
 export const registerFreelancers = async ({ signal, data }) => {
   try {
-    console.log(data.profileImageUrl);
-    try {
-      const imageUrl = await axios.post(
-        "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload",
-        data.profileImageUrl
-      );
-    } catch (error) {}
+    // console.log(data.profileImageUrl);
+    const imageURL = await uploadImage({ imageURL: data.profileImageUrl });
+    const handleData = {
+      ...data,
+      profileImageUrl: imageURL,
+    };
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}/auth/register-freelancer`,
-      data,
+      handleData,
       {
         signal,
         headers: {
@@ -89,16 +159,27 @@ export const registerFreelancers = async ({ signal, data }) => {
         },
       }
     );
-    console.log(response);
+    // console.log(response);
     return response;
   } catch (error) {
     if (error.response) {
-      console.log(error);
       const err = new Error(
         "An error occurred while registering the freelancer"
       );
       err.code = error.response.status;
-      err.errors = error.response.data.errors;
+      if (error.response.status === 400) {
+        err.message = "Email address already exists";
+        err.felid = "email";
+      } else if (
+        error.response.data.errors &&
+        typeof error.response.data.errors === "object"
+      ) {
+        // Extract error messages from the object
+        err.errors = error.response.data.errors;
+      } else {
+        err.message =
+          error.response.data?.message || "An unexpected error occurred";
+      }
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");
@@ -108,9 +189,14 @@ export const registerFreelancers = async ({ signal, data }) => {
 // register for companies
 export const registerCompanies = async ({ signal, data }) => {
   try {
+    const imageURL = await uploadImage({ imageURL: data.profileImageUrl });
+    const handleData = {
+      ...data,
+      profileImageUrl: imageURL,
+    };
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}/auth/register-company`,
-      data,
+      handleData,
       {
         signal,
         headers: {
@@ -121,12 +207,23 @@ export const registerCompanies = async ({ signal, data }) => {
     return response;
   } catch (error) {
     if (error.response) {
-      console.log(error);
       const err = new Error(
-        "An error occurred while registering the freelancer"
+        "An error occurred while registering the company"
       );
       err.code = error.response.status;
-      err.errors = error.response.data.errors;
+      if (error.response.status === 400) {
+        err.message = "Email address already exists";
+        err.felid = "email";
+      } else if (
+        error.response.data.errors &&
+        typeof error.response.data.errors === "object"
+      ) {
+        // Extract error messages from the object
+        err.errors = error.response.data.errors;
+      } else {
+        err.message =
+          error.response.data?.message || "An unexpected error occurred";
+      }
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");

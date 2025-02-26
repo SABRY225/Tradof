@@ -1,10 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import Cookies from "js-cookie";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify"; // Import toast
 
-import { loginUser } from "@/Util/http";
+import { loginUser } from "@/Util/Https/http";
 import { useAuth } from "@/Context/AuthContext";
 
 import InputFelid from "../UI/InputFelid";
@@ -15,6 +15,7 @@ import { useState } from "react";
 export default function Login() {
   const { user, login } = useAuth();
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
   const { mutate, data, isPending } = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
@@ -26,9 +27,9 @@ export default function Login() {
       });
       // console.log(data);
       // // ✅ Store user data in local state (Avoid storing token in localStorage!)
-      login({ userId: data.userId, role: data.role });
+      login({ userId: data.userId, role: data.role, token: data.token });
 
-      window.location.href = "/dashboard"; // Redirect after login
+      navigate("/user/dashboard"); // Redirect after login
     },
     onError: (error) => {
       toast.error(error?.message || "Login failed!", {
@@ -60,7 +61,7 @@ export default function Login() {
   const formData = watch();
 
   const onSubmit = () => {
-    console.log(formData);
+    // console.log(formData);
     mutate({ data: formData });
   };
 

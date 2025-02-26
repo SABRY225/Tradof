@@ -9,16 +9,34 @@ import StepThreeFreelancer from "./StepThreeFreelancer";
 import "../../styles/register.css";
 import StepThreeCompany from "./StepThreeCompany";
 import { useMutation } from "@tanstack/react-query";
-import { registerCompanies, registerFreelancers } from "../../Util/http";
+import { registerCompanies, registerFreelancers } from "../../Util/Https/http";
 import { Link, useNavigate } from "react-router-dom";
 import Loading from "../../pages/Loading";
 import { toast } from "react-toastify";
+import {
+  StepOneValidator,
+  StepThreeCompanyValidator,
+  StepThreeFreelancerValidator,
+  StepTwoValidator,
+} from "@/Util/registerValidate";
 
 // constants
 const defaultLanguagePairs = [
   {
-    from: { id: 2, name: "English", code: "en" },
-    to: { id: 5, name: "French", code: "fr" },
+    from: {
+      id: 1,
+      languageName: "Afar",
+      languageCode: "aa",
+      countryName: "Djibouti",
+      countryCode: "DJ",
+    },
+    to: {
+      id: 104,
+      languageName: "English",
+      languageCode: "en",
+      countryName: "Barbados",
+      countryCode: "BB",
+    },
   },
 ];
 
@@ -30,7 +48,7 @@ export default function RegisterFrom() {
     acceptPolicy: false,
     errors: [],
   });
-  const [currentPhoto, setCurrentPhoto] = useState(null);
+  const [currentPhoto, setCurrentPhoto] = useState("");
   const [languagePair, setLanguagePair] = useState(defaultLanguagePairs);
   const [specializations, setSpecializations] = useState([]);
   const [preferredLanguage, setPreferredLanguage] = useState([
@@ -47,6 +65,7 @@ export default function RegisterFrom() {
     formState: { errors },
   } = useForm({
     defaultValues: {
+      companyName: "",
       firstName: "",
       lastName: "",
       phoneNumber: "",
@@ -64,13 +83,31 @@ export default function RegisterFrom() {
     onError: (error) => {
       if (error.errors) {
         Object.entries(error.errors).forEach(([field, messages]) => {
+          toast.error(messages[0], {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            progress: undefined,
+          });
           setError(field, {
             type: "server",
             message: messages[0], // Show the first error message for each field
           });
         });
       } else {
-        setError("general", {
+        toast.error(error?.message, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+        setError(error.felid || "general", {
           type: "server",
           message: error.message || "Something went wrong. Please try again.",
         });
@@ -83,13 +120,31 @@ export default function RegisterFrom() {
     onError: (error) => {
       if (error.errors) {
         Object.entries(error.errors).forEach(([field, messages]) => {
+          toast.error(messages[0], {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            progress: undefined,
+          });
           setError(field, {
             type: "server",
             message: messages[0], // Show the first error message for each field
           });
         });
       } else {
-        setError("general", {
+        toast.error(error?.message, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+        setError(error.felid || "general", {
           type: "server",
           message: error.message || "Something went wrong. Please try again.",
         });
@@ -100,148 +155,42 @@ export default function RegisterFrom() {
   const isStepIncreasing = step > prevStep;
 
   const nextStep = () => {
+    clearErrors();
     if (step == 1) {
-      if (stepOneData.accountType === null) {
+      let errors = StepOneValidator({ stepOneData });
+      if (errors.length > 0) {
         setStepOneData((prev) => ({
           ...prev,
-          errors: ["Must Choose account type"],
-        }));
-        return;
-      }
-      if (stepOneData.acceptPolicy === false) {
-        setStepOneData((prev) => ({
-          ...prev,
-          errors: ["You must accept policy"],
+          errors: errors,
         }));
         return;
       }
     } else {
-      let hasError = false;
-      if (!stepTwoData.firstName.trim()) {
-        setError("firstName", {
-          type: "manual",
-          message: "First name is required.",
+      let errors = StepTwoValidator({ stepTwoData });
+      if (errors.length > 0) {
+        errors.forEach((error) => {
+          setError(error.felid, { type: "manual", message: error.message });
         });
-        hasError = true;
-      } else clearErrors("firstName");
-
-      if (!stepTwoData.lastName.trim()) {
-        setError("lastName", {
-          type: "manual",
-          message: "Last name is required.",
-        });
-        hasError = true;
-      } else clearErrors("lastName");
-
-      const phoneRegex = /^\+?[1-9]\d{6,14}$/;
-      if (!stepTwoData.phoneNumber.trim()) {
-        setError("phoneNumber", {
-          type: "manual",
-          message: "Phone number is required.",
-        });
-        hasError = true;
-      } else if (!phoneRegex.test(stepTwoData.phoneNumber)) {
-        setError("phoneNumber", {
-          type: "manual",
-          message: "Phone number must be 10-15 digits.",
-        });
-        hasError = true;
-      } else clearErrors("phoneNumber");
-
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!stepTwoData.email.trim()) {
-        setError("email", { type: "manual", message: "Email is required." });
-        hasError = true;
-      } else if (!emailRegex.test(stepTwoData.email)) {
-        setError("email", { type: "manual", message: "Invalid email format." });
-        hasError = true;
-      } else clearErrors("email");
-
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/;
-      if (!stepTwoData.password.trim()) {
-        setError("password", {
-          type: "manual",
-          message: "Password is required.",
-        });
-        hasError = true;
-      } else if (stepTwoData.password.length < 6) {
-        setError("password", {
-          type: "manual",
-          message: "Password must be at least 6 characters long.",
-        });
-        hasError = true;
-      } else if (!passwordRegex.test(stepTwoData.password)) {
-        setError("password", {
-          type: "manual",
-          message:
-            "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
-        });
-        hasError = true;
-      } else {
-        clearErrors("password");
+        return;
       }
-
-      if (!stepTwoData.confirmPassword.trim()) {
-        setError("confirmPassword", {
-          type: "manual",
-          message: "Please confirm your password.",
-        });
-        hasError = true;
-      } else if (stepTwoData.password !== stepTwoData.confirmPassword) {
-        setError("confirmPassword", {
-          type: "manual",
-          message: "Passwords do not match.",
-        });
-        hasError = true;
-      } else clearErrors("confirmPassword");
-
-      if (hasError) return;
     }
     setPrevStep(step);
     setStep((prev) => prev + 1);
   };
+
   const onSendData = (e) => {
     e.preventDefault();
-
     if (stepOneData.accountType === "freelancer") {
-      if (currentPhoto.trim() === "") {
-        toast.error("Please choose account photo", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        });
-        return;
-      }
-      if (stepTwoData.country.trim() === "") {
-        toast.error("Please choose Country", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        });
-        return;
-      }
-      if (specializations.length == 0) {
-        toast.error("Please choose at least one specialization", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        });
-        return;
-      }
-      if (languagePair.length == 0) {
-        toast.error("Please choose at least one language pair", {
+      const hasError = StepThreeFreelancerValidator({
+        stepThreeData: {
+          currentPhoto,
+          country: stepTwoData.country,
+          specializations,
+          languagePair,
+        },
+      });
+      if (hasError !== "") {
+        toast.error(hasError, {
           position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
@@ -270,68 +219,19 @@ export default function RegisterFrom() {
       };
       registerFreelancer({ data: freelancerData });
     } else {
-      if (currentPhoto.trim() === "") {
-        toast.error("Please choose account photo", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        });
-        return;
-      }
-      if (stepTwoData.country.trim() === "") {
-        toast.error("Please choose Country", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        });
-        return;
-      }
-      if (stepTwoData.location.trim() === "") {
-        toast.error("Please choose location", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        });
-        return;
-      }
-      if (stepTwoData.jopTitle.trim() === "") {
-        toast.error("Please write jop title", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        });
-        return;
-      }
-      if (industriesServed.length == 0) {
-        toast.error("Please choose at least one industries served", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        });
-        return;
-      }
-      if (preferredLanguage.length == 0) {
-        toast.error("Please choose at least one preferred language", {
+      const hasError = StepThreeCompanyValidator({
+        stepThreeData: {
+          currentPhoto,
+          companyName: stepTwoData.companyName,
+          country: stepTwoData.country,
+          location: stepTwoData.location,
+          jopTitle: stepTwoData.jopTitle,
+          industriesServed,
+          preferredLanguage,
+        },
+      });
+      if (hasError !== "") {
+        toast.error(hasError, {
           position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
@@ -343,6 +243,7 @@ export default function RegisterFrom() {
         return;
       }
       const companyData = {
+        companyName: stepTwoData.companyName.trim(),
         email: stepTwoData.email.trim(),
         password: stepTwoData.password.trim(),
         firstName: stepTwoData.firstName.trim(),
@@ -392,7 +293,6 @@ export default function RegisterFrom() {
     }
   };
 
-  console.log(Loading1);
   if (Loading1 || Loading2) return <Loading />;
 
   return (
@@ -406,7 +306,7 @@ export default function RegisterFrom() {
           Please fill out this form with the required information
         </div>
         <div className="font-poppins text-[13px]">
-          Do you have an account? {" "}
+          Do you have an account?{" "}
           <Link className="text-[#6C63FF] font-semibold" to="../">
             Sign In
           </Link>
@@ -490,25 +390,23 @@ export default function RegisterFrom() {
 
         <div className="mt-4 flex justify-end gap-5 font-poppins text-[14px]">
           {step > 1 && (
-            <button
-              type="button"
+            <div
               onClick={() => {
                 setPrevStep(step);
                 setStep((prev) => prev - 1);
               }}
-              className="text-customGray px-4 py-2 rounded"
+              className="text-customGray px-4 py-2 rounded cursor-pointer"
             >
               Previous
-            </button>
+            </div>
           )}
           {step < 3 ? (
-            <button
-              type="button"
+            <div
               onClick={nextStep}
-              className="bg-second-color text-white px-4 py-2 rounded"
+              className="bg-second-color text-white px-4 py-2 rounded cursor-pointer"
             >
               Next
-            </button>
+            </div>
           ) : (
             <button
               type="submit"

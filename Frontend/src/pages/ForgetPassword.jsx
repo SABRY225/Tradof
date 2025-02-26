@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import InputFelid from "../UI/InputFelid";
 import ButtonFelid from "../UI/ButtonFelid";
 import { useMutation } from "@tanstack/react-query";
-import { restPassword } from "@/Util/http";
+import { restPassword } from "@/Util/Https/http";
 import Loading from "./Loading";
 import { toast } from "react-toastify";
 

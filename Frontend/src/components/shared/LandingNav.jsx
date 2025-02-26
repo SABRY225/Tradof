@@ -5,6 +5,8 @@ import { motion } from "motion/react";
 import { logo, droplist } from "../../assets/paths.js";
 import ButtonFelid from "../../UI/ButtonFelid";
 
+const navItems = ["Home", "Plans", "Features", "Rated", "Contact Us"];
+
 export default function LandingNav() {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -41,8 +43,7 @@ export default function LandingNav() {
     }
   }, [activeHash]);
 
-  console.log(activeHash);
-  const navItems = ["Home", "Plans", "Features", "Rated", "Contact Us"];
+  // console.log(activeHash);
 
   return (
     <motion.nav
