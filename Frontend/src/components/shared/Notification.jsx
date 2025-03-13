@@ -48,6 +48,11 @@ const notifications = [
     message: "chat message",
     age: "2 min age",
   },
+  {
+    type: "Project chat",
+    message: "chat message",
+    age: "2 min age",
+  },
 ];
 
 export default function Notification({ classes }) {
@@ -97,7 +102,7 @@ export default function Notification({ classes }) {
         />
         <img src={search} alt="search icon" className="p-2" />
       </div>
-      <ul className="custom-scrollbar space-y-2 overflow-y-auto max-h-[435px]">
+      <ul className="custom-scrollbar space-y-2 overflow-y-auto max-h-[520px]">
         {filteredNotifications.map((note, index) => (
           <li
             key={index}

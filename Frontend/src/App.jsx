@@ -34,6 +34,9 @@ import Setting, { settingsLoader } from "./pages/shared/Setting";
 import SendOTP from "./pages/SendOTP";
 import VerifyEmail from "./pages/VerifyEmail";
 import Dashboard from "./pages/Dashboard";
+import { default as AdminDashboard } from "./pages/Admin/Dashboard";
+import AdminLayout from "./layouts/AdminLayout";
+import Calender from "./pages/shared/Calender";
 
 // create routes
 const router = createBrowserRouter([
@@ -76,6 +79,17 @@ const router = createBrowserRouter([
       { path: "profile", element: <Profile /> },
       { path: "settings", element: <Setting />, loader: settingsLoader },
       { path: "dashboard", element: <Dashboard /> },
+      { path: "calender", element: <Calender /> },
+    ],
+  },
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+    children: [
+      {
+        path: "dashboard",
+        element: <AdminDashboard />,
+      },
     ],
   },
   {

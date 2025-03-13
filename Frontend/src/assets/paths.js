@@ -37,9 +37,17 @@ import grayOffers from './icons/grayOffers.svg';
 import grayBudget from './icons/grayBudget.svg';
 import whitePlus from './icons/whitePlus.svg';
 import closeWhite from './icons/closeWhite.svg';
+import layer from "./icons/layer.svg";
+import Done_ring_round from "./icons/Done_ring_round.svg";
+import people from './icons/people.svg';
+import group_list from './icons/group_list.svg';
+import group_light from './icons/group_ligth.svg';
+import active from './icons/active.svg';
+import online from './icons/online.svg';
 
 export {
   // a
+  active,
   // b
   bluePlus,
   blackCalender,
@@ -63,6 +71,7 @@ export {
   darkGithub,
   darkPhone,
   dwonarrow,
+  Done_ring_round,
   // e
   // f
   facebook,
@@ -71,6 +80,8 @@ export {
   gmail,
   grayOffers,
   grayBudget,
+  group_list,
+  group_light,
   // h
   // i
   // j
@@ -78,15 +89,18 @@ export {
   // l
   logo,
   linkedin,
+  layer,
   // m
   minus,
   // n
   notification,
   // o
   openPage,
+  online,
   // p
   profilePhoto,
   person,
+  people,
   // q
   // r
   rabash,
