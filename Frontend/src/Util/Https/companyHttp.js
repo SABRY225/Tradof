@@ -308,7 +308,6 @@ export const changesPassword = async ({ signal, data, id, token }) => {
   }
 };
 
-
 //  A.SABRY
 export const getStartedProjects = async ({ id, token}) => {
   try {
@@ -381,7 +380,7 @@ export const deleteProject = async ({ id, token}) => {
 export const fatchCurrentOffers = async ({ PageIndex,ProjectId, token}) => {
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/proposal?&maxPageSize=1&PageIndex=${PageIndex}&ProjectId=${ProjectId}`,
+      `${import.meta.env.VITE_BACKEND_URL}/proposal?&PageSize=3&PageIndex=${PageIndex}&ProjectId=${ProjectId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`, // Attach token here
