@@ -308,3 +308,138 @@ export const changesPassword = async ({ signal, data, id, token }) => {
   }
 };
 
+
+//  A.SABRY
+export const getStartedProjects = async ({ id, token}) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/project/allstartedprojects?companyId=${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token here
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching company data");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const getUpcomingdProjects = async ({ id, token}) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/project/allincomingprojects?companyId=${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token here
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching company data");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const deleteProject = async ({ id, token}) => {
+  try {
+    console.log(id);
+    
+    const response = await axios.delete(
+      `${import.meta.env.VITE_BACKEND_URL}/project/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token here
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while deleting project");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+} ;
+
+export const fatchCurrentOffers = async ({ PageIndex,ProjectId, token}) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/proposal?&maxPageSize=1&PageIndex=${PageIndex}&ProjectId=${ProjectId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token here
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching company data");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const Acceptproposal = async ({ projectId,proposalId, token}) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/proposal/accept?projectId=${projectId}&proposalId=${proposalId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching company data");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const Denyproposal = async ({projectId,proposalId, token}) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/proposal/deny?projectId=${projectId}&proposalId=${proposalId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, 
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching company data");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};

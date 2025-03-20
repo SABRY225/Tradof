@@ -1,6 +1,10 @@
-import person from "../../../assets/images/1560a64114a9372e.jpg";
-import { openPage } from "../../../assets/paths.js";
-import { ProjectStatus } from "../../../Util/projectStatus";
+// import person from "../../../assets/images/1560a64114a9372e.jpg";
+// import { openPage } from "../../../assets/paths.js";
+
+import { openPage, person } from "@/assets/paths";
+import { ProjectStatus } from "@/Util/projectStatus";
+
+// import { ProjectStatus } from "../../../Util/projectStatus";
 const startProjects = [
   {
     id: 1,

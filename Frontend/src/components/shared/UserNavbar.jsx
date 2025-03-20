@@ -21,11 +21,11 @@ const CompanyList = [
   { name: "Create Project", link: "/user/project/create" },
   {
     name: "Start Projects",
-    link: "user/project/start",
+    link: "/user/project/start",
   },
   {
     name: "Upcoming Projects",
-    link: "user/project/upcoming",
+    link: "/user/project/upcoming",
   },
   { name: "Finances", link: "/user/finances" },
   { name: "Settings", link: "/user/settings" },
@@ -38,7 +38,7 @@ const FreelancerList = [
   },
   {
     name: "Projects",
-    link: "user/project/available",
+    link: "/user/project/available",
   },
   {
     name: "Offers",
@@ -85,7 +85,7 @@ export default function UserNavbar() {
       initial={{ y: "-15rem" }}
       animate={{ y: "0" }}
       transition={{ type: "keyframes", duration: 1.5 }}
-      className="sticky top-0 bg-main-color text-white border-gray-200 z-[10]"
+      className="sticky top-0 bg-[#6C63FF] text-white border-gray-200 z-[10]"
     >
       <motion.div className="max-w-screen-xl flex flex-wrap items-center md:gap-[50px] mx-auto p-4 w-full">
         <Link to="/user/dashboard" className="flex items-center space-x-3">

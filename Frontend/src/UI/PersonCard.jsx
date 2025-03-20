@@ -52,6 +52,7 @@ const extractName = (key, url) => {
 };
 
 export default function PersonCard({ member }) {
+  
   return (
     <AlertDialog>
       <AlertDialogTrigger className="rounded-full border-[3px]">

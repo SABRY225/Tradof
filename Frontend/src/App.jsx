@@ -37,6 +37,14 @@ import Dashboard from "./pages/Dashboard";
 import { default as AdminDashboard } from "./pages/Admin/Dashboard";
 import AdminLayout from "./layouts/AdminLayout";
 import Calender from "./pages/shared/Calender";
+import StartedProjects from "./pages/Client/StartedProjects";
+import UpcomingProjects from "./pages/Client/UpcomingProjects";
+import PayProject from "./pages/Client/PayProject";
+import Finances from "./pages/Client/Finances";
+import ProjectOffers from "./pages/Client/ProjectOffers";
+import AddOffer from "./pages/Freelancer/AddOffer";
+import AvailableProjects from "./pages/Freelancer/AvailableProjects";
+import Offers from "./pages/Freelancer/Offers";
 
 // create routes
 const router = createBrowserRouter([
@@ -74,12 +82,22 @@ const router = createBrowserRouter([
     children: [
       {
         path: "project",
-        children: [{ path: "create", element: <CreateProject /> }],
+        children: [
+          { path: "offer/:projectId", element: <ProjectOffers /> },
+          { path: "create", element: <CreateProject /> },
+          { path: "start", element: <StartedProjects /> },
+          { path: "upcoming", element: <UpcomingProjects /> },
+          { path: "pay", element: <PayProject /> },
+          { path: "add-offer/:projectId", element: <AddOffer /> },
+          { path: "available", element: <AvailableProjects /> },
+        ],
       },
       { path: "profile", element: <Profile /> },
+      { path: "finances", element: <Finances /> },
       { path: "settings", element: <Setting />, loader: settingsLoader },
       { path: "dashboard", element: <Dashboard /> },
       { path: "calender", element: <Calender /> },
+      { path: "offers", element: <Offers /> },
     ],
   },
   {

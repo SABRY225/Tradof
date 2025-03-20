@@ -1,0 +1,235 @@
+import { profilePhoto } from "../assets/paths";
+
+export const teamsData = [
+    {
+        name: "Mohamed Abdalrazek",
+        image: profilePhoto,
+        subtitle: "Full Stack Developer (MERN)",
+        media: [
+            {
+                facebook: "https://www.facebook.com/mohamed.abdalrazek.942/",
+                linkedin: "https://www.linkedin.com/in/mohamed-abdalrazek-6515a0232/",
+                gmail: "abdalrazekmohmed6@gmail.com",
+                github: "https://github.com/Dr-Rabi3",
+                phone: "+20 1030666109",
+            },
+        ],
+        profile:
+            "I am studying Computer Science and focusing on Data Structures, Object-Oriented Programming (OOP), Algorithms, and Web Development. Learning a variety of skills enables me to approach challenges from multiple perspectives. I am currently available for a full-time position.",
+        skills: [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "React",
+            "Node.js",
+            "Express",
+            "Monogo.db",
+            "OOP",
+            "Algorithms",
+            "Data Structures",
+        ],
+        experience: [
+            "52th place out of +200 team in the 2022 ECPC Qualifications Collegiate Programming Contest.",
+            "19th place out of +200 team in the 2023 ECPC Qualifications Collegiate Programming Contest.",
+            "Qualified to 2023 ACPC Arab Collegiate Programming Contest.",
+        ],
+    },
+    {
+        name: "Mohamed Abdalrazek",
+        image: profilePhoto,
+        subtitle: "Full Stack Developer (MERN)",
+        media: [
+            {
+                facebook: "https://www.facebook.com/mohamed.abdalrazek.942/",
+                linkedin: "https://www.linkedin.com/in/mohamed-abdalrazek-6515a0232/",
+                gmail: "abdalrazekmohmed6@gmail.com",
+                github: "https://github.com/Dr-Rabi3",
+                phone: "+20 1030666109",
+            },
+        ],
+        profile:
+            "I am studying Computer Science and focusing on Data Structures, Object-Oriented Programming (OOP), Algorithms, and Web Development. Learning a variety of skills enables me to approach challenges from multiple perspectives. I am currently available for a full-time position.",
+        skills: [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "React",
+            "Node.js",
+            "Express",
+            "Monogo.db",
+            "OOP",
+            "Algorithms",
+            "Data Structures",
+        ],
+        experience: [
+            "52th place out of +200 team in the 2022 ECPC Qualifications Collegiate Programming Contest.",
+            "19th place out of +200 team in the 2023 ECPC Qualifications Collegiate Programming Contest.",
+            "Qualified to 2023 ACPC Arab Collegiate Programming Contest.",
+        ],
+    },
+    {
+        name: "Mohamed Abdalrazek",
+        image: profilePhoto,
+        subtitle: "Full Stack Developer (MERN)",
+        media: [
+            {
+                facebook: "https://www.facebook.com/mohamed.abdalrazek.942/",
+                linkedin: "https://www.linkedin.com/in/mohamed-abdalrazek-6515a0232/",
+                gmail: "abdalrazekmohmed6@gmail.com",
+                github: "https://github.com/Dr-Rabi3",
+                phone: "+20 1030666109",
+            },
+        ],
+        profile:
+            "I am studying Computer Science and focusing on Data Structures, Object-Oriented Programming (OOP), Algorithms, and Web Development. Learning a variety of skills enables me to approach challenges from multiple perspectives. I am currently available for a full-time position.",
+        skills: [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "React",
+            "Node.js",
+            "Express",
+            "Monogo.db",
+            "OOP",
+            "Algorithms",
+            "Data Structures",
+        ],
+        experience: [
+            "52th place out of +200 team in the 2022 ECPC Qualifications Collegiate Programming Contest.",
+            "19th place out of +200 team in the 2023 ECPC Qualifications Collegiate Programming Contest.",
+            "Qualified to 2023 ACPC Arab Collegiate Programming Contest.",
+        ],
+    },
+    {
+        name: "Mohamed Abdalrazek",
+        image: profilePhoto,
+        subtitle: "Full Stack Developer (MERN)",
+        media: [
+            {
+                facebook: "https://www.facebook.com/mohamed.abdalrazek.942/",
+                linkedin: "https://www.linkedin.com/in/mohamed-abdalrazek-6515a0232/",
+                gmail: "abdalrazekmohmed6@gmail.com",
+                github: "https://github.com/Dr-Rabi3",
+                phone: "+20 1030666109",
+            },
+        ],
+        profile:
+            "I am studying Computer Science and focusing on Data Structures, Object-Oriented Programming (OOP), Algorithms, and Web Development. Learning a variety of skills enables me to approach challenges from multiple perspectives. I am currently available for a full-time position.",
+        skills: [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "React",
+            "Node.js",
+            "Express",
+            "Monogo.db",
+            "OOP",
+            "Algorithms",
+            "Data Structures",
+        ],
+        experience: [
+            "52th place out of +200 team in the 2022 ECPC Qualifications Collegiate Programming Contest.",
+            "19th place out of +200 team in the 2023 ECPC Qualifications Collegiate Programming Contest.",
+            "Qualified to 2023 ACPC Arab Collegiate Programming Contest.",
+        ],
+    },
+    {
+        name: "Mohamed Abdalrazek",
+        image: profilePhoto,
+        subtitle: "Full Stack Developer (MERN)",
+        media: [
+            {
+                facebook: "https://www.facebook.com/mohamed.abdalrazek.942/",
+                linkedin: "https://www.linkedin.com/in/mohamed-abdalrazek-6515a0232/",
+                gmail: "abdalrazekmohmed6@gmail.com",
+                github: "https://github.com/Dr-Rabi3",
+                phone: "+20 1030666109",
+            },
+        ],
+        profile:
+            "I am studying Computer Science and focusing on Data Structures, Object-Oriented Programming (OOP), Algorithms, and Web Development. Learning a variety of skills enables me to approach challenges from multiple perspectives. I am currently available for a full-time position.",
+        skills: [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "React",
+            "Node.js",
+            "Express",
+            "Monogo.db",
+            "OOP",
+            "Algorithms",
+            "Data Structures",
+        ],
+        experience: [
+            "52th place out of +200 team in the 2022 ECPC Qualifications Collegiate Programming Contest.",
+            "19th place out of +200 team in the 2023 ECPC Qualifications Collegiate Programming Contest.",
+            "Qualified to 2023 ACPC Arab Collegiate Programming Contest.",
+        ],
+    },
+    {
+        name: "Mohamed Abdalrazek",
+        image: profilePhoto,
+        subtitle: "Full Stack Developer (MERN)",
+        media: [
+            {
+                facebook: "https://www.facebook.com/mohamed.abdalrazek.942/",
+                linkedin: "https://www.linkedin.com/in/mohamed-abdalrazek-6515a0232/",
+                gmail: "abdalrazekmohmed6@gmail.com",
+                github: "https://github.com/Dr-Rabi3",
+                phone: "+20 1030666109",
+            },
+        ],
+        profile:
+            "I am studying Computer Science and focusing on Data Structures, Object-Oriented Programming (OOP), Algorithms, and Web Development. Learning a variety of skills enables me to approach challenges from multiple perspectives. I am currently available for a full-time position.",
+        skills: [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "React",
+            "Node.js",
+            "Express",
+            "Monogo.db",
+            "OOP",
+            "Algorithms",
+            "Data Structures",
+        ],
+        experience: [
+            "52th place out of +200 team in the 2022 ECPC Qualifications Collegiate Programming Contest.",
+            "19th place out of +200 team in the 2023 ECPC Qualifications Collegiate Programming Contest.",
+            "Qualified to 2023 ACPC Arab Collegiate Programming Contest.",
+        ],
+    },
+    {
+        name: "Mohamed Abdalrazek",
+        image: profilePhoto,
+        subtitle: "Full Stack Developer (MERN)",
+        media: [
+            {
+                facebook: "https://www.facebook.com/mohamed.abdalrazek.942/",
+                linkedin: "https://www.linkedin.com/in/mohamed-abdalrazek-6515a0232/",
+                gmail: "abdalrazekmohmed6@gmail.com",
+                github: "https://github.com/Dr-Rabi3",
+                phone: "+20 1030666109",
+            },
+        ],
+        profile:
+            "I am studying Computer Science and focusing on Data Structures, Object-Oriented Programming (OOP), Algorithms, and Web Development. Learning a variety of skills enables me to approach challenges from multiple perspectives. I am currently available for a full-time position.",
+        skills: [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "React",
+            "Node.js",
+            "Express",
+            "Monogo.db",
+            "OOP",
+            "Algorithms",
+            "Data Structures",
+        ],
+        experience: [
+            "52th place out of +200 team in the 2022 ECPC Qualifications Collegiate Programming Contest.",
+            "19th place out of +200 team in the 2023 ECPC Qualifications Collegiate Programming Contest.",
+            "Qualified to 2023 ACPC Arab Collegiate Programming Contest.",
+        ],
+    },
+]

@@ -3,8 +3,12 @@ import CurrentProjects from "@/components/Freelancer/Dashboard/CurrentProjects";
 import DiscoverProject from "@/components/Freelancer/Dashboard/DiscoverProject";
 import OffersChart from "@/components/Freelancer/Dashboard/OffersChart";
 import Notification from "@/components/shared/Notification";
+import Cookies from "js-cookie";
 
 export default function FreelancerDashboard() {
+    const token = Cookies.get("token");
+    console.log(token);
+    
   return (
     <>
       <div className="py-8 px-10 bg-background-color overflow-hidden space-y-12">

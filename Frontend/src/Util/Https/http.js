@@ -333,3 +333,53 @@ export const changePassword = async ({ signal, data }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
+
+// SABRY API
+export const fatchProjectDetailes = async ({id,token}) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/project/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json", // Ensure JSON format
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while change password");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const fatchProjectCard = async ({id,token}) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/project/GetProjectCardData?projectId=${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json", // Ensure JSON format
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while change password");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};

@@ -215,7 +215,6 @@ export const editSocialMedia = async ({ signal, data, id, token }) => {
   }
 };
 
-
 export const changesPassword = async ({ signal, data, id, token }) => {
   try {
     const response = await axios.post(
@@ -242,3 +241,28 @@ export const changesPassword = async ({ signal, data, id, token }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
+// SABRY API
+export const AddOffer = async ({data,token})=>{
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/proposal`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error("Server Error:", error);
+      const err = new Error("An error occurred while adding offer");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+}

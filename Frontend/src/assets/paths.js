@@ -43,6 +43,7 @@ import people from './icons/people.svg';
 import group_list from './icons/group_list.svg';
 import group_light from './icons/group_ligth.svg';
 import active from './icons/active.svg';
+import files from './icons/files.svg';
 import online from './icons/online.svg';
 
 export {
@@ -60,6 +61,7 @@ export {
   calender,
   closeDialog,
   copy,
+  files,
   checkedCopy,
   chat,
   closeWhite,
