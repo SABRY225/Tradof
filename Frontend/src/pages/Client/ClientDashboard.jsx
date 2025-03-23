@@ -12,15 +12,12 @@ export default function ClientDashboard() {
         <Charts classes="flex-grow" />
         <Notification classes="hidden lg:block" />
       </div>
-      <motion.div
-        initial={{ y: "10rem" }}
-        whileInView={{ y: 0 }}
-        transition={{ type: "keyframes", duration: 0.5 }}
+      <div
         className="grid  grid-cols-1 md:grid-cols-2 gap-[20px]"
       >
         <StartProject />
         <UpcomingProject />
-      </motion.div>
+      </div>
     </div>
   );
 }
