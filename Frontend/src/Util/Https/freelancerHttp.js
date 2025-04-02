@@ -175,8 +175,7 @@ export const editProfile = async ({ signal, data, id, token }) => {
       }
     );
     return response.data;
-  }
-  catch (error) {
+  } catch (error) {
     if (error.response) {
       console.error("Server Error:", error);
       const err = new Error("An error occurred while edit profile");
@@ -186,7 +185,7 @@ export const editProfile = async ({ signal, data, id, token }) => {
     }
     throw new Error(error.message || "An unexpected error occurred");
   }
-}
+};
 
 export const editSocialMedia = async ({ signal, data, id, token }) => {
   try {
@@ -215,13 +214,10 @@ export const editSocialMedia = async ({ signal, data, id, token }) => {
   }
 };
 
-
 export const changesPassword = async ({ signal, data, id, token }) => {
   try {
     const response = await axios.post(
-      `${
-        import.meta.env.VITE_BACKEND_URL
-      }/freelancers/${id}/change-password`,
+      `${import.meta.env.VITE_BACKEND_URL}/freelancers/${id}/change-password`,
       data,
       {
         signal,
@@ -235,6 +231,30 @@ export const changesPassword = async ({ signal, data, id, token }) => {
     if (error.response) {
       console.log(error);
       const err = new Error("An error occurred while change password");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const getStatistics = async ({ signal, id, token }) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/project/statistics?id=${id}`,
+      {
+        signal,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while fetch statistics");
       err.code = error.response.status;
       err.message = error.response.data;
       throw err;
