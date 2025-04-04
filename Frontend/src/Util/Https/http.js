@@ -3,6 +3,26 @@ import axios from "axios";
 
 export const queryClient = new QueryClient();
 
+// refresh token
+
+export const refreshToken = async ({ signal, oldToken }) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/auth/refresh-token`,
+      { oldToken }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching the token");
+      err.code = error.response.status;
+      err.info = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
 // get all subscriptions
 export const getAllSubscriptions = async ({ signal }) => {
   try {
@@ -207,9 +227,7 @@ export const registerCompanies = async ({ signal, data }) => {
     return response;
   } catch (error) {
     if (error.response) {
-      const err = new Error(
-        "An error occurred while registering the company"
-      );
+      const err = new Error("An error occurred while registering the company");
       err.code = error.response.status;
       if (error.response.status === 400) {
         err.message = "Email address already exists";
@@ -243,7 +261,7 @@ export const loginUser = async ({ signal, data }) => {
         },
       }
     );
-    console.log(response);
+    // console.log(response);
 
     return response.data;
   } catch (error) {

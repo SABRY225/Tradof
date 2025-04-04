@@ -19,15 +19,18 @@ export default function Login() {
   const { mutate, data, isPending } = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      // ✅ Store token in HTTP-only cookie (backend should handle this securely)
       Cookies.set("token", data.token, {
         expires: 7,
         secure: true,
         sameSite: "Strict",
       });
-      // console.log(data);
-      // // ✅ Store user data in local state (Avoid storing token in localStorage!)
-      login({ userId: data.userId, role: data.role, token: data.token });
+      console.log(data);
+      login({
+        userId: data.userId,
+        role: data.role,
+        token: data.token,
+        refreshToken : data.refreshToken,
+      });
 
       navigate("/user/dashboard"); // Redirect after login
     },

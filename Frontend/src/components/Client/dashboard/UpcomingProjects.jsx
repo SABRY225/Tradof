@@ -107,7 +107,7 @@ export default function UpcomingProject() {
   return (
     <div>
       <div className="mb-2 flex justify-between">
-        <h1 className="font-medium text-[18px]">Started Projects</h1>
+        <h1 className="font-medium text-[18px]">Upcoming Projects</h1>
         <img src={openPage} alt="" />
       </div>
       <ul className="space-y-[10px]">

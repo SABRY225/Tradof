@@ -1,32 +1,58 @@
-import { RadialStackedChart } from "@/UI/RadialStackedChart";
-const chartData = [{ completed: 500, inCompleted: 570 }];
+import { useAuth } from "@/context/AuthContext";
+import CardChart from "@/UI/FreeChart";
+import { getStatistics } from "@/Util/Https/freelancerHttp";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Charts({ classes }) {
+  const {
+    user: { userId, token },
+  } = useAuth();
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["freeChart"],
+    queryFn: ({ signal }) => getStatistics({ signal, id: userId, token }),
+  });
+  console.log(data);
+  const activeChart = data
+    ? [{ completed: data.active, inCompleted: data.inProgress + data.accepted }]
+    : {};
+  const inProgressChart = data
+    ? [
+        {
+          completed: data.inProgress,
+          inCompleted: data.active + data.accepted,
+        },
+      ]
+    : {};
+  const acceptedChart = data
+    ? [
+        {
+          completed: data.accepted,
+          inCompleted: data.active + data.inProgress,
+        },
+      ]
+    : {};
   return (
     <div
       className={`bg-main-color rounded-lg flex h-fit flex-grow overflow-x-auto overflow-y-hidden custom-scrollbar ${classes}`}
     >
-      <div className="flex flex-col w-full items-center p-3">
-        <RadialStackedChart data={chartData} label="Completed project" />
-        <div className="flex text-white justify-between w-[200px] p-2 border-t-2 ">
-          <p className="font-light">Complete projects</p>
-          <span>{chartData[0].completed}</span>
-        </div>
-      </div>
-      <div className="flex flex-col w-full items-center p-3">
-        <RadialStackedChart data={chartData} label="Completed project" />
-        <div className="flex text-white justify-between w-[200px] p-2 border-t-2 ">
-          <p className="font-light">Complete projects</p>
-          <span>{chartData[0].completed}</span>
-        </div>
-      </div>
-      <div className="flex flex-col w-full items-center p-3">
-        <RadialStackedChart data={chartData} label="Completed project" />
-        <div className="flex text-white justify-between w-[200px] p-2 border-t-2 ">
-          <p className="font-light">Complete projects</p>
-          <span>{chartData[0].completed}</span>
-        </div>
-      </div>
+      <CardChart
+        name="Active"
+        data={activeChart}
+        isLoading={isLoading}
+        label="Not active project yet..."
+      />
+      <CardChart
+        name="In progress"
+        data={inProgressChart}
+        isLoading={isLoading}
+        label="Not started project yet..."
+      />
+      <CardChart
+        name="Accepted"
+        data={acceptedChart}
+        isLoading={isLoading}
+        label="Not accepted project yet..."
+      />
     </div>
   );
 }
