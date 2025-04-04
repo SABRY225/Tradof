@@ -45,6 +45,9 @@ import group_light from './icons/group_ligth.svg';
 import active from './icons/active.svg';
 import files from './icons/files.svg';
 import online from './icons/online.svg';
+import plus from './icons/plus.svg';
+import clock from './icons/clock.svg';
+import group_light2 from './icons/group_ligth2.svg';
 
 export {
   // a
@@ -61,7 +64,7 @@ export {
   calender,
   closeDialog,
   copy,
-  files,
+  clock,
   checkedCopy,
   chat,
   closeWhite,
@@ -77,6 +80,7 @@ export {
   // e
   // f
   facebook,
+  files,
   finances,
   // g
   gmail,
@@ -84,6 +88,7 @@ export {
   grayBudget,
   group_list,
   group_light,
+  group_light2,
   // h
   // i
   // j
@@ -101,6 +106,7 @@ export {
   online,
   // p
   profilePhoto,
+  plus,
   person,
   people,
   // q

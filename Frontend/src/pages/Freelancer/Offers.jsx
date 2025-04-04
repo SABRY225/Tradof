@@ -1,8 +1,179 @@
+import { useState, useEffect } from "react";
+import {
+  Box,
+  Typography,
+  TextField,
+  Pagination,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  InputAdornment,
+} from "@mui/material";
+import { SearchIcon } from "lucide-react";
+import PageTitle from "@/UI/PageTitle";
+import Cookies from "js-cookie";
+import CustomButton from "@/UI/CustomButton";
+import { Avatar } from "@mantine/core";
+
+const projectsData = [
+  {
+    id: 1,
+    owner: "Mohamed abdalrazek",
+    gmail: "Mohamedabdalrazek@gmail.com",
+    title: "Translation of an article about medical tools",
+    description:
+      "Translation of an article about medical tools,Translation of an article about medical tools,Translation of an article about medical tools",
+    startDate: "12/12/2024",
+    deadline: "3 weeks",
+    price: "$39.15",
+    status: "Active",
+  },
+  {
+    id: 2,
+    owner: "Mohamed abdalrazek",
+    gmail: "Mohamedabdalrazek@gmail.com",
+    title: "Translation of an article about medical tools",
+    description:
+      "Translation of an article about medical tools,Translation of an article about medical tools,Translation of an article about medical tools",
+    startDate: "12/12/2024",
+    deadline: "3 weeks",
+    price: "$50.25",
+    status: "Complete",
+  },
+  {
+    id: 3,
+    owner: "Mohamed abdalrazek",
+    gmail: "Mohamedabdalrazek@gmail.com",
+    title: "Translation of an article about medical tools",
+    description:
+      "Translation of an article about medical tools,Translation of an article about medical tools,Translation of an article about medical tools",
+    startDate: "12/12/2024",
+    deadline: "3 weeks",
+    price: "$30.25",
+    status: "Review",
+  },
+];
+
+const statusColors = {
+  Active: "#3DCF3D",
+  Complete: "#FF9500",
+  "Review": "#6C63FF",
+};
 function Offers() {
+    const [data, setData] = useState([]);
+    const [search, setSearch] = useState("");
+    const [filter, setFilter] = useState("All");
+    const [page, setPage] = useState(1);
+    const itemsPerPage = 2;
+    const token = Cookies.get("token");
+    const userId = Cookies.get("userId");
+  
+  
+    // useEffect(() => {
+    //   const FatchData = async () => {
+    //     const data = await getStartedProjects({ id: userId, token });
+    //     setData(data);
+    //   };
+    //   FatchData();
+    // }, [token, userId, data]);
+  
+  
+    const filteredProjects = projectsData.filter(
+      (project) =>
+        (filter === "All" || project.status === filter) &&
+        project.title.toLowerCase().includes(search.toLowerCase())
+    );
+  
+    const displayedProjects = filteredProjects.slice(
+      (page - 1) * itemsPerPage,
+      page * itemsPerPage
+    );
+  
+    useEffect(() => {
+      setPage(1);
+    }, [filter, search]);
+  
   return (
-    <div>
+    <>
+    <PageTitle title="Your Offers" subtitle="Follow your offers" />
+    <Box py={5} px={10}>
+        <Typography variant="h5" gutterBottom>
+          State
+        </Typography>
+        <Box display="flex" alignItems="center" justifyContent="space-between">
+          <RadioGroup
+            row
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          >
+            {["All", "Active", "Review", "Complete"].map((state) => (
+              <FormControlLabel
+                key={state}
+                value={state}
+                control={<Radio />}
+                label={state}
+              />
+            ))}
+          </RadioGroup>
+        </Box>
+        <Box mt={3}>
+          {displayedProjects.map((project) => (
+            <div
+              key={project?.id}
+              className=" bg-card-color py-[15px] px-[30px] mx-10 my-10 rounded-lg shadow"
+            >
+              <div>
+                <div className="flex justify-between">
+                  <div className="text-[22px] font-bold flex items-center">
+                    <Avatar />
+                    <div className="text-[16px] font-bold ml-2">
+                      <div >{project?.owner}</div>
+                      <div className="text-[13px] font-light ">{project?.gmail}</div>
+                    </div>
+                  </div>
+
+                  <Box mt={2} textAlign="right">
+                    <CustomButton label={project.status} color={statusColors[project.status]} textColor="white" />
+                  </Box>
+                </div>
+                <div className="text-[22px] font-bold mt-2">
+                  {project?.title}
+                </div>
+                <div className="border border-main-color my-3"></div>
+                <ul>
+                  <li className="text-[15px] font-semibold mb-5">
+                    Offer details{" "}
+                    <div className="font-light">{project?.description}</div>
+                  </li>
+                  <li className="text-[15px] font-semibold my-2">
+                    <span className="mr-14">Start at </span>
+                    <span className="font-light">
+                      {project?.startDate}
+                    </span>
+                  </li>
+                  <li className="text-[15px] font-semibold my-2">
+                    <span className="mr-14">Deadline</span>
+                    <span className="font-light">{project?.deadline}</span>
+                  </li>
+                  <li className="text-[15px] font-semibold my-2">
+                    <span className="mr-20">Price</span>
+                    <span className="font-light">{project?.price}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          ))}
+        </Box>
+        <Box display="flex" justifyContent="center" mt={3}>
+          <Pagination
+            count={Math.ceil(filteredProjects.length / itemsPerPage)}
+            page={page}
+            onChange={(event, value) => setPage(value)}
+          />
+        </Box>
+      </Box>
       
-    </div>
+    </>
   )
 }
 

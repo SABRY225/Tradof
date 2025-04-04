@@ -11,11 +11,8 @@ import {
 } from "@mui/material";
 import { SearchIcon } from "lucide-react";
 import PageTitle from "@/UI/PageTitle";
-import { blueOffers, openPage } from "@/assets/paths";
-import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import { getStartedProjects } from "@/Util/Https/companyHttp";
-import ButtonFelid from "@/UI/ButtonFelid";
 import CustomButton from "@/UI/CustomButton";
 import { Avatar } from "@mantine/core";
 

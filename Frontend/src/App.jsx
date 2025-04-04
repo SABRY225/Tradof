@@ -40,11 +40,20 @@ import Calender from "./pages/shared/Calender";
 import StartedProjects from "./pages/Client/StartedProjects";
 import UpcomingProjects from "./pages/Client/UpcomingProjects";
 import PayProject from "./pages/Client/PayProject";
-import Finances from "./pages/Client/Finances";
+import Finances from "./pages/shared/Finances";
 import ProjectOffers from "./pages/Client/ProjectOffers";
 import AddOffer from "./pages/Freelancer/AddOffer";
 import AvailableProjects from "./pages/Freelancer/AvailableProjects";
 import Offers from "./pages/Freelancer/Offers";
+import Feedback from "./pages/shared/Feedback";
+import TechnicalSupport from "./pages/shared/TechnicalSupport";
+import AdminTechnicalSupport from "./pages/Admin/AdminTechnicalSupport";
+import AdminFinances from "./pages/Admin/AdminFinances";
+import AdminAskQuestion from "./pages/Admin/AdminAskQuestion";
+import AskQuestion from "./pages/shared/AskQuestion";
+import ProjectPage from "./pages/shared/ProjectPage";
+import WithdrawProfits from "./pages/Freelancer/WithdrawProfits";
+import AdminFeedback from "./pages/Admin/AdminFeedback";
 
 // create routes
 const router = createBrowserRouter([
@@ -87,27 +96,37 @@ const router = createBrowserRouter([
           { path: "create", element: <CreateProject /> },
           { path: "start", element: <StartedProjects /> },
           { path: "upcoming", element: <UpcomingProjects /> },
+          // work in progress
+          { path: ":projectId", element: <ProjectPage /> },
           { path: "pay", element: <PayProject /> },
           { path: "add-offer/:projectId", element: <AddOffer /> },
           { path: "available", element: <AvailableProjects /> },
         ],
       },
       { path: "profile", element: <Profile /> },
-      { path: "finances", element: <Finances /> },
       { path: "settings", element: <Setting />, loader: settingsLoader },
       { path: "dashboard", element: <Dashboard /> },
       { path: "calender", element: <Calender /> },
       { path: "offers", element: <Offers /> },
+      // work in progress
+      { path: "finances", element: <Finances /> },
+      { path: "withdraw-profits", element: <WithdrawProfits /> },
+      { path: "technical-support", element: <TechnicalSupport /> },
+      { path: "feedback", element: <Feedback /> },
+      { path: "ask-question", element: <AskQuestion /> },
     ],
   },
   {
     path: "/admin",
     element: <AdminLayout />,
     children: [
-      {
-        path: "dashboard",
-        element: <AdminDashboard />,
-      },
+      {path: "dashboard",element: <AdminDashboard />},
+      {path: "setting",element: <Setting />},
+      // work in progress
+      {path: "technical-support",element: <AdminTechnicalSupport />},
+      {path: "finances",element: <AdminFinances />},
+      {path: "ask-question",element: <AdminAskQuestion />},
+      {path: "feedback",element: <AdminFeedback />},
     ],
   },
   {

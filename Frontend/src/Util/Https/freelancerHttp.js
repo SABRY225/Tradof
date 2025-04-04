@@ -266,3 +266,25 @@ export const AddOffer = async ({data,token})=>{
     throw new Error(error.message || "An unexpected error occurred");
   }
 }
+
+export const fatchProjects = async ({token}) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/project?pageIndex=1&Status&pageSize=10&budget&languageFromId&languageToId&sortBy`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token here
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching company data");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
