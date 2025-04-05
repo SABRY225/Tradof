@@ -31,8 +31,11 @@ export default function Login() {
         token: data.token,
         refreshToken : data.refreshToken,
       });
-
-      navigate("/user/dashboard"); // Redirect after login
+      if(data.role==="admin"){
+        navigate("/admin/dashboard"); // Redirect to admin dashboard
+      }else{
+        navigate("/user/dashboard"); // Redirect after login
+      }
     },
     onError: (error) => {
       toast.error(error?.message || "Login failed!", {

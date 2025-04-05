@@ -54,6 +54,7 @@ import AskQuestion from "./pages/shared/AskQuestion";
 import ProjectPage from "./pages/shared/ProjectPage";
 import WithdrawProfits from "./pages/Freelancer/WithdrawProfits";
 import AdminFeedback from "./pages/Admin/AdminFeedback";
+import SettingAdmin from "./pages/Admin/SettingAdmin";
 
 // create routes
 const router = createBrowserRouter([
@@ -121,12 +122,13 @@ const router = createBrowserRouter([
     element: <AdminLayout />,
     children: [
       {path: "dashboard",element: <AdminDashboard />},
-      {path: "setting",element: <Setting />},
+      {path: "settings",element: <SettingAdmin />},
       // work in progress
       {path: "technical-support",element: <AdminTechnicalSupport />},
       {path: "finances",element: <AdminFinances />},
       {path: "ask-question",element: <AdminAskQuestion />},
       {path: "feedback",element: <AdminFeedback />},
+      {path: "withdrawal",element: <AdminFeedback />},
     ],
   },
   {
