@@ -54,6 +54,7 @@ import AskQuestion from "./pages/shared/AskQuestion";
 import ProjectPage from "./pages/shared/ProjectPage";
 import WithdrawProfits from "./pages/Freelancer/WithdrawProfits";
 import AdminFeedback from "./pages/Admin/AdminFeedback";
+import ProfitWithdrawalRequests from "./pages/Admin/ProfitWithdrawalRequests";
 
 // create routes
 const router = createBrowserRouter([
@@ -127,7 +128,12 @@ const router = createBrowserRouter([
       {path: "finances",element: <AdminFinances />},
       {path: "ask-question",element: <AdminAskQuestion />},
       {path: "feedback",element: <AdminFeedback />},
+      {path: "profit-withdraw",element: <ProfitWithdrawalRequests />},
     ],
+  },
+  {
+    path: "test",
+    element: <ProfitWithdrawalRequests />,
   },
   {
     path: "*",
