@@ -46,7 +46,6 @@ import AddOffer from "./pages/Freelancer/AddOffer";
 import AvailableProjects from "./pages/Freelancer/AvailableProjects";
 import Offers from "./pages/Freelancer/Offers";
 import Feedback from "./pages/shared/Feedback";
-import TechnicalSupport from "./pages/shared/TechnicalSupport";
 import AdminTechnicalSupport from "./pages/Admin/AdminTechnicalSupport";
 import AdminFinances from "./pages/Admin/AdminFinances";
 import AdminAskQuestion from "./pages/Admin/AdminAskQuestion";
@@ -55,6 +54,8 @@ import ProjectPage from "./pages/shared/ProjectPage";
 import WithdrawProfits from "./pages/Freelancer/WithdrawProfits";
 import AdminFeedback from "./pages/Admin/AdminFeedback";
 import SettingAdmin from "./pages/Admin/SettingAdmin";
+import SuccessPayment from "./pages/payment";
+import PlanPage from "./pages/PlanPage";
 
 // create routes
 const router = createBrowserRouter([
@@ -65,6 +66,8 @@ const router = createBrowserRouter([
       { index: true, element: <LandingPage />, loader: subscriptionsLoader }, // Default route
     ],
   },
+  { path: "success-payment", element: <SuccessPayment /> },
+  { path: "select-plan", element: <PlanPage /> },
   {
     path: "/loading",
     element: <Loading />,
@@ -109,12 +112,12 @@ const router = createBrowserRouter([
       { path: "dashboard", element: <Dashboard /> },
       { path: "calender", element: <Calender /> },
       { path: "offers", element: <Offers /> },
+      { path: "feedback", element: <Feedback /> },
+      { path: "ask-question", element: <AskQuestion /> },
       // work in progress
       { path: "finances", element: <Finances /> },
       { path: "withdraw-profits", element: <WithdrawProfits /> },
-      { path: "technical-support", element: <TechnicalSupport /> },
-      { path: "feedback", element: <Feedback /> },
-      { path: "ask-question", element: <AskQuestion /> },
+
     ],
   },
   {

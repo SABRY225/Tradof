@@ -291,7 +291,7 @@ export const AddOffer = async ({data,token})=>{
 export const fatchProjects = async ({token}) => {
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/project?pageIndex=1&Status&pageSize=10&budget&languageFromId&languageToId&sortBy`,
+      `${import.meta.env.VITE_BACKEND_URL}/project/unassigned-projects?pageIndex=1&pageSize=10`,
       {
         headers: {
           Authorization: `Bearer ${token}`, // Attach token here

@@ -15,14 +15,11 @@ function AddOffer() {
       const { projectId } = useParams();
       const [project, setData] = useState(null);
       const token = Cookies.get("token");
-      console.log(token);
-      console.log(projectId);
       
       useEffect(() => {
           const FatchData = async () => {
               const data = await fatchProjectDetailes({ id: projectId, token });
               console.log(data);
-              
               setData(data);
           };
           FatchData();

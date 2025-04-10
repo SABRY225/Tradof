@@ -20,7 +20,7 @@ const Chatbot = ({ user }) => {
   const getMessages = async () => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_NODE_URL}/api/technicalSupport/${user?.userId}`,
+        `${import.meta.env.VITE_BACKEND_NODE_URL}/technicalSupport/${user?.userId}`,
         { headers: { Authorization: `Bearer ${user?.token}` } }
       );
       setMessages(res.data.messages);
@@ -41,7 +41,7 @@ const Chatbot = ({ user }) => {
 
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_NODE_URL}/api/technicalSupport`,
+        `${import.meta.env.VITE_BACKEND_NODE_URL}/technicalSupport`,
         formData,
         {
           headers: {
@@ -114,6 +114,7 @@ const Chatbot = ({ user }) => {
         ) : (
           messages.map((msg, index) => {
             const isUser = msg.senderId === user?.userId;
+            
             return (
               <div key={index} style={styles.messageContainer(isUser)}>
                 <div style={styles.messageBubble(isUser)}>

@@ -1,0 +1,132 @@
+.chatContainer {
+    display: flex;
+    height: 600px; /* تعديل حسب الحاجة */
+    border: 1px solid #e0e0e0;
+    /* border-radius: 8px; */
+    overflow: hidden;
+  }
+  
+  /* أنماط قسم الدردشة الرئيسي */
+  .chattingSection {
+    flex: 2; /* يأخذ ضعف المساحة المخصصة لقسم آخر الرسائل */
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .chatHeader {
+    padding: 16px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .messageList {
+    flex-grow: 1;
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .messageBubble {
+    padding: 10px 12px;
+    border-radius: 16px;
+    background-color: #e0e0e0;
+    color: #333;
+    align-self: flex-start; /* محاذاة الفقاعات إلى اليسار افتراضيًا */
+    max-width: 70%;
+    word-break: break-word;
+  }
+  
+  .userMessage {
+    background-color: #6200ee; /* لون رسائل المستخدم */
+    color: white;
+    align-self: flex-end; /* محاذاة رسائل المستخدم إلى اليمين */
+  }
+  
+  .chatInputArea {
+    padding: 16px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+  }
+  
+  .inputButtons {
+    display: flex;
+    gap: 8px;
+    margin-right: 8px;
+  }
+  
+  .messageInput {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    outline: none;
+  }
+  
+  /* أنماط قسم آخر الرسائل */
+  .lastMessagesSection {
+    flex: 1;
+    background-color: #6C63FF;
+    border-left: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .lastMessagesHeader {
+    padding: 16px;
+    color: #fff;
+    font-weight: 700;
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .lastMessagesList {
+    flex-grow: 1;
+    padding: 8px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .lastMessageItem {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    background-color: #fff;
+    border-radius: 10px;
+    
+  }
+  
+  .lastMessageItem:last-child {
+    border-bottom: none;
+  }
+  
+  .avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 8px;
+    object-fit: cover;
+  }
+  
+  .messageDetails {
+    flex-grow: 1;
+  }
+  
+  .userName {
+    font-weight: bold;
+    margin-bottom: 2px;
+    font-size: 14px;
+  }
+  
+  .lastMessageText {
+    color: #777;
+    font-size: 12px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+

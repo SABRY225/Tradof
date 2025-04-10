@@ -442,3 +442,30 @@ export const Denyproposal = async ({projectId,proposalId, token}) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
+
+export const GetCurrentSubscription = async({companyId,token})=>{
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/subscription/current-subscription/${companyId}`,
+      {
+        headers: {
+          Authorization: `${token}`, 
+        },
+      }
+    );
+    if(response.data.success==false && response.data.message=="No subscription found" ){
+      window.location.href = "/select-plan";
+    }
+    
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching company data");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+}

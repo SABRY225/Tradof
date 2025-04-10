@@ -18,12 +18,15 @@ export default function DropList({ name, email }) {
     {
       items: [
         {
-          icon: offers,
-          text: "Your Offers",
-        },
-        {
           icon: finances,
           text: "Your Finances",
+          link:"/user/finances"
+
+        },
+        {
+          icon: offers,
+          text: "Ask Question",
+          link:"/user/ask-question"
         },
       ],
     },
@@ -32,22 +35,20 @@ export default function DropList({ name, email }) {
         {
           icon: calender,
           text: "Calendar",
+          link:"/user/calender"
         },
-        {
-          icon: notification,
-          text: "Notification",
-        },
+        // {
+        //   icon: notification,
+        //   text: "Notification",
+        // },
       ],
     },
     {
       items: [
         {
-          icon: support,
-          text: "Tradof Supports",
-        },
-        {
           icon: feedback,
           text: "Give us feedback",
+          link:"/user/feedback"
         },
       ],
     },

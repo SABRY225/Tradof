@@ -1,8 +1,9 @@
 import  { useState } from "react";
-import { IoMdChatbubbles } from "react-icons/io";
+// import { MdSupportAgent  } from "react-icons/io";
+import { MdSupportAgent } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
 import Chatbot from "./Chatbot";
-
+import { BiSupport } from "react-icons/bi";
 const FloatingChat = ({ user }) => {
 
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +20,7 @@ const FloatingChat = ({ user }) => {
         </div>
       )}
       <button onClick={toggleChat} style={styles.floatingButton}>
-        {isOpen ? <IoMdClose size={24} color="#fff" /> : <IoMdChatbubbles size={24} color="#fff" />}
+        {isOpen ? <IoMdClose size={24} color="#fff" /> : <MdSupportAgent  size={45} color="#fff" />}
       </button>
     </>
   );
@@ -36,8 +37,8 @@ const styles = {
     position: "fixed",
     bottom: 20,
     right: 20,
-    width: 60,
-    height: 60,
+    width: 70,
+    height: 70,
     borderRadius: "50%",
     backgroundColor: "#7b61ff",
     border: "none",
