@@ -136,6 +136,10 @@ const router = createBrowserRouter([
     element: <ProfitWithdrawalRequests />,
   },
   {
+    path: "test2",
+    element: <AdminFeedback />,
+  },
+  {
     path: "*",
     element: <NotFound />,
   },

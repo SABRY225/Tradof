@@ -7,19 +7,22 @@ import {
     TableBody,
     TableCell,
     TableContainer,
-    TableHead,
     TableRow,
     Paper,
     Avatar,
     Chip,
     IconButton,
-    Pagination
+    Pagination,
+    useMediaQuery,
+    useTheme
 } from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import SettingsIcon from '@mui/icons-material/Settings';
 import Footer from '@/components/shared/Footer';
 
 export default function ProfitWithdrawalRequests() {
     const [page, setPage] = useState(1);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     // Mock data for the table
     const requests = [
@@ -65,10 +68,10 @@ export default function ProfitWithdrawalRequests() {
                     <TableContainer component={Paper} sx={{
                         boxShadow: 'none',
                         borderRadius: '10px',
-                        overflow: 'hidden',
+                        overflow: 'auto',
                         mb: 4
                     }}>
-                        <Table sx={{ minWidth: 650 }}>
+                        <Table sx={{ minWidth: isMobile ? 500 : 650 }}>
                             <TableBody>
                                 {requests.map((request) => (
                                     <TableRow
@@ -80,7 +83,12 @@ export default function ProfitWithdrawalRequests() {
                                             borderBottom: '1px solid #f0f0f0'
                                         }}
                                     >
-                                        <TableCell sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                        <TableCell sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 2,
+                                            minWidth: '200px'
+                                        }}>
                                             <Avatar
                                                 src={`https://ui-avatars.com/api/?name=${request.name}&background=6c63ff&color=fff`}
                                                 alt={request.name}
@@ -94,17 +102,17 @@ export default function ProfitWithdrawalRequests() {
                                                 </Typography>
                                             </Box>
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{ minWidth: '180px' }}>
                                             <Typography variant="body2">
                                                 {request.email}
                                             </Typography>
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{ minWidth: '120px' }}>
                                             <Typography variant="body2">
                                                 {request.phone}
                                             </Typography>
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{ minWidth: '80px' }}>
                                             <Typography
                                                 variant="body2"
                                                 sx={{
@@ -118,7 +126,7 @@ export default function ProfitWithdrawalRequests() {
                                                 Details
                                             </Typography>
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{ minWidth: '100px' }}>
                                             <Chip
                                                 label={request.status}
                                                 size="small"
@@ -130,9 +138,9 @@ export default function ProfitWithdrawalRequests() {
                                                 }}
                                             />
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{ minWidth: '50px' }}>
                                             <IconButton size="small">
-                                                <MoreVertIcon fontSize="small" />
+                                                <SettingsIcon fontSize="small" />
                                             </IconButton>
                                         </TableCell>
                                     </TableRow>
@@ -147,6 +155,7 @@ export default function ProfitWithdrawalRequests() {
                             page={page}
                             onChange={handleChangePage}
                             color="primary"
+                            size={isMobile ? "small" : "medium"}
                             sx={{
                                 '& .MuiPaginationItem-root': {
                                     color: '#6c63ff',
@@ -160,7 +169,7 @@ export default function ProfitWithdrawalRequests() {
                     </Box>
                 </Container>
             </div>
-            <Footer />
+            <Footer borderColor={"#6c63ff"} />
         </div>
     );
 }
