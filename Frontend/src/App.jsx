@@ -56,6 +56,7 @@ import AdminFeedback from "./pages/Admin/AdminFeedback";
 import SettingAdmin from "./pages/Admin/SettingAdmin";
 import SuccessPayment from "./pages/payment";
 import PlanPage from "./pages/PlanPage";
+import ProfitWithdrawalRequests from "./pages/Admin/ProfitWithdrawalRequests";
 
 // create routes
 const router = createBrowserRouter([
@@ -132,7 +133,16 @@ const router = createBrowserRouter([
       {path: "ask-question",element: <AdminAskQuestion />},
       {path: "feedback",element: <AdminFeedback />},
       {path: "withdrawal",element: <AdminFeedback />},
+      {path: "profit-withdraw",element: <ProfitWithdrawalRequests />},
     ],
+  },
+  {
+    path: "test",
+    element: <ProfitWithdrawalRequests />,
+  },
+  {
+    path: "test2",
+    element: <AdminAskQuestion />,
   },
   {
     path: "*",

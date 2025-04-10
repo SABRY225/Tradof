@@ -25,6 +25,8 @@ function AskQuestion() {
       try {
         setLoading(true);
         const results = await searchAskQuestion({ token, query: searchQuery });
+        console.log(results);
+        
         setSearchResults(results.data || []);
       } catch (error) {
         console.error("Search error:", error);
@@ -163,7 +165,10 @@ function AskQuestion() {
                 onChange={(e) => setQuestion(e.target.value)}
                 label="Question"
                 variant="outlined"
-                InputLabelProps={{ shrink: true }}
+
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 sx={{
                   mb: 2,
                   '& .MuiOutlinedInput-root': {
@@ -234,7 +239,7 @@ function AskQuestion() {
         </Typography>
       </Box>
 
-      <style>{`
+        <style>{`
         @media (max-width: 1020px) {
           .polygon-background-1 {
             clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important;

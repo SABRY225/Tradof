@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { motion } from "framer-motion";
 import { Container, Typography, TextField, Button, Box, Slider } from '@mui/material';
-import Footer from '@/components/shared/Footer';
 import feedbackImg from '@/assets/images/feedback.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFaceFrown, faFaceFrownOpen, faFaceMeh, faFaceSmile } from '@fortawesome/free-solid-svg-icons';
@@ -67,6 +66,7 @@ function Feedback() {
   };
 
 
+
   return (
     <>
       <div className="relative overflow-hidden">
@@ -91,7 +91,7 @@ function Feedback() {
 
         <Container maxWidth="xl" sx={{
           py: 4,
-          mx: { xs: '0px', md: '100px' }
+          mx: { xs: '0px', md: '100px' } 
         }}>
           <div className="flex gap-8 md:w-[90%] w-full">
             <motion.div
@@ -125,13 +125,13 @@ function Feedback() {
                   transform: 'translateX(-50%)',
                   transition: 'left 0.3s ease',
                 }}>
-                  <FontAwesomeIcon
+                  <FontAwesomeIcon 
                     icon={
                       rating <= 24 ? faFaceFrown :
-                        rating <= 49 ? faFaceFrownOpen :
-                          rating <= 74 ? faFaceMeh :
-                            faFaceSmile
-                    }
+                      rating <= 49 ? faFaceFrownOpen :
+                      rating <= 74 ? faFaceMeh :
+                      faFaceSmile
+                    } 
                     className="text-white text-3xl"
                   />
                 </div>
@@ -145,7 +145,6 @@ function Feedback() {
                     { value: 50 },
                     { value: 75 },
                     { value: 100 }
-                    // enum: ['Very Bad', 'Bad', 'Good', 'Very Good', 'Excellent'],
                   ]}
                   sx={{
                     color: 'white',
@@ -166,9 +165,9 @@ function Feedback() {
                     }
                   }}
                 />
-                <Typography
-                  sx={{
-                    color: 'white',
+                <Typography 
+                  sx={{ 
+                    color: 'white', 
                     fontSize: '15px',
                     position: 'absolute',
                     left: `${rating}%`,
@@ -179,10 +178,10 @@ function Feedback() {
                   }}
                 >
                   {rating <= 24 ? 'Very Poor' :
-                    rating <= 49 ? 'Poor' :
-                      rating <= 74 ? 'Good' :
-                        rating <= 99 ? 'Very Good' :
-                          'Excellent'}
+                   rating <= 49 ? 'Poor' :
+                   rating <= 74 ? 'Good' :
+                   rating <= 99 ? 'Very Good' :
+                   'Excellent'}
                 </Typography>
               </Box>
 
