@@ -137,7 +137,7 @@ const router = createBrowserRouter([
   },
   {
     path: "test2",
-    element: <AdminFeedback />,
+    element: <AdminAskQuestion />,
   },
   {
     path: "*",
