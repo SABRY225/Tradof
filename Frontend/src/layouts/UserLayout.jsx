@@ -3,6 +3,7 @@ import { useAuth } from "@/Context/AuthContext";
 
 import UserNavbar from "../components/shared/UserNavbar";
 import Footer from "@/components/shared/Footer";
+import FloatingChat from "./FloatingChat";
 
 
 export default function UserLayout() {
@@ -13,6 +14,7 @@ export default function UserLayout() {
     <>
       <UserNavbar />
       <Outlet />
+      <FloatingChat user={user} />
       <Footer borderColor="#6C63FF" borderSize="true" />
     </>
   );

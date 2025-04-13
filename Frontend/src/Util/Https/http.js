@@ -27,12 +27,13 @@ export const refreshToken = async ({ signal, oldToken }) => {
 export const getAllSubscriptions = async ({ signal }) => {
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/package`,
+      `https://tradofserver.azurewebsites.net/api/package`,
       {
         signal,
       }
     );
-    return response.data;
+    
+    return response.data.data;
   } catch (error) {
     if (error.response) {
       const err = new Error("An error occurred while fetching the packages");
@@ -401,3 +402,75 @@ export const fatchProjectCard = async ({id,token}) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
+export const sendFeedback=async({token,rate,reasonRate,idea})=>{
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/feedback`,
+      {rate,reasonRate,idea},
+      {
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while change password");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+
+}
+
+export const searchAskQuestion = async({token,query})=>{
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/askQuestion/search?query=${query}`,
+      {
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while change password");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+}
+
+export const sendAskQuestion = async({token,question})=>{
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/askQuestion`,
+      {question},
+      {
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while change password");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+}

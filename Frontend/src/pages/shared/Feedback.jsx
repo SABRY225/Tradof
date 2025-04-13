@@ -1,19 +1,71 @@
 import { useState } from 'react';
 import { motion } from "framer-motion";
 import { Container, Typography, TextField, Button, Box, Slider } from '@mui/material';
-import Footer from '@/components/shared/Footer';
 import feedbackImg from '@/assets/images/feedback.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFaceFrown, faFaceFrownOpen, faFaceMeh, faFaceSmile } from '@fortawesome/free-solid-svg-icons';
+import { sendFeedback } from '@/Util/Https/http';
+import Cookies from 'js-cookie';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 function Feedback() {
   const [rating, setRating] = useState(50);
   const [reason, setReason] = useState('');
   const [idea, setIdea] = useState('');
+  const token = Cookies.get("token");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const ratingsMap = {
+        0: "Very Bad",
+        25: "Bad",
+        50: "Good",
+        75: "Very Good",
+        100: "Excellent"
+      };
+
+      const rate = ratingsMap[rating];
+      if(!rate || !reason){
+        toast.error("rete and reason for rate are required.", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+      }
+
+      const data = await sendFeedback({ token, rate, reasonRate: reason, idea });
+      console.log("Feedback response:", data);
+      toast.success(data?.message, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+      navigate("/user/dashboard")
+    } catch (error) {
+      toast.error(error?.message, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+    }
   };
+
+
 
   return (
     <>
@@ -247,7 +299,6 @@ function Feedback() {
           }
         `}</style>
       </div>
-      <Footer color="white" borderColor="#6C63FF" borderSize="true" />
     </>
   );
 }

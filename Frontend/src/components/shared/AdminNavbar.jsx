@@ -18,7 +18,10 @@ const List = [
     link: "/admin/dashboard",
   },
   { name: "Technical support", link: "/admin/technical-support" },
+  { name: "Ask Questions", link: "/admin/ask-question" },
+  { name: "Feedback", link: "/admin/feedback" },
   { name: "Finances", link: "/admin/finances" },
+  { name: "Withdrawal", link: "/admin/withdrawal" },
   { name: "Settings", link: "/admin/settings" },
 ];
 

@@ -11,6 +11,7 @@ import InputFelid from "../UI/InputFelid";
 import ButtonFelid from "../UI/ButtonFelid";
 import Loading from "./Loading";
 import { useState } from "react";
+import { GetCurrentSubscription } from "@/Util/Https/companyHttp";
 
 export default function Login() {
   const { user, login } = useAuth();
@@ -18,21 +19,39 @@ export default function Login() {
   const navigate = useNavigate();
   const { mutate, data, isPending } = useMutation({
     mutationFn: loginUser,
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       Cookies.set("token", data.token, {
         expires: 7,
         secure: true,
         sameSite: "Strict",
       });
-      console.log(data);
+  
       login({
         userId: data.userId,
         role: data.role,
         token: data.token,
-        refreshToken : data.refreshToken,
+        refreshToken: data.refreshToken,
       });
-
-      navigate("/user/dashboard"); // Redirect after login
+  
+      try {
+        if(data.role=="CompanyAdmin"){
+          await GetCurrentSubscription({
+            companyId: data.userId,
+            token: data.token,
+          });
+        }
+        // بعد التأكد من الاشتراك، نوجّه
+        if (data.role === "admin") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/user/dashboard");
+        }
+  
+      } catch (err) {
+        // لو مفيش اشتراك أو فيه Error، يتوجه لاختيار الخطة
+        console.error("Subscription error:", err);
+        navigate("/select-plan");
+      }
     },
     onError: (error) => {
       toast.error(error?.message || "Login failed!", {
@@ -47,6 +66,7 @@ export default function Login() {
       setError(error.message);
     },
   });
+  
 
   const {
     control,
