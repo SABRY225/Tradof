@@ -6,7 +6,7 @@ export default function PageTitle({ title, subtitle }) {
       initial={{ y: "-50rem" }}
       animate={{ y: "0rem" }}
       transition={{ type: "keyframes", duration: 1 }}
-      className="relative"
+      className="relative bg-background-color"
     >
       <div className="relative z-[1] title font-namdhinggo font-extrabold text-center text-[50px] text-white max-w-screen-xl md:py-[60px] mx-auto p-4 w-full">
         {title}
