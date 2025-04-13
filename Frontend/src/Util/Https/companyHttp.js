@@ -457,7 +457,9 @@ export const GetCurrentSubscription = async({companyId,token})=>{
     if(response.data.success==false && response.data.message=="No subscription found" ){
       window.location.href = "/select-plan";
     }
-    
+    if(response.data.data.status=="pending" ){
+      window.location.href = "/select-plan";
+    }
     return response.data;
   } catch (error) {
     if (error.response) {

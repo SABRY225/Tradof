@@ -5,7 +5,7 @@ export const queryClient = new QueryClient();
 
 // refresh token
 
-export const refreshToken = async ({ signal, oldToken }) => {
+export const refreshToken = async ({ oldToken }) => {
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}/auth/refresh-token`,

@@ -127,13 +127,12 @@ const router = createBrowserRouter([
     children: [
       {path: "dashboard",element: <AdminDashboard />},
       {path: "settings",element: <SettingAdmin />},
-      // work in progress
-      {path: "technical-support",element: <AdminTechnicalSupport />},
-      {path: "finances",element: <AdminFinances />},
       {path: "ask-question",element: <AdminAskQuestion />},
+      {path: "technical-support",element: <AdminTechnicalSupport />},
+      // work in progress
       {path: "feedback",element: <AdminFeedback />},
-      {path: "withdrawal",element: <AdminFeedback />},
-      {path: "profit-withdraw",element: <ProfitWithdrawalRequests />},
+      {path: "withdrawal",element: <ProfitWithdrawalRequests />},
+      {path: "finances",element: <AdminFinances />},
     ],
   },
   {
