@@ -15,11 +15,19 @@ import dayjs from "dayjs";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import { FadeLoader } from "react-spinners";
 
 dayjs.extend(customParseFormat);
 const dateFormat = "YYYY-MM-DD HH:mm";
 
-export default function EventModel({ date, handleAddEvent, open, setOpen }) {
+export default function EventModel({
+  date,
+  handleAddEvent,
+  open,
+  setOpen,
+  isPending,
+  participation,
+}) {
   const startDate = new Date(date);
   const endDate = new Date(startDate);
   endDate.setHours(endDate.getHours() + 1); // Add 1 hour
@@ -40,7 +48,7 @@ export default function EventModel({ date, handleAddEvent, open, setOpen }) {
         end: endDate,
       },
       description: "",
-      people: [],
+      people: [participation],
     },
   });
   const formDate = watch();
@@ -154,7 +162,19 @@ export default function EventModel({ date, handleAddEvent, open, setOpen }) {
               )}
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex items-center gap-3">
+            {isPending && (
+              <FadeLoader
+                color="#000"
+                cssOverride={{ width: "0px", height: "0px" }}
+                height={3}
+                width={3}
+                loading
+                margin={-11}
+                radius={15}
+                speedMultiplier={1}
+              />
+            )}{" "}
             <ButtonFelid
               type="submit"
               classes="font-semibold text-[12px] px-[20px] py-[5px] bg-second-color"

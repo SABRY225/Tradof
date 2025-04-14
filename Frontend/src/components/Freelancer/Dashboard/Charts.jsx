@@ -11,10 +11,10 @@ export default function Charts({ classes }) {
     queryKey: ["freeChart"],
     queryFn: ({ signal }) => getStatistics({ signal, id: userId, token }),
   });
-  console.log(data);
+  // console.log(data);
   const activeChart = data
     ? [{ completed: data.active, inCompleted: data.inProgress + data.accepted }]
-    : {};
+    : null;
   const inProgressChart = data
     ? [
         {
@@ -22,7 +22,7 @@ export default function Charts({ classes }) {
           inCompleted: data.active + data.accepted,
         },
       ]
-    : {};
+    :null;
   const acceptedChart = data
     ? [
         {
@@ -30,7 +30,8 @@ export default function Charts({ classes }) {
           inCompleted: data.active + data.inProgress,
         },
       ]
-    : {};
+    : null;
+  
   return (
     <div
       className={`bg-main-color rounded-lg flex h-fit flex-grow overflow-x-auto overflow-y-hidden custom-scrollbar ${classes}`}

@@ -68,7 +68,8 @@ export default function UserNavbar() {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(null);
-      }if (
+      }
+      if (
         dropdownRefNotification.current &&
         !dropdownRefNotification.current.contains(event.target)
       ) {
@@ -95,17 +96,17 @@ export default function UserNavbar() {
           </span>
         </Link>
         <div className="flex items-center md:order-2 space-x-3 ml-auto">
-          <button type="button">
+          <Link to="/user/calender">
             <img src={calender} alt="calender icon" />
-          </button>
-          <div ref={dropdownRefNotification}>
+          </Link>
+          <div ref={dropdownRefNotification} className="pt-[9px]">
             <button
               type="button"
               onClick={() =>
                 setIsDropdownOpen((prev) => (prev ? null : "notification"))
               }
             >
-              <img src={notification} alt="notification icon" />
+              <img src={notification} alt="notification icon" className="w-5" />
             </button>
           </div>
           <div ref={dropdownRef}>

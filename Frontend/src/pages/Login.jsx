@@ -4,13 +4,14 @@ import Cookies from "js-cookie";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify"; // Import toast
 
-import { loginUser } from "@/Util/Https/http";
+import { loginUser, signByGoogle } from "@/Util/Https/http";
 import { useAuth } from "@/Context/AuthContext";
 
 import InputFelid from "../UI/InputFelid";
 import ButtonFelid from "../UI/ButtonFelid";
 import Loading from "./Loading";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { googleColor } from "@/assets/paths";
 
 export default function Login() {
   const { user, login } = useAuth();
@@ -19,17 +20,11 @@ export default function Login() {
   const { mutate, data, isPending } = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      Cookies.set("token", data.token, {
-        expires: 7,
-        secure: true,
-        sameSite: "Strict",
-      });
-      console.log(data);
       login({
         userId: data.userId,
         role: data.role,
         token: data.token,
-        refreshToken : data.refreshToken,
+        refreshToken: data.refreshToken,
       });
 
       navigate("/user/dashboard"); // Redirect after login
@@ -47,7 +42,30 @@ export default function Login() {
       setError(error.message);
     },
   });
-
+  const {
+    mutate: signGoogle,
+    data: googleData,
+    isPending: googlePending,
+  } = useMutation({
+    mutationFn: signByGoogle,
+    onSuccess: (data) => {
+      console.log("Google login data:", data);
+     
+      // navigate("/user/dashboard");
+    },
+    onError: (error) => {
+      toast.error(error?.message || "Google login failed!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+      setError(error.message);
+    },
+  });
   const {
     control,
     register,
@@ -60,6 +78,13 @@ export default function Login() {
       password: "",
     },
   });
+
+  useEffect(() => {
+    console.log(user);
+    if (user) {
+      navigate("/user/dashboard");
+    }
+  }, []);
 
   const formData = watch();
 
@@ -103,16 +128,26 @@ export default function Login() {
             requires={["password is required"]}
             classes="min-w-[300px] text-[16px] outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]"
           />
-          <>
-            <div className="text-left border-b border-black w-fit">
-              <Link to="forget-password">Forgot Password?</Link>
-            </div>
-          </>
-          <ButtonFelid
-            text="Log in"
-            classes="mt-[40px] px-[60px] py-[7px] bg-second-color m-auto"
-            type="submit"
-          />
+          <div className="text-left border-b border-black w-fit">
+            <Link to="forget-password">Forgot Password?</Link>
+          </div>
+          <div className="flex items-center mt-[40px]">
+            <ButtonFelid
+              text="Log in"
+              classes="px-[60px] py-[7px] bg-second-color m-auto"
+              type="submit"
+            />
+            <button
+              type="button"
+              onClick={() => signGoogle()}
+              className="h-fit w-fit mx-auto flex rounded py-1 px-2 gap-2 font-medium"
+            >
+              <div className="w-8 h-8 bg-white rounded-md flex items-center justify-center">
+                <img src={googleColor} alt="google color" className="w-5 " />
+              </div>
+              <p className="border-b-2 border-black">Sign in with Google</p>
+            </button>
+          </div>
         </form>
       </div>
     </div>

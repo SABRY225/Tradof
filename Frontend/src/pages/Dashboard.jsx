@@ -9,7 +9,7 @@ export default function Dashboard() {
   const {
     user: { role },
   } = useAuth();
-  console.log(role);
+  
   useEffect(() => {
     if (!role) {
       navigate("/auth");

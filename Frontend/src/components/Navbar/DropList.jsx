@@ -63,6 +63,7 @@ export default function DropList({ name, email }) {
           text: "Log out",
           link: "/auth",
           onClick: () => {
+            console.log("logout");
             leave();
           },
         },
