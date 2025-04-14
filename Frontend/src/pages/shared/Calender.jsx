@@ -12,68 +12,23 @@ import { createDragAndDropPlugin } from "@schedule-x/drag-and-drop";
 import { createEventModalPlugin } from "@schedule-x/event-modal";
 
 import "@schedule-x/theme-default/dist/index.css";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import EventModel from "@/components/shared/EventCalenderModel";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { colors, colorsKeys } from "@/Util/colors";
+import Cookies from "js-cookie";
+import { createCalender, createEvent, getAllEvents } from "@/Util/Https/http";
+import { useLoaderData } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/context/AuthContext";
+import Loading from "../Loading";
 
 dayjs.extend(customParseFormat);
 
 const today = new Date();
-
-const initEvents = [
-  {
-    id: "1",
-    title: "Event 1",
-    start: "2025-03-06",
-    end: "2025-03-06",
-    description: "Event 1 description",
-    people: [],
-    calendarId: "color1",
-  },
-  {
-    id: "2",
-    title: "Event 2",
-    start: "2025-03-06 03:00",
-    end: "2025-04-08 05:00",
-    description: "Event 2 description",
-    people: [],
-    calendarId: "color2",
-  },
-  {
-    id: "3",
-    title: "Event 3",
-    start: "2025-03-06 03:00",
-    end: "2025-03-06 05:00",
-    description: "Event 3 description",
-    people: [],
-  },
-  {
-    id: "4",
-    title: "Event 4",
-    start: "2025-03-06 03:00",
-    end: "2025-03-06 05:00",
-    description: "Event 4 description",
-    people: [],
-  },
-  {
-    id: "5",
-    title: "Event 5",
-    start: "2025-03-06 03:00",
-    end: "2025-03-06 05:00",
-    description: "Event 5 description",
-    people: [],
-  },
-  {
-    id: "6",
-    title: "Event 6",
-    start: "2025-03-06 03:00",
-    end: "2025-03-06 05:00",
-    description: "Event 6 description",
-    people: [],
-  },
-];
+const dateFormat = "YYYY-MM-DD HH:mm";
 
 const getRandomCalendarId = () => {
   const keys = Object.keys(colorsKeys);
@@ -81,17 +36,65 @@ const getRandomCalendarId = () => {
 };
 
 export default function Calender() {
+  const {
+    user: { token },
+  } = useAuth();
   const [selectDate, setSelectDate] = useState(today);
+  const hasLoadedRef = useRef(false);
   const [open, setOpen] = useState(false);
-
-  const [events, setEvents] = useState(
-    initEvents.map((event) => ({
-      ...event,
-      calendarId: getRandomCalendarId(),
-    }))
-  );
+  const [events, setEvents] = useState([]);
   const eventsService = useMemo(() => createEventsServicePlugin(), []);
-
+  const {
+    mutate,
+    data: newEvent,
+    isPending,
+  } = useMutation({
+    mutationFn: createEvent,
+    onSuccess: ({ data }) => {
+      const event = {
+        ...data.event,
+        id: data.event._id,
+        start: dayjs(data.event.startDate).format(dateFormat),
+        end: dayjs(data.event.endDate).format(dateFormat),
+        calendarId: getRandomCalendarId(),
+        people: data.event.participation ? [data.event.participation] : [],
+      };
+      console.log("Event created successfully:", event);
+      setEvents((prevEvents) => [...prevEvents, event]);
+      eventsService.add(event);
+      setOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error creating event:", error);
+      toast.error(error.message || "create event failed!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+    },
+  });
+  const { data, isError, isLoading } = useQuery({
+    queryKey: ["events"],
+    queryFn: ({ signal }) => getAllEvents({ signal, token }),
+    placeholderData: (prev) => prev,
+    retry: 1,
+  });
+  const calender = useLoaderData();
+  if (calender?.error) {
+    toast.error(calendar?.message || "create calender failed!", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: false,
+      progress: undefined,
+    });
+  }
   const AddEventMonth = useCallback(() => {
     setTimeout(() => {
       document.querySelectorAll(".sx__month-grid-day").forEach((cell) => {
@@ -170,7 +173,7 @@ export default function Calender() {
       createViewMonthGrid(),
       createViewMonthAgenda(),
     ],
-    events,
+    // events,
     plugins: [
       eventsService,
       createDragAndDropPlugin(),
@@ -179,32 +182,90 @@ export default function Calender() {
   });
 
   useEffect(() => {
-    // get all events
-    setEvents(eventsService?.getAll() || []);
-  }, []);
+    if (hasLoadedRef.current || !data?.data) return;
 
-  console.log(events);
+    const transformEvent = (event) => ({
+      id: event._id,
+      title: event.title,
+      start: dayjs(event.startDate).format(dateFormat),
+      end: dayjs(event.endDate).format(dateFormat),
+      description: event.description,
+      people: event?.participation ? [event.participation] : [],
+      calendarId: getRandomCalendarId(),
+    });
+    const events = data?.data?.map(transformEvent);
+
+    if (events && events.length) {
+      events.forEach((event) => eventsService.add(event));
+      setEvents(events);
+    } else {
+      setEvents([]);
+    }
+    hasLoadedRef.current = true;
+  }, [data]);
+
   const handleAddEvent = (newEvent) => {
-    setEvents((prevEvents) => [...prevEvents, newEvent]);
-    eventsService.add(newEvent);
-    console.log("Event Data:", newEvent);
-    setOpen(false);
-  };
+    const token = Cookies.get("token");
+    if (!token) {
+      toast.error("No authentication token found!");
+      return;
+    }
 
+    mutate({
+      data: {
+        ...newEvent,
+        startDate: newEvent.start,
+        endDate: newEvent.end,
+      },
+      token,
+    });
+
+    console.log("Event Data:", newEvent);
+  };
   return (
-    <>
+    <div className="bg-background-color">
       <PageTitle title="Calender" subtitle="Check your dates" />
-      <div className="container max-w-screen-xl mx-auto p-4 w-full my-[30px] overflow-x-auto">
-        <ScheduleXCalendar calendarApp={calendar} />
-        {open && (
-          <EventModel
-            handleAddEvent={handleAddEvent}
-            open={open}
-            date={selectDate}
-            setOpen={setOpen}
-          />
+      <div className="container max-w-screen-xl mx-auto px-4 w-full py-[30px] overflow-x-auto">
+        {!isLoading && (
+          <>
+            <ScheduleXCalendar calendarApp={calendar} />
+            {open && (
+              <EventModel
+                handleAddEvent={handleAddEvent}
+                open={open}
+                date={selectDate}
+                setOpen={setOpen}
+                isPending={isPending}
+              />
+            )}
+          </>
         )}
+        {isLoading && <Loading />}
       </div>
-    </>
+    </div>
   );
 }
+
+export const calendarLoader = async () => {
+  const token = Cookies.get("token");
+  if (!token) {
+    return { error: true, status: 401, message: "Unauthorized" };
+  }
+
+  try {
+    const response = await createCalender({ token });
+    return { data: response.data };
+  } catch (error) {
+    console.log(error);
+    if (error?.alreadyExists) {
+      console.warn("Calendar already exists, skipping creation.");
+      return { status: 409, message: "Calendar already exists" };
+    }
+    console.error("Failed to create calendar", error);
+    return {
+      error: true,
+      status: error.code || 500,
+      message: error.message || "Failed to create calendar",
+    };
+  }
+};

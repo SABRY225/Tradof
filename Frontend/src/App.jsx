@@ -36,7 +36,7 @@ import VerifyEmail from "./pages/VerifyEmail";
 import Dashboard from "./pages/Dashboard";
 import { default as AdminDashboard } from "./pages/Admin/Dashboard";
 import AdminLayout from "./layouts/AdminLayout";
-import Calender from "./pages/shared/Calender";
+import Calender, { calendarLoader } from "./pages/shared/Calender";
 import StartedProjects from "./pages/Client/StartedProjects";
 import UpcomingProjects from "./pages/Client/UpcomingProjects";
 import PayProject from "./pages/Client/PayProject";
@@ -57,6 +57,8 @@ import SettingAdmin from "./pages/Admin/SettingAdmin";
 import SuccessPayment from "./pages/payment";
 import PlanPage from "./pages/PlanPage";
 import ProfitWithdrawalRequests from "./pages/Admin/ProfitWithdrawalRequests";
+import ProjectPage, { projectLoader } from "./pages/shared/ProjectPage";
+import ErrorPage from "./pages/ErrorPage";
 
 // create routes
 const router = createBrowserRouter([
@@ -97,21 +99,31 @@ const router = createBrowserRouter([
       {
         path: "project",
         children: [
+          {
+            path: ":projectId",
+            element: <ProjectPage />,
+            loader: projectLoader,
+          },
           { path: "offer/:projectId", element: <ProjectOffers /> },
+          { path: "add-offer/:projectId", element: <AddOffer /> },
           { path: "create", element: <CreateProject /> },
           { path: "start", element: <StartedProjects /> },
           { path: "upcoming", element: <UpcomingProjects /> },
           // work in progress
           { path: ":projectId", element: <ProjectPage /> },
           { path: "pay", element: <PayProject /> },
-          { path: "add-offer/:projectId", element: <AddOffer /> },
           { path: "available", element: <AvailableProjects /> },
         ],
       },
       { path: "profile", element: <Profile /> },
       { path: "settings", element: <Setting />, loader: settingsLoader },
       { path: "dashboard", element: <Dashboard /> },
-      { path: "calender", element: <Calender /> },
+      {
+        path: "calender",
+        element: <Calender />,
+        loader: calendarLoader,
+        // errorElement: <ErrorPage />,
+      },
       { path: "offers", element: <Offers /> },
       { path: "feedback", element: <Feedback /> },
       { path: "ask-question", element: <AskQuestion /> },

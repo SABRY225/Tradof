@@ -1,5 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 export const queryClient = new QueryClient();
 
@@ -350,7 +351,6 @@ export const changePassword = async ({ signal, data }) => {
   }
 };
 
-
 // SABRY API
 export const fatchDataUser = async ({userId,token}) => {
   try {
@@ -376,7 +376,7 @@ export const fatchDataUser = async ({userId,token}) => {
   }
 };
 
-export const fatchProjectDetailes = async ({id,token}) => {
+export const fatchProjectDetailes = async ({ id, token }) => {
   try {
     const response = await axios.get(
       `${import.meta.env.VITE_BACKEND_URL}/project/${id}`,
@@ -400,10 +400,12 @@ export const fatchProjectDetailes = async ({id,token}) => {
   }
 };
 
-export const fatchProjectCard = async ({id,token}) => {
+export const fatchProjectCard = async ({ id, token }) => {
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/project/GetProjectCardData?projectId=${id}`,
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/project/GetProjectCardData?projectId=${id}`,
       {
         headers: {
           "Content-Type": "application/json", // Ensure JSON format
@@ -495,3 +497,167 @@ export const sendAskQuestion = async({token,question})=>{
     throw new Error(error.message || "An unexpected error occurred");
   }
 }
+
+// rabi3 in code
+
+export const createCalender = async ({ token }) => {
+  try {
+    console.log(token);
+    const response = await axios.post(
+      import.meta.env.VITE_CALENDER_URL,
+      {},
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error();
+      err.code = error.response.status;
+      if (error.response.status === 409) {
+        err.message = "Calendar already exists";
+        err.alreadyExists = true; // custom flag to handle in loader
+      } else {
+        err.message =
+          error.response.data?.message ||
+          "An error occurred while creating calendar";
+      }
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const createEvent = async ({ token, data }) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_CALENDER_URL}/event`,
+      data,
+      {
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error();
+      err.code = error.response.status;
+      err.message =
+        error.response.data?.message ||
+        "An error occurred while creating event";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const getAllEvents = async ({
+  token,
+  day = "",
+  month = "",
+  year = "",
+}) => {
+  try {
+    const url = `${
+      import.meta.env.VITE_CALENDER_URL
+    }/events?day=${day}&month=${month}&year=${year}`;
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: token,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error();
+      err.code = error.response.status;
+      err.message =
+        error.response.data?.message ||
+        "An error occurred while creating event";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const signByGoogle = async () => {
+  console.log("signByGoogle");
+  const googleLoginUrl = "https://tradof.runasp.net/api/auth/google-login";
+  const width = 500;
+  const height = 600;
+  const left = window.screen.width / 2 - width / 2;
+  const top = window.screen.height / 2 - height / 2;
+
+  const popup = window.open(
+    googleLoginUrl,
+    "Google Login",
+    `width=${width},height=${height},top=${top},left=${left}`
+  );
+
+  if (!popup) {
+    console.error("Failed to open login popup. It may have been blocked.");
+    return;
+  }
+
+  const cleanup = () => {
+    window.removeEventListener("message", handleMessage);
+    clearInterval(checkPopupClosed);
+    clearTimeout(timeout);
+    popup?.close();
+  };
+
+  const handleMessage = (event) => {
+    // You may need to adjust the origin
+    if (event.origin !== "https://tradof.runasp.net") return;
+    if (event.source !== popup) return;
+
+    const { token, userId, role, refreshToken } = event.data;
+    // console.log(event.data);
+    if (token && userId && role && refreshToken) {
+      Cookies.set("token", token, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      Cookies.set("refreshToken", refreshToken, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      Cookies.set("userId", userId, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      Cookies.set("role", role, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      console.log("Login successful!");
+      window.location.href = "/user/dashboard"; // fallback
+    } else {
+      console.warn("Incomplete login data received:", event.data);
+    }
+    cleanup();
+  };
+
+  window.addEventListener("message", handleMessage);
+
+  const checkPopupClosed = setInterval(() => {
+    if (popup.closed) {
+      console.warn("Login popup was closed by the user.");
+      cleanup();
+    }
+  }, 500);
+  const timeout = setTimeout(() => {
+    console.error("Login process timed out.");
+    cleanup();
+  }, 2 * 60 * 1000);
+};

@@ -33,10 +33,10 @@ import openPage from "./icons/openPage.svg";
 import blueOffers from "./icons/blueOffers.svg";
 import rabash from "./icons/rabash.svg";
 import timer from "./icons/timer.svg";
-import grayOffers from './icons/grayOffers.svg';
-import grayBudget from './icons/grayBudget.svg';
-import whitePlus from './icons/whitePlus.svg';
-import closeWhite from './icons/closeWhite.svg';
+import grayOffers from "./icons/grayOffers.svg";
+import grayBudget from "./icons/grayBudget.svg";
+import whitePlus from "./icons/whitePlus.svg";
+import closeWhite from "./icons/closeWhite.svg";
 import layer from "./icons/layer.svg";
 import Done_ring_round from "./icons/Done_ring_round.svg";
 import people from './icons/people.svg';
@@ -49,6 +49,19 @@ import plus from './icons/plus.svg';
 import clock from './icons/clock.svg';
 import group_light2 from './icons/group_ligth2.svg';
 import calendar from './icons/calendar.svg';
+import people from "./icons/people.svg";
+import group_list from "./icons/group_list.svg";
+import group_light from "./icons/group_ligth.svg";
+import active from "./icons/active.svg";
+import files from "./icons/files.svg";
+import online from "./icons/online.svg";
+import stare from "./icons/stare.svg";
+import emptyStare from "./icons/emptyStare.svg";
+import folder_add from "./icons/folder_add.svg";
+import file from "./icons/file.svg";
+import send from "./icons/send.svg";
+import googleColor from './icons/googleColor.svg';
+import meeting from "./icons/meeting.svg";
 
 export {
   // a
@@ -80,10 +93,13 @@ export {
   dwonarrow,
   Done_ring_round,
   // e
+  emptyStare,
   // f
   facebook,
   files,
   finances,
+  folder_add,
+  file,
   // g
   gmail,
   grayOffers,
@@ -91,6 +107,7 @@ export {
   group_list,
   group_light,
   group_light2,
+  googleColor,
   // h
   // i
   // j
@@ -101,6 +118,7 @@ export {
   layer,
   // m
   minus,
+  meeting,
   // n
   notification,
   // o
@@ -118,6 +136,8 @@ export {
   share,
   search,
   support,
+  stare,
+  send,
   // t
   timer,
   // u

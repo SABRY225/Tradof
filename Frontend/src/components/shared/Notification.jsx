@@ -102,7 +102,7 @@ export default function Notification({ classes }) {
         />
         <img src={search} alt="search icon" className="p-2" />
       </div>
-      <ul className="custom-scrollbar space-y-2 overflow-y-auto max-h-[520px]">
+      <ul className=" custom-scrollbar space-y-2 overflow-y-auto max-h-[160px] lg:max-h-[520px]">
         {filteredNotifications.map((note, index) => (
           <li
             key={index}

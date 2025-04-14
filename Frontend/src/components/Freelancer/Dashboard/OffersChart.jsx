@@ -43,7 +43,7 @@ const OffersChart = ({ classes }) => {
   const filteredData =
     chartData.filter((item) => item.date.startsWith(year)) || [];
 
-  console.log(filteredData);
+  // console.log(filteredData);
   return (
     <div
       className={`max-h-fit bg-card-color rounded-lg flex flex-grow ${classes}`}

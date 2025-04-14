@@ -7,7 +7,6 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState({ userId: null, role: null, token: null });
 
-  // Function to refresh the token
   const refreshToken = async () => {
     try {
       const oldRefreshToken = Cookies.get("refreshToken");
@@ -33,7 +32,7 @@ export const AuthProvider = ({ children }) => {
         });
 
         setUser((prevUser) => ({ ...prevUser, token: accessToken }));
-        return accessToken;
+        return { accessToken, newRefreshToken };
       }
     } catch (error) {
       console.error("Failed to refresh token", error);
@@ -46,6 +45,7 @@ export const AuthProvider = ({ children }) => {
     const token = Cookies.get("token");
     const userId = Cookies.get("userId");
     const role = Cookies.get("role");
+    let refreshToken = Cookies.get("refreshToken");
 
     if (!token || !userId || !role) {
       console.warn("Missing authentication data, logging out...");
@@ -61,10 +61,15 @@ export const AuthProvider = ({ children }) => {
       if (isExpired) {
         console.log("Token expired, attempting refresh...");
         const newToken = await refreshToken();
-        if (!newToken) return;
+        if (!newToken) throw new Error("Failed to refresh token");
+        refreshToken = newToken.newRefreshToken;
       }
-
-      setUser({ userId, role, token });
+      login({
+        userId,
+        role,
+        token,
+        refreshToken,
+      });
     } catch (error) {
       console.error("Error decoding token, logging out...");
       logout();
@@ -115,7 +120,7 @@ export const AuthProvider = ({ children }) => {
 
     setUser({ userId, role, token });
 
-    console.log("User logged in:", { userId, role, token });
+    console.warn("User logged in");
   };
 
   const logout = () => {

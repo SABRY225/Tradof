@@ -161,7 +161,7 @@ export const editProfile = async ({ signal, data, token }) => {
 export const createProject = async ({ signal, data, id, token }) => {
   try {
     const response = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}/project?companyId=${id}`,
+      `${import.meta.env.VITE_BACKEND_URL}/project`,
       data,
       {
         signal,
@@ -322,7 +322,7 @@ export const getStartedProjects = async ({ id, token}) => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      const err = new Error("An error occurred while fetching company data");
+      const err = new Error("An error occurred while fetching start projects data");
       err.code = error.response.status;
       err.message = error.response.data;
       throw err;
@@ -344,7 +344,7 @@ export const getUpcomingdProjects = async ({ id, token}) => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      const err = new Error("An error occurred while fetching company data");
+      const err = new Error("An error occurred while fetching incoming projects data");
       err.code = error.response.status;
       err.message = error.response.data;
       throw err;
@@ -492,3 +492,56 @@ export const GetCompanyStatistics = async({companyId,token})=>{
     throw new Error(error.message || "An unexpected error occurred");
   }
 }
+
+
+export const uploadProjectFile = async ({ token, data, projectId }) => {
+  try {
+    console.log(token, data, projectId);
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/project/upload-files/${projectId}`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          // "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log("Error response:", error.response.data); // 👈 helpful
+      const err = new Error("An error occurred while uploading file");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const deleteProjectFile = async ({ token, fileId }) => {
+  try {
+    const response = await axios.delete(
+      `${import.meta.env.VITE_BACKEND_URL}/project/delete-file/${fileId}`,
+      {
+        headers: {
+          "Content-Type": "application/json", // Ensure JSON format
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while delete file");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+
