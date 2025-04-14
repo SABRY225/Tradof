@@ -14,7 +14,6 @@ function AddAdmin({ admins }) {
         <div>Admin name</div>
         <div>Email</div>
         <div>Phone</div>
-        <div>Country</div>
         <div>
           <ButtonFelid
             text="ADD"
@@ -28,9 +27,8 @@ function AddAdmin({ admins }) {
               <>
               <div key={index} className="flex justify-between items-center px-5  bg-white py-3  text-[17px] font-roboto-condensed font-mono border-2 border-card-color rounded mt-1 text-black  ">
               <div className="w-28">{admin.email}</div>
-              <div className="w-28">{admin.name}</div>
-              <div className="w-24">{admin.phone}</div>
-              <div className="w-24">{admin.country}</div>
+              <div className="w-28">{admin.firstName+" "+admin.lastName}</div>
+              <div className="w-24">{admin.phoneNumber}</div>
               <div>
                 <ButtonFelid
                   text="Delete"

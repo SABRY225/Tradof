@@ -24,13 +24,10 @@ export const refreshToken = async ({ oldToken }) => {
 };
 
 // get all subscriptions
-export const getAllSubscriptions = async ({ signal }) => {
+export const getAllSubscriptions = async () => {
   try {
     const response = await axios.get(
-      `https://tradofserver.azurewebsites.net/api/package`,
-      {
-        signal,
-      }
+      `https://tradofserver.azurewebsites.net/api/package`
     );
     
     return response.data.data;
@@ -355,6 +352,30 @@ export const changePassword = async ({ signal, data }) => {
 
 
 // SABRY API
+export const fatchDataUser = async ({userId,token}) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/auth/user/${userId}`,
+      {
+        headers: {
+          "Content-Type": "application/json", // Ensure JSON format
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while fatch user detailes");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
 export const fatchProjectDetailes = async ({id,token}) => {
   try {
     const response = await axios.get(
@@ -370,7 +391,7 @@ export const fatchProjectDetailes = async ({id,token}) => {
   } catch (error) {
     if (error.response) {
       console.log(error);
-      const err = new Error("An error occurred while change password");
+      const err = new Error("An error occurred while fatch project detailes");
       err.code = error.response.status;
       err.message = error.response.data;
       throw err;
@@ -394,7 +415,7 @@ export const fatchProjectCard = async ({id,token}) => {
   } catch (error) {
     if (error.response) {
       console.log(error);
-      const err = new Error("An error occurred while change password");
+      const err = new Error("An error occurred while fatch project card");
       err.code = error.response.status;
       err.message = error.response.data;
       throw err;
@@ -418,7 +439,7 @@ export const sendFeedback=async({token,rate,reasonRate,idea})=>{
   } catch (error) {
     if (error.response) {
       console.log(error);
-      const err = new Error("An error occurred while change password");
+      const err = new Error("An error occurred while send feedback");
       err.code = error.response.status;
       err.message = error.response.data;
       throw err;
@@ -442,7 +463,7 @@ export const searchAskQuestion = async({token,query})=>{
   } catch (error) {
     if (error.response) {
       console.log(error);
-      const err = new Error("An error occurred while change password");
+      const err = new Error("An error occurred while search AskQuestion");
       err.code = error.response.status;
       err.message = error.response.data;
       throw err;
@@ -466,7 +487,7 @@ export const sendAskQuestion = async({token,question})=>{
   } catch (error) {
     if (error.response) {
       console.log(error);
-      const err = new Error("An error occurred while change password");
+      const err = new Error("An error occurred while send AskQuestion");
       err.code = error.response.status;
       err.message = error.response.data;
       throw err;

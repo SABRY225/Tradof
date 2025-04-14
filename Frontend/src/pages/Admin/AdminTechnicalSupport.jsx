@@ -6,6 +6,7 @@ import { IoMdSend } from 'react-icons/io';
 import { FaFileAlt, FaFileImage, FaTimes } from 'react-icons/fa';
 import logoIcon from "../../assets/icons/logo.svg";
 import Loading from '../Loading';
+import { Avatar } from '@mui/material';
 
 const MessageBubble = ({ message, isUser, file }) => (
   <div className={`${styles.messageBubble} ${isUser === "admin" ? styles.userMessage : styles.otherMessage}`}>
@@ -19,7 +20,13 @@ const LastMessageItem = ({ user, lastMessage, onUserSelect, isActive }) => (
     className={`${styles.lastMessageItem} ${isActive ? styles.active : ''}`}
     onClick={() => onUserSelect(user)}
   >
-    <img src={user?.profileImageUrl} alt={user?.firstName} className={styles.avatar} />
+    {/* <img src={user?.profileImageUrl?user?.profileImageUrl:""} alt={user?.firstName} className={styles.avatar} /> */}
+    <Avatar 
+    src={user?.profileImageUrl}
+    alt={user?.firstName}
+    sx={{ width: 50, height: 50,mr:1 }} 
+    />
+    
     <div className={styles.messageDetails}>
       <h3 className={styles.userName}>{user?.firstName + " " + user?.lastName}</h3>
       <p className={styles.lastMessageText}>{lastMessage?.message}</p>
@@ -181,7 +188,11 @@ const AdminTechnicalSupport = () => {
           <h3 className='flex items-center'>
             {selectedUserChat ? (
               <>
-                <img src={selectedUserChat.profileImageUrl} className={styles.avatar} alt={selectedUserChat.firstName} />
+                <Avatar 
+    src={selectedUserChat?.profileImageUrl}
+    alt={selectedUserChat?.firstName}
+    sx={{ width: 50, height: 50,mr:1 }} 
+    />
                 <h4>{selectedUserChat.firstName + " " + selectedUserChat.lastName}</h4>
               </>
             ) : (

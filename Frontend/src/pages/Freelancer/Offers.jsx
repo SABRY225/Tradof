@@ -2,18 +2,17 @@ import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
-  TextField,
   Pagination,
   FormControlLabel,
   Radio,
   RadioGroup,
-  InputAdornment,
+  Avatar
 } from "@mui/material";
-import { SearchIcon } from "lucide-react";
 import PageTitle from "@/UI/PageTitle";
 import Cookies from "js-cookie";
 import CustomButton from "@/UI/CustomButton";
-import { Avatar } from "@mantine/core";
+import { fatchOffers } from "@/Util/Https/freelancerHttp";
+import { calendar, calender, grayBudget, timer } from "@/assets/paths";
 
 const projectsData = [
   {
@@ -69,13 +68,15 @@ function Offers() {
     const userId = Cookies.get("userId");
   
   
-    // useEffect(() => {
-    //   const FatchData = async () => {
-    //     const data = await getStartedProjects({ id: userId, token });
-    //     setData(data);
-    //   };
-    //   FatchData();
-    // }, [token, userId, data]);
+    useEffect(() => {
+      const FatchData = async () => {
+        const data = await fatchOffers({ userId, token });
+        console.log(data);
+        
+        setData(data.items);
+      };
+      FatchData();
+    }, []);
   
   
     const filteredProjects = projectsData.filter(
@@ -84,7 +85,7 @@ function Offers() {
         project.title.toLowerCase().includes(search.toLowerCase())
     );
   
-    const displayedProjects = filteredProjects.slice(
+    const displayedProjects = data.slice(
       (page - 1) * itemsPerPage,
       page * itemsPerPage
     );
@@ -97,10 +98,10 @@ function Offers() {
     <>
     <PageTitle title="Your Offers" subtitle="Follow your offers" />
     <Box py={5} px={10}>
-        <Typography variant="h5" gutterBottom>
+        {/* <Typography variant="h5" gutterBottom>
           State
-        </Typography>
-        <Box display="flex" alignItems="center" justifyContent="space-between">
+        </Typography> */}
+        {/* <Box display="flex" alignItems="center" justifyContent="space-between">
           <RadioGroup
             row
             value={filter}
@@ -115,7 +116,7 @@ function Offers() {
               />
             ))}
           </RadioGroup>
-        </Box>
+        </Box> */}
         <Box mt={3}>
           {displayedProjects.map((project) => (
             <div
@@ -124,40 +125,46 @@ function Offers() {
             >
               <div>
                 <div className="flex justify-between">
-                  <div className="text-[22px] font-bold flex items-center">
-                    <Avatar />
+                  <div className=" font-bold flex items-center">
+                    <Avatar src={project?.companyImage} sx={{ width: 60, height: 60 }}/>
                     <div className="text-[16px] font-bold ml-2">
-                      <div >{project?.owner}</div>
-                      <div className="text-[13px] font-light ">{project?.gmail}</div>
+                      <div >{project?.companyFirstName+" "+project?.companyLastName}</div>
+                      <div className="text-[13px] font-light ">{project?.companyEmail}</div>
                     </div>
                   </div>
 
-                  <Box mt={2} textAlign="right">
+                  {/* <Box mt={2} textAlign="right">
                     <CustomButton label={project.status} color={statusColors[project.status]} textColor="white" />
-                  </Box>
+                  </Box> */}
                 </div>
                 <div className="text-[22px] font-bold mt-2">
-                  {project?.title}
+                  {project?.projecttitle}
                 </div>
+                          <div className="flex flex-col md:flex-row md:gap-[30px] mt-2">
+                            <div className="flex gap-2">
+                              <img src={timer} alt="icon" width={15} />
+                              <p className="text-gray-500 text-[12px]">
+                                {new Date(project.timePosted).toDateString()} 
+                              </p>
+                            </div>
+                            <div className="flex gap-2">
+                              <img src={grayBudget} alt="icon" width={15} />
+                              <p className="text-gray-500 text-[12px]">
+                                {project.offerPrice} 
+                              </p>
+                            </div>
+                            <div className="flex gap-2">
+                              <img src={calendar} alt="icon" width={15}  />
+                              <p className="text-gray-500 text-[12px]">
+                                Delivery time {project.days} days
+                              </p>
+                            </div>
+                          </div>
                 <div className="border border-main-color my-3"></div>
                 <ul>
                   <li className="text-[15px] font-semibold mb-5">
                     Offer details{" "}
-                    <div className="font-light">{project?.description}</div>
-                  </li>
-                  <li className="text-[15px] font-semibold my-2">
-                    <span className="mr-14">Start at </span>
-                    <span className="font-light">
-                      {project?.startDate}
-                    </span>
-                  </li>
-                  <li className="text-[15px] font-semibold my-2">
-                    <span className="mr-14">Deadline</span>
-                    <span className="font-light">{project?.deadline}</span>
-                  </li>
-                  <li className="text-[15px] font-semibold my-2">
-                    <span className="mr-20">Price</span>
-                    <span className="font-light">{project?.price}</span>
+                    <div className="font-light">{project?.proposalDescription}</div>
                   </li>
                 </ul>
               </div>

@@ -309,3 +309,49 @@ export const fatchProjects = async ({token}) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
+export const fatchOffers = async ({userId,token}) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/proposal/freelancer-proposals?freelancerId=${userId}&pageIndex=1&pageSize=4`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token here
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching offers data");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const GetFreelancerStatistics = async({freelancerId,token})=>{
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/financial/freelancer-statistics/${freelancerId}`,
+      {
+        headers: {
+          Authorization: `${token}`, 
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching company data");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      console.log(error);
+      
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+}

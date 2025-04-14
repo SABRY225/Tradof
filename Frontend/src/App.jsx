@@ -129,9 +129,9 @@ const router = createBrowserRouter([
       {path: "settings",element: <SettingAdmin />},
       {path: "ask-question",element: <AdminAskQuestion />},
       {path: "technical-support",element: <AdminTechnicalSupport />},
-      // work in progress
       {path: "feedback",element: <AdminFeedback />},
       {path: "withdrawal",element: <ProfitWithdrawalRequests />},
+      // work in progress
       {path: "finances",element: <AdminFinances />},
     ],
   },
@@ -141,7 +141,7 @@ const router = createBrowserRouter([
   },
   {
     path: "test2",
-    element: <AdminAskQuestion />,
+    element: <Finances />,
   },
   {
     path: "*",

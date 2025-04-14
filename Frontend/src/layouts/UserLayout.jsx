@@ -13,7 +13,9 @@ export default function UserLayout() {
   return (
     <>
       <UserNavbar />
+      <div className=" pb-1">
       <Outlet />
+      </div>
       <FloatingChat user={user} />
       <Footer borderColor="#6C63FF" borderSize="true" />
     </>

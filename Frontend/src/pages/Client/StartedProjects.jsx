@@ -100,14 +100,19 @@ const StartedProjects = () => {
     <>
       <PageTitle title="Started Project" subtitle="project has been assigned to freelancer" />
       <Box py={5} px={10}>
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5" gutterBottom  sx={{
+              display:{md:"flex",xs:"none"}
+            }}>
           State
         </Typography>
-        <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Box display="flex" alignItems="center" justifyContent="space-between" >
           <RadioGroup
             row
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
+            sx={{
+              display:{md:"flex",xs:"none"}
+            }}
           >
             {["All", "Active", "Review", "Complete"].map((state) => (
               <FormControlLabel
@@ -151,49 +156,56 @@ const StartedProjects = () => {
         <Box mt={3}>
           {displayedProjects.map((project) => (
             <div
-              key={project?.id}
-              className=" bg-card-color py-[15px] px-[30px] mx-10 my-10 rounded-lg shadow"
-            >
-              <div>
-                <div className="flex justify-between">
-                  <div className="text-[22px] font-bold flex items-center">
-                    <Avatar />
-                    <div className="text-[16px] font-bold ml-2">
-                      <div >{project?.owner}</div>
-                      <div className="text-[13px] font-light ">{project?.gmail}</div>
-                    </div>
+            key={project?.id}
+            className="bg-card-color py-4 px-4 sm:px-6 md:px-10 my-6 md:my-10 rounded-lg shadow w-full max-w-4xl mx-auto"
+          >
+            <div>
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                <div className="text-[20px] font-bold flex items-start sm:items-center">
+                  <Avatar />
+                  <div className="text-[16px] font-bold ml-2">
+                    <div>{project?.owner}</div>
+                    <div className="text-[13px] font-light break-all">{project?.gmail}</div>
                   </div>
-
-                  <Box mt={2} textAlign="right">
-                    <CustomButton label={project.status} color={statusColors[project.status]} textColor="white" />
-                  </Box>
                 </div>
-                <div className="text-[22px] font-bold mt-2">
-                  {project?.title}
-                </div>
-                <div className="border border-main-color my-3"></div>
-                <ul>
-                  <li className="text-[15px] font-semibold mb-5">
-                    Offer details{" "}
-                    <div className="font-light">{project?.description}</div>
-                  </li>
-                  <li className="text-[15px] font-semibold my-2">
-                    <span className="mr-14">Start at </span>
-                    <span className="font-light">
-                      {project?.startDate}
-                    </span>
-                  </li>
-                  <li className="text-[15px] font-semibold my-2">
-                    <span className="mr-14">Deadline</span>
-                    <span className="font-light">{project?.deadline}</span>
-                  </li>
-                  <li className="text-[15px] font-semibold my-2">
-                    <span className="mr-20">Price</span>
-                    <span className="font-light">{project?.price}</span>
-                  </li>
-                </ul>
+          
+                <Box mt={[1, 2]} textAlign="right">
+                  <CustomButton
+                    label={project.status}
+                    color={statusColors[project.status]}
+                    textColor="white"
+                  />
+                </Box>
               </div>
+          
+              <div className="text-[20px] sm:text-[22px] font-bold mt-4">{project?.title}</div>
+          
+              <div className="border border-main-color my-3"></div>
+          
+              <ul>
+                <li className="text-[15px] font-semibold mb-4">
+                  Offer details
+                  <div className="font-light">{project?.description}</div>
+                </li>
+          
+                <li className="text-[15px] font-semibold my-2 flex flex-wrap sm:flex-nowrap">
+                  <span className="min-w-[100px]">Start at</span>
+                  <span className="font-light">{project?.startDate}</span>
+                </li>
+          
+                <li className="text-[15px] font-semibold my-2 flex flex-wrap sm:flex-nowrap">
+                  <span className="min-w-[100px]">Deadline</span>
+                  <span className="font-light">{project?.deadline}</span>
+                </li>
+          
+                <li className="text-[15px] font-semibold my-2 flex flex-wrap sm:flex-nowrap">
+                  <span className="min-w-[100px]">Price</span>
+                  <span className="font-light">{project?.price}</span>
+                </li>
+              </ul>
             </div>
+          </div>
+          
           ))}
         </Box>
         <Box display="flex" justifyContent="center" mt={3}>

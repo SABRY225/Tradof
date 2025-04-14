@@ -48,6 +48,7 @@ import online from './icons/online.svg';
 import plus from './icons/plus.svg';
 import clock from './icons/clock.svg';
 import group_light2 from './icons/group_ligth2.svg';
+import calendar from './icons/calendar.svg';
 
 export {
   // a
@@ -62,6 +63,7 @@ export {
   // c
   camera,
   calender,
+  calendar,
   closeDialog,
   copy,
   clock,

@@ -68,10 +68,10 @@ function AdminAskQuestion() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f5f7ff]">
+    <div className="flex  min-h-screen bg-[#f5f7ff]">
       <div className="flex-grow">
         <Container maxWidth="lg" sx={{ py: 4 }}>
-          <Grid container spacing={3}>
+          <Grid container spacing={3} >
             <Grid item xs={12} md={8}>
               {
                 questions.length==0?<div className='text-center text-2xl text-[#6C63FF]'>No questions available at the moment</div>:
