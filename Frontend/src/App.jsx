@@ -50,14 +50,14 @@ import AdminTechnicalSupport from "./pages/Admin/AdminTechnicalSupport";
 import AdminFinances from "./pages/Admin/AdminFinances";
 import AdminAskQuestion from "./pages/Admin/AdminAskQuestion";
 import AskQuestion from "./pages/shared/AskQuestion";
-import ProjectPage from "./pages/shared/ProjectPage";
+// import ProjectPage from "./pages/shared/ProjectPage";
 import WithdrawProfits from "./pages/Freelancer/WithdrawProfits";
 import AdminFeedback from "./pages/Admin/AdminFeedback";
 import SettingAdmin from "./pages/Admin/SettingAdmin";
 import SuccessPayment from "./pages/payment";
 import PlanPage from "./pages/PlanPage";
 import ProfitWithdrawalRequests from "./pages/Admin/ProfitWithdrawalRequests";
-import ProjectPage, { projectLoader } from "./pages/shared/ProjectPage";
+import ProjectPage,{projectLoader} from "./pages/shared/ProjectPage";
 import ErrorPage from "./pages/ErrorPage";
 
 // create routes

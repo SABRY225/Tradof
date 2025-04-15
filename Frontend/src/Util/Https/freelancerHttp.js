@@ -356,7 +356,6 @@ export const GetFreelancerStatistics = async({freelancerId,token})=>{
   }
 }
 
-};
 
 // rabi3 in code
 export const getCurrentProjects = async ({
