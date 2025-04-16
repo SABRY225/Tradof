@@ -40,7 +40,6 @@ export default function DiscoverProject({ classes }) {
   const {
     user: { userId, token },
   } = useAuth();
-  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const projectsPerPage = 5;
 
@@ -83,8 +82,7 @@ export default function DiscoverProject({ classes }) {
       {items.map((project) => (
         <div
           key={project.id}
-          className="my-2 shadow-md relative p-[15px] px-[25px] space-y-[10px] bg-white rounded-lg font-roboto-condensed cursor-pointer"
-          onClick={() => navigate(`../project/${project.id}`)}
+          className="my-2 shadow-md relative p-[15px] px-[25px] space-y-[10px] bg-white rounded-lg font-roboto-condensed"
         >
           <div className="font-roboto-condensed text-[20px]">
             {project?.description}

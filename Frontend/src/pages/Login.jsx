@@ -12,7 +12,6 @@ import ButtonFelid from "../UI/ButtonFelid";
 import Loading from "./Loading";
 import { useEffect, useState } from "react";
 import { googleColor } from "@/assets/paths";
-import { useState } from "react";
 import { GetCurrentSubscription } from "@/Util/Https/companyHttp";
 
 export default function Login() {
@@ -21,7 +20,6 @@ export default function Login() {
   const navigate = useNavigate();
   const { mutate, data, isPending } = useMutation({
     mutationFn: loginUser,
-    onSuccess: (data) => {
     onSuccess: async (data) => {
       Cookies.set("token", data.token, {
         expires: 7,

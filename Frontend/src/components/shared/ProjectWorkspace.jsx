@@ -47,7 +47,7 @@ export default function Workspace({ files, projectId }) {
       });
     },
   });
-  const { mutate: deleteFile , isPending: isDeleted} = useMutation({
+  const { mutate: deleteFile, isPending: isDeleted } = useMutation({
     mutationFn: deleteProjectFile,
     onSuccess: (data) => {
       console.log("Error deleting file:", data);
@@ -129,7 +129,8 @@ export default function Workspace({ files, projectId }) {
             )}
             <button
               onClick={handleClick}
-              className="bg-second-color text-white px-2 py-1 rounded-md flex items-center gap-2 font-medium"
+              className={`bg-second-color text-white px-2 py-1 rounded-md flex items-center gap-2 font-medium ${isPending ? "opacity-[0.8] cursor-not-allowed" : ""}`}
+              disabled={isPending}
             >
               <img src={folder_add} alt="" />
               Add files
@@ -199,8 +200,13 @@ export default function Workspace({ files, projectId }) {
                               </Link>
                             </button>
                             <button
-                              className="text-red-600 font-medium text-[10px] hover:underline"
+                              className={`text-red-600 font-medium text-[10px] hover:underline ${
+                                fileId === file.id && isDeleted
+                                  ? "opacity-[0.8] cursor-not-allowed"
+                                  : ""
+                              }`}
                               onClick={() => handleDeleteFile({ id: file.id })}
+                              disabled={fileId === file.id && isDeleted}
                             >
                               Delete
                             </button>

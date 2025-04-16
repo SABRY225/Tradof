@@ -50,7 +50,6 @@ import AdminTechnicalSupport from "./pages/Admin/AdminTechnicalSupport";
 import AdminFinances from "./pages/Admin/AdminFinances";
 import AdminAskQuestion from "./pages/Admin/AdminAskQuestion";
 import AskQuestion from "./pages/shared/AskQuestion";
-import ProjectPage from "./pages/shared/ProjectPage";
 import WithdrawProfits from "./pages/Freelancer/WithdrawProfits";
 import AdminFeedback from "./pages/Admin/AdminFeedback";
 import SettingAdmin from "./pages/Admin/SettingAdmin";

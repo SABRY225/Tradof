@@ -45,7 +45,6 @@ export default function UpcomingProject() {
       // Refetch the projects after deletion
       queryClient.invalidateQueries(["upcomingProject"]);
       queryClient.refetchQueries(["upcomingProject"]);
-
     },
   });
   if (isError) {
@@ -64,6 +63,13 @@ export default function UpcomingProject() {
     handelDeleteProject({ id, token });
   };
 
+  const incomingProject = data
+    ? data.count > 5
+      ? data.items.slice(0, 5)
+      : data.items
+    : [];
+  
+
   return (
     <div>
       <div className="mb-2 flex justify-between">
@@ -75,8 +81,7 @@ export default function UpcomingProject() {
       {isLoading && <div className="text-center">Loading...</div>}
 
       <ul className="space-y-[10px]">
-        {data &&
-          data?.slice(0,5).map((project) => {
+        {incomingProject.map((project) => {
             return (
               <li
                 key={project.id}
