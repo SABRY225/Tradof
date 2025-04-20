@@ -56,7 +56,9 @@ import file from "./icons/file.svg";
 import send from "./icons/send.svg";
 import googleColor from './icons/googleColor.svg';
 import meeting from "./icons/meeting.svg";
-
+import strongBox from './icons/strongBox.svg';
+import cardTick from './icons/card-tick.svg';
+import cardRemove from './icons/card-remove.svg';
 export {
   // a
   active,
@@ -77,6 +79,8 @@ export {
   checkedCopy,
   chat,
   closeWhite,
+  cardTick,
+  cardRemove,
   // d
   droplist,
   darkFacebook,
@@ -132,6 +136,7 @@ export {
   support,
   stare,
   send,
+  strongBox,
   // t
   timer,
   // u

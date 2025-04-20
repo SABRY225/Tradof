@@ -12,6 +12,8 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getUnassignedProjects } from "@/Util/Https/freelancerHttp";
 import { Link, useNavigate } from "react-router-dom";
+import Loading from "@/pages/Loading";
+import Pagination from "@/UI/Pagination";
 
 const getTimeAgo = (creationDate) => {
   const now = new Date();
@@ -36,21 +38,21 @@ const getTimeAgo = (creationDate) => {
   return `${diffYears} year${diffYears !== 1 ? "s" : ""} ago`;
 };
 
+const ITEMS_PER_PAGE = 5;
 export default function DiscoverProject({ classes }) {
   const {
     user: { userId, token },
   } = useAuth();
   const [currentPage, setCurrentPage] = useState(1);
-  const projectsPerPage = 5;
 
-  const { data, isLoading, isError, isFetching } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["unassigned-projects", userId, currentPage],
     queryFn: ({ signal }) =>
       getUnassignedProjects({
         signal,
         token,
         indexPage: currentPage,
-        pageSize: projectsPerPage,
+        pageSize: ITEMS_PER_PAGE,
       }),
     keepPreviousData: true,
     staleTime: 5 * 60 * 1000,
@@ -59,8 +61,7 @@ export default function DiscoverProject({ classes }) {
 
   const { items = [], count = 0 } = data || {};
 
-  // console.log(data);
-
+  // console.log(items);
   return (
     <motion.div
       initial={{ x: "-50rem" }}
@@ -74,7 +75,12 @@ export default function DiscoverProject({ classes }) {
           <img src={openPage} alt="" />
         </Link>
       </h1>
-      {count === 0 && (
+      {isLoading && (
+        <div className="text-center font-medium text-[20px] bg-white w-1/2 mx-auto py-2 rounded-md shadow">
+          Loading...
+        </div>
+      )}
+      {!isLoading && count === 0 && (
         <div className="text-center font-medium text-[20px] bg-white w-1/2 mx-auto py-2 rounded-md shadow">
           Not found projects.
         </div>
@@ -126,6 +132,12 @@ export default function DiscoverProject({ classes }) {
           </Link>
         </div>
       ))}
+      <Pagination
+        setCurrentPage={setCurrentPage}
+        currentPage={currentPage}
+        ITEMS_PER_PAGE={ITEMS_PER_PAGE}
+        length={count}
+      />
     </motion.div>
   );
 }

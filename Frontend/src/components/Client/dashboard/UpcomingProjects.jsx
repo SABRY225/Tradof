@@ -68,8 +68,8 @@ export default function UpcomingProject() {
       ? data.items.slice(0, 5)
       : data.items
     : [];
-  
 
+  console.log(incomingProject);;
   return (
     <div>
       <div className="mb-2 flex justify-between">
@@ -81,7 +81,9 @@ export default function UpcomingProject() {
       {isLoading && <div className="text-center">Loading...</div>}
 
       <ul className="space-y-[10px]">
-        {incomingProject.map((project) => {
+        {!isLoading &&
+          !isError &&
+          incomingProject?.map((project) => {
             return (
               <li
                 key={project.id}
