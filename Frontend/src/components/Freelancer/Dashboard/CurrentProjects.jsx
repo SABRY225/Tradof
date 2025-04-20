@@ -165,19 +165,25 @@ export default function CurrentProjects({ classes }) {
                 day < 10 ? "0" + day : day
               }/${year}`;
             };
-console.log(project?.startDate);
+            console.log(project?.startDate);
             const formattedStartDate = formatDate(project?.startDate);
             // const formattedEndDate = formatDate(project?.endDate);
 
             let style = "";
-            switch (project.status) {
-              case ProjectStatus.ACTIVE:
+            switch (+project?.status.statusValue) {
+              case +ProjectStatus.Active:
                 style = "text-[#00A200] bg-[#C3FFC3]";
                 break;
-              case ProjectStatus.INPROGRESS:
+              case +ProjectStatus.Pending:
+                style = "text-[#ffa200] bg-[#fff9c3]";
+                break;
+              case +ProjectStatus.InProgress:
                 style = "text-[#A20000] bg-[#FFC3C3]";
                 break;
-              case ProjectStatus.COMPLETED:
+              case +ProjectStatus.OnReviewing:
+                style = "text-[#007eff] bg-[#c3f3ff]";
+                break;
+              case +ProjectStatus.Finished:
                 style = "text-[#A26A00] bg-[#FFEAC3]";
                 break;
             }
@@ -210,7 +216,7 @@ console.log(project?.startDate);
                 <div className="p-3 text-[13px]">{deadlineByDays} days</div>
                 <div className="p-3 w-[80px]">
                   <div
-                    className={`w-[80px] rounded-lg font-[500] text-[13px] ${style}`}
+                    className={`w-[100px] text-center rounded font-[500] text-[13px] ${style}`}
                   >
                     {project?.status.statusName}
                   </div>

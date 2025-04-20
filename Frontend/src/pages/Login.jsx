@@ -32,7 +32,6 @@ export default function Login() {
         role: data.role,
         token: data.token,
         refreshToken: data.refreshToken,
-        refreshToken: data.refreshToken,
       });
   
       try {

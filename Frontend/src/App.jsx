@@ -39,7 +39,6 @@ import AdminLayout from "./layouts/AdminLayout";
 import Calender, { calendarLoader } from "./pages/shared/Calender";
 import StartedProjects from "./pages/Client/StartedProjects";
 import UpcomingProjects from "./pages/Client/UpcomingProjects";
-import PayProject from "./pages/Client/PayProject";
 import Finances from "./pages/shared/Finances";
 import ProjectOffers from "./pages/Client/ProjectOffers";
 import AddOffer from "./pages/Freelancer/AddOffer";
@@ -58,6 +57,7 @@ import PlanPage from "./pages/PlanPage";
 import ProfitWithdrawalRequests from "./pages/Admin/ProfitWithdrawalRequests";
 import ProjectPage, { projectLoader } from "./pages/shared/ProjectPage";
 import ErrorPage from "./pages/ErrorPage";
+import PayProject, { payProjectLoader } from "./pages/shared/PayProject";
 
 // create routes
 const router = createBrowserRouter([
@@ -77,6 +77,7 @@ const router = createBrowserRouter([
   {
     path: "/auth",
     element: <LoginLayout />,
+    errorElement: <ErrorPage />,
     children: [
       { index: true, element: <Login /> },
       { path: "forget-password", element: <ForgetPassword /> },
@@ -90,10 +91,12 @@ const router = createBrowserRouter([
   {
     path: "/payment",
     element: <Payment />,
+    errorElement: <ErrorPage />,
   },
   {
     path: "/user",
     element: <UserLayout />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: "project",
@@ -110,7 +113,11 @@ const router = createBrowserRouter([
           { path: "upcoming", element: <UpcomingProjects /> },
           // work in progress
           { path: ":projectId", element: <ProjectPage /> },
-          { path: "pay", element: <PayProject /> },
+          {
+            path: "pay/:projectId",
+            element: <PayProject />,
+            loader: payProjectLoader,
+          },
           { path: "available", element: <AvailableProjects /> },
         ],
       },
@@ -129,30 +136,32 @@ const router = createBrowserRouter([
       // work in progress
       { path: "finances", element: <Finances /> },
       { path: "withdraw-profits", element: <WithdrawProfits /> },
-
     ],
   },
   {
     path: "/admin",
     element: <AdminLayout />,
+    errorElement: <ErrorPage />,
     children: [
-      {path: "dashboard",element: <AdminDashboard />},
-      {path: "settings",element: <SettingAdmin />},
-      {path: "ask-question",element: <AdminAskQuestion />},
-      {path: "technical-support",element: <AdminTechnicalSupport />},
-      {path: "feedback",element: <AdminFeedback />},
-      {path: "withdrawal",element: <ProfitWithdrawalRequests />},
+      { path: "dashboard", element: <AdminDashboard /> },
+      { path: "settings", element: <SettingAdmin /> },
+      { path: "ask-question", element: <AdminAskQuestion /> },
+      { path: "technical-support", element: <AdminTechnicalSupport /> },
+      { path: "feedback", element: <AdminFeedback /> },
+      { path: "withdrawal", element: <ProfitWithdrawalRequests /> },
       // work in progress
-      {path: "finances",element: <AdminFinances />},
+      { path: "finances", element: <AdminFinances /> },
     ],
   },
   {
     path: "test",
     element: <ProfitWithdrawalRequests />,
+    errorElement: <ErrorPage />,
   },
   {
     path: "test2",
     element: <Finances />,
+    errorElement: <ErrorPage />,
   },
   {
     path: "*",

@@ -1,7 +1,7 @@
 import { files } from "@/assets/paths";
 import ButtonFelid from "@/UI/ButtonFelid";
 
-export default function ProjectDetails({ project }) {
+export default function ProjectDetails({ project, projectFiles }) {
   return (
     <div>
       <h1 className="italic border-b-2 border-main-color w-fit ml-2 pl-2">
@@ -35,20 +35,21 @@ export default function ProjectDetails({ project }) {
           <p className="font-roboto-condensed">
             {project?.languageFrom.languageCode}-
             {project?.languageFrom.countryCode} -{" "}
-            {project?.languageTo.languageCode}-
-            {project?.languageTo.countryCode}
+            {project?.languageTo.languageCode}-{project?.languageTo.countryCode}
           </p>
         </div>
-        {/* <div>
-          <h1 className="text-main-color text-[13px] font-semibold">
-            Attachment files
-          </h1>
-          <ButtonFelid
-            text="Files"
-            classes="bg-second-color px-5 py-[2px] font-regular flex flex-row-reverse"
-            icon={files}
-          />
-        </div> */}
+        {projectFiles && (
+          <div>
+            <h1 className="text-main-color text-[13px] font-semibold">
+              Attachment files
+            </h1>
+            <ButtonFelid
+              text="Files"
+              classes="bg-second-color px-5 py-[2px] font-regular flex flex-row-reverse"
+              icon={files}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

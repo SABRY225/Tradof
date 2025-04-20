@@ -5,6 +5,7 @@ import { ProjectStatus } from "../../../Util/projectStatus";
 import { getStartedProjects } from "@/Util/Https/companyHttp";
 import { useAuth } from "@/context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function StartProject() {
   const {
@@ -16,7 +17,7 @@ export default function StartProject() {
   });
   const navigate = useNavigate();
 
-  const { items } = data || [];
+  const { items } = data || { items: [] };
   if (isError) {
     console.error("Error fetching data:", error);
     toast.error("Error fetching data", {
