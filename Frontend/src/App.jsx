@@ -27,7 +27,7 @@ import RestPassword from "./pages/RestPassword";
 import ConfirmEmail from "./pages/ConfirmEmail";
 import Payment from "./pages/Freelancer/Payment";
 import Loading from "./pages/Loading";
-import CreateProject from "./pages/Client/CreateProject";
+import CreateProject, { basicDataLoader } from "./pages/Client/CreateProject";
 import UserLayout from "./layouts/UserLayout";
 import Profile from "./pages/shared/Profile";
 import Setting, { settingsLoader } from "./pages/shared/Setting";
@@ -58,12 +58,14 @@ import ProfitWithdrawalRequests from "./pages/Admin/ProfitWithdrawalRequests";
 import ProjectPage, { projectLoader } from "./pages/shared/ProjectPage";
 import ErrorPage from "./pages/ErrorPage";
 import PayProject, { payProjectLoader } from "./pages/shared/PayProject";
+import { userDataLoader } from "./components/shared/UserNavbar";
 
 // create routes
 const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
+    loader: basicDataLoader,
     children: [
       { index: true, element: <LandingPage />, loader: subscriptionsLoader }, // Default route
     ],
@@ -96,6 +98,7 @@ const router = createBrowserRouter([
   {
     path: "/user",
     element: <UserLayout />,
+    loader: userDataLoader,
     errorElement: <ErrorPage />,
     children: [
       {
@@ -106,9 +109,20 @@ const router = createBrowserRouter([
             element: <ProjectPage />,
             loader: projectLoader,
           },
-          { path: "offer/:projectId", element: <ProjectOffers /> },
-          { path: "add-offer/:projectId", element: <AddOffer /> },
-          { path: "create", element: <CreateProject /> },
+          {
+            path: "offer/:projectId",
+            element: <ProjectOffers />,
+            loader: projectLoader,
+          },
+          {
+            path: "add-offer/:projectId",
+            element: <AddOffer />,
+            loader: projectLoader,
+          },
+          {
+            path: "create",
+            element: <CreateProject />,
+          },
           { path: "start", element: <StartedProjects /> },
           { path: "upcoming", element: <UpcomingProjects /> },
           // work in progress
@@ -118,10 +132,18 @@ const router = createBrowserRouter([
             element: <PayProject />,
             loader: payProjectLoader,
           },
-          { path: "available", element: <AvailableProjects /> },
+          {
+            path: "available",
+            element: <AvailableProjects />,
+            loader: basicDataLoader,
+          },
         ],
       },
-      { path: "profile", element: <Profile /> },
+      {
+        path: "profile",
+        element: <Profile />,
+        loader: userDataLoader,
+      },
       { path: "settings", element: <Setting />, loader: settingsLoader },
       { path: "dashboard", element: <Dashboard /> },
       {

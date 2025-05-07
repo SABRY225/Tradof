@@ -281,7 +281,7 @@ export const AddOffer = async ({ data, token }) => {
       console.error("Server Error:", error);
       const err = new Error("An error occurred while adding offer");
       err.code = error.response.status;
-      err.message = error.response.data;
+      err.message = error.response.data.message;
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");

@@ -17,7 +17,12 @@ const getPageNumbers = (total, current) => {
   return range;
 };
 
-export default function Pagination({ setCurrentPage, currentPage, ITEMS_PER_PAGE , length}) {
+export default function Pagination({
+  setCurrentPage,
+  currentPage,
+  ITEMS_PER_PAGE,
+  length,
+}) {
   const totalPages = Math.ceil(length / ITEMS_PER_PAGE);
 
   return (
@@ -29,7 +34,6 @@ export default function Pagination({ setCurrentPage, currentPage, ITEMS_PER_PAGE
       >
         Prev
       </button>
-
       {getPageNumbers(totalPages, currentPage).map((page, i) =>
         page === "..." ? (
           <span key={i} className="px-3 py-1 text-gray-400">
@@ -47,7 +51,6 @@ export default function Pagination({ setCurrentPage, currentPage, ITEMS_PER_PAGE
           </button>
         )
       )}
-
       <button
         onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
         className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"

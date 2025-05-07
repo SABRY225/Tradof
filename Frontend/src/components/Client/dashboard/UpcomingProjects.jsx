@@ -69,7 +69,7 @@ export default function UpcomingProject() {
       : data.items
     : [];
 
-  console.log(incomingProject);;
+  // console.log(incomingProject);;
   return (
     <div>
       <div className="mb-2 flex justify-between">

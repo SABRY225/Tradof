@@ -1,111 +1,403 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { Minus, Plus } from "lucide-react";
 import {
-  Card,
-  CardContent,
-  Typography,
-  Avatar,
-  Box,
-  Button,
-  Pagination,
-  TextField,
-} from "@mui/material";
-import { fatchCurrentOffers } from "@/Util/Https/companyHttp";
-import { useParams } from "react-router-dom";
-import Cookies from "js-cookie";
+  fatchCurrentOffers,
+  Acceptproposal,
+  Denyproposal,
+} from "@/Util/Https/companyHttp";
+import { useNavigate, useParams } from "react-router-dom";
 import convertDateToCustomFormat from "@/Util/convertDate";
 import ButtonFelid from "@/UI/ButtonFelid";
-import { files } from "@/assets/paths";
+import { docs, download, file, image, PDF, search, xlsx } from "@/assets/paths";
 import ButtonFelidRej from "@/UI/ButtonFelidRej";
+import { useAuth } from "@/context/AuthContext";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { toast } from "react-toastify";
+
+const commonClasses =
+  "font-epilogue outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]";
+
+const ITEMS_PER_PAGE = 20;
 
 const OffersPage = () => {
-  const [offers, setOffers] = useState([]);
-  const [page, setPage] = useState(1);
+  const { user } = useAuth();
+  const token = user?.token;
+  const navigate = useNavigate();
   const [budget, setBudget] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
   const { projectId } = useParams();
-  const token = Cookies.get("token");
+  const queryClient = useQueryClient();
+
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["offers", projectId, budget],
+    queryFn: ({ pageParam = 1 }) =>
+      fatchCurrentOffers({
+        PageIndex: pageParam,
+        ProjectId: projectId,
+        token,
+        budget: budget,
+        pageSize: ITEMS_PER_PAGE,
+      }),
+    getNextPageParam: (lastPage, pages) => {
+      const totalPages = Math.ceil(lastPage.count / ITEMS_PER_PAGE);
+      return pages.length < totalPages ? pages.length + 1 : undefined;
+    },
+  });
+
+  const acceptMutation = useMutation({
+    mutationFn: ({ proposalId }) =>
+      Acceptproposal({
+        projectId,
+        proposalId,
+        token,
+      }),
+    onSuccess: () => {
+      toast.success("Proposal accepted successfully", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+      queryClient.invalidateQueries(["offers", projectId]);
+      navigate(`/user/project/${projectId}`);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to accept proposal", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+    },
+  });
+
+  const denyMutation = useMutation({
+    mutationFn: ({ proposalId }) =>
+      Denyproposal({
+        projectId,
+        proposalId,
+        token,
+      }),
+    onSuccess: () => {
+      toast.success("Proposal denied successfully", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+      queryClient.invalidateQueries(["offers", projectId]);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to deny proposal", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+    },
+  });
+
+  const offers = data?.pages.flatMap((page) => page.items) || [];
 
   useEffect(() => {
-    fetchOffers();
-  }, [page, budget]);
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+          document.documentElement.offsetHeight - 100 &&
+        hasNextPage &&
+        !isFetchingNextPage
+      ) {
+        fetchNextPage();
+      }
+    };
 
-  const fetchOffers = async () => {
-    try {
-      const response = await fatchCurrentOffers({ PageIndex: page, ProjectId: projectId, token });
-      console.log(response);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-      setOffers(response.items);
-      setTotalPages(response.pageSize);
-    } catch (error) {
-      console.error("Error fetching offers", error);
-    }
+  const handleBudgetChange = async (e) => {
+    e.preventDefault();
+    const value = e.target.value;
+    setBudget(value);
   };
 
-  return (
-    <Box p={3}>
-      <Typography variant="h5" gutterBottom mb={4}>
-        Current Offers
-      </Typography>
-      <Box display="flex">
-        <Box display="flex" gap={2} mr={2}>
-          <TextField
-            type="number"
-            label="Budget"
-            variant="outlined"
-            value={budget}
-            onChange={(e) => setBudget(e.target.value)}
-            sx={{ width: "250px" }}
-          />
-        </Box>
-        <Box display="flex" flexDirection="column" gap={2}>
-          {offers.map((offer, index) => (
-            <Card key={index} sx={{ width: "1100px", p: 2, background: "#E5E5FF" }}>
-              <Box display="flex" alignItems="center" mb={1}>
-                <Avatar />
-                <Typography variant="h6" className="font-light" ml={2}>Mohamed Abdalrazek</Typography>
-              </Box>
-              <CardContent>
-                <Typography variant="body1">{offer.proposalDescription}</Typography>
-                <Typography variant="subtitle2" mt={1} >
-                  <span className="font-bold w-80 mr-14">Delivery time</span>
-                  <span className="font-light">{convertDateToCustomFormat(offer.timePosted)}</span>
-                </Typography>
-                <Typography variant="subtitle2">
-                  <span className="font-bold w-80 mr-24" >Budget</span>
-                  <span className="font-light">${offer.offerPrice}</span>
-                </Typography>
+  const handleBudgetIncrement = (e) => {
+    e.preventDefault();
+    const newValue = Number(budget) + 1;
+    setBudget(newValue);
+  };
 
-                <Box mt={2} display="flex" justifyContent="space-between" alignItems="end">
-                  <Box>
-                    <div className="font-bold mb-1" >Attachment files</div>
-                    <ButtonFelid
-                      icon={files}
-                      text="Files"
-                      type="submit"
-                      classes="rounded text-[15px] px-[30px] py-[7px] bg-second-color m-auto md:m-0"
+  const handleBudgetDecrement = (e) => {
+    e.preventDefault();
+    const newValue = Math.max(0, Number(budget) - 1);
+    setBudget(newValue);
+  };
+
+  const handleAcceptProposal = (proposalId) => {
+    acceptMutation.mutate({ proposalId });
+  };
+
+  const handleDenyProposal = (proposalId) => {
+    denyMutation.mutate({ proposalId });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="text-center py-4">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-main-color mx-auto"></div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="text-center py-4 text-red-500">
+        Error: {error.message}
+      </div>
+    );
+  }
+
+  console.log(offers);
+
+  return (
+    <div className="bg-background-color">
+      <div className="container max-w-screen-xl mx-auto w-full py-[30px] px-4">
+        <div className="flex flex-col lg:flex-row gap-[20px]">
+          {/* Filter Sidebar */}
+          <aside className="w-full lg:w-[350px] p-4 lg:p-6 h-fit lg:sticky lg:top-20 border-r-0 lg:border-r-2 border-main-color border-dashed">
+            <div className="mb-6 relative">
+              <label
+                htmlFor="offer-search"
+                className="absolute -top-2 left-3 bg-background-color px-1 text-xs z-10"
+              >
+                Search
+              </label>
+              <input
+                id="offer-search"
+                type="text"
+                placeholder="Search offers..."
+                className="text-sm w-full rounded px-3 py-2 pr-10 bg-transparent border border-[#D6D7D7] focus:outline-none focus:ring-2 focus:ring-main-color placeholder:text-[14px]"
+              />
+              <img
+                src={search}
+                alt="search"
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+              />
+            </div>
+
+            {/* Delivery Time Filter */}
+            <div className="text-[14px] mb-6">
+              <h3 className="font-medium font-epilogue mb-2">Delivery time</h3>
+              <ul className="space-y-2">
+                {[
+                  "Less than 0 week",
+                  "From 1 to 2 weeks",
+                  "From 2 weeks to 3 month",
+                  "From one month to three month",
+                  "More than 3 months",
+                ].map((label, i) => (
+                  <li key={i} className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="delivery"
+                      id={`delivery${i}`}
+                      className="peer accent-main-color"
                     />
-                  </Box>
-                  <Box display="flex" justifyContent="space-around" width={250}>
-                    <ButtonFelid
-                      text="Accept"
-                      type="submit"
-                      classes=" rounded-[0px] text-[15px] px-[30px] py-[7px] bg-second-color m-auto md:m-0"
+                    <label
+                      htmlFor={`delivery${i}`}
+                      className="text-[14px] cursor-pointer"
+                    >
+                      {label}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Budget Filter */}
+            <div className="text-[14px] w-full">
+              <h1 className="font-medium font-epilogue">Budget</h1>
+              <div>
+                <div className="relative w-full">
+                  <input
+                    type="number"
+                    value={budget}
+                    onChange={handleBudgetChange}
+                    className={`w-full pr-10 ${commonClasses}`}
+                    placeholder="Min budget ($)"
+                    min="0"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleBudgetDecrement}
+                    className="outlet-none absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-500 text-main-color"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleBudgetIncrement}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-main-color"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          {/* Offers List */}
+          <main className="flex-1">
+            <div className="grid grid-cols-1 gap-4">
+              {offers.map((offer, index) => (
+                <div key={offer.id || index}>
+                  <div className="flex items-center gap-2 mb-[-15px] ml-[10px]">
+                    <img
+                      src={offer?.freelancerImageUrl}
+                      alt="profile"
+                      className="w-12 h-12 rounded-full object-cover bg-white border border-second-color"
                     />
-                    <ButtonFelidRej                        
-                      text="Reject"
-                      type="submit"
-                      classes=" rounded-[0px] text-[15px] px-[30px] py-[7px]  m-auto md:m-0"/>
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          ))}
-        </Box>
-      </Box>
-      <Box display="flex" justifyContent="center" mt={3}>
-        <Pagination count={totalPages} page={page} onChange={(event, value) => setPage(value)} />
-      </Box>
-    </Box>
+                    <div className="text-[16px] font-roboto-condensed">
+                      <div>{offer?.freelancerName}</div>
+                    </div>
+                  </div>
+                  <div className="bg-card-color rounded-lg p-[20px] ">
+                    <div className="font-light">
+                      {offer?.proposalDescription}
+                    </div>
+                    <div className="w-full h-[2px] bg-main-color mt-2"></div>
+                    <div className="flex flex-col gap-1 mt-4">
+                      <div className="text-[13px]">
+                        <span className="font-semibold">Delivery Time:</span>{" "}
+                        <span className="font-light">{offer?.days} days</span>
+                      </div>
+                      <div className="text-[13px]">
+                        <span className="font-semibold">Budget:</span>{" "}
+                        <span className="font-light">${offer.offerPrice}</span>
+                      </div>
+
+                      <div className="w-fit text-[13px]">
+                        <div className="font-semibold">Attachment files</div>
+                        <div className="flex items-center gap-2">
+                          {offer?.proposalAttachments.length > 0 ? (
+                            offer?.proposalAttachments.map(
+                              (attachment, index) => {
+                                const fileExtension = attachment?.attachmentUrl
+                                  .split(".")
+                                  .pop()
+                                  .toLowerCase();
+                                let fileIcon = file;
+
+                                if (fileExtension === "pdf") {
+                                  fileIcon = PDF;
+                                } else if (
+                                  ["jpg", "jpeg", "png", "gif"].includes(
+                                    fileExtension
+                                  )
+                                ) {
+                                  fileIcon = image;
+                                } else if (
+                                  ["doc", "docx"].includes(fileExtension)
+                                ) {
+                                  fileIcon = docs;
+                                } else if (
+                                  ["xls", "xlsx"].includes(fileExtension)
+                                ) {
+                                  fileIcon = xlsx;
+                                }
+
+                                return (
+                                  <div
+                                    key={attachment?.id || index}
+                                    className="relative cursor-pointer"
+                                    onClick={() =>
+                                      window.open(
+                                        attachment?.attachmentUrl,
+                                        "_blank"
+                                      )
+                                    }
+                                  >
+                                    <img src={fileIcon} alt="file" width={18} />
+                                    <img
+                                      src={download}
+                                      alt="download"
+                                      width={13}
+                                      className="absolute bottom-0 right-[-5px]"
+                                    />
+                                  </div>
+                                );
+                              }
+                            )
+                          ) : (
+                            <div className="text-gray-500">No attachments</div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end mt-4 gap-4">
+                      <ButtonFelid
+                        text="Accept"
+                        type="button"
+                        onClick={() => handleAcceptProposal(offer.id)}
+                        disabled={
+                          acceptMutation.isLoading || denyMutation.isLoading
+                        }
+                        classes="text-[10px] font-medium px-[10px] py-[5px] bg-second-color"
+                      />
+                      <ButtonFelidRej
+                        text="Reject"
+                        type="button"
+                        onClick={() => handleDenyProposal(offer.id)}
+                        disabled={
+                          acceptMutation.isLoading || denyMutation.isLoading
+                        }
+                        classes="text-[10px] font-medium px-[10px] py-[5px]"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {offers.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                No offers found
+              </div>
+            )}
+
+            {isFetchingNextPage && (
+              <div className="text-center py-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-main-color mx-auto"></div>
+              </div>
+            )}
+          </main>
+        </div>
+      </div>
+    </div>
   );
 };
 

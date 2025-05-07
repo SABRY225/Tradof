@@ -345,7 +345,7 @@ export const getUpcomingdProjects = async ({ id, token }) => {
         },
       }
     );
-    console.log(response.data);
+    // console.log(response.data);
     return response.data.data;
   } catch (error) {
     if (error.response) {
@@ -362,7 +362,7 @@ export const getUpcomingdProjects = async ({ id, token }) => {
 
 export const deleteProject = async ({ id, token }) => {
   try {
-    console.log(id);
+    // console.log(id);
 
     const response = await axios.delete(
       `${import.meta.env.VITE_BACKEND_URL}/project/${id}`,
@@ -377,19 +377,24 @@ export const deleteProject = async ({ id, token }) => {
     if (error.response) {
       const err = new Error("An error occurred while deleting project");
       err.code = error.response.status;
-      err.message = error.response.data;
+      err.message = error.response.data.message;
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
 
-export const fatchCurrentOffers = async ({ PageIndex, ProjectId, token }) => {
+export const fatchCurrentOffers = async ({
+  PageIndex,
+  ProjectId,
+  token,
+  pageSize,
+}) => {
   try {
     const response = await axios.get(
       `${
         import.meta.env.VITE_BACKEND_URL
-      }/proposal?&PageSize=3&PageIndex=${PageIndex}&ProjectId=${ProjectId}`,
+      }/proposal?&pageSize=${pageSize}&PageIndex=${PageIndex}&ProjectId=${ProjectId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`, // Attach token here
@@ -410,10 +415,11 @@ export const fatchCurrentOffers = async ({ PageIndex, ProjectId, token }) => {
 
 export const Acceptproposal = async ({ projectId, proposalId, token }) => {
   try {
-    const response = await axios.get(
+    const response = await axios.post(
       `${
         import.meta.env.VITE_BACKEND_URL
       }/proposal/accept?projectId=${projectId}&proposalId=${proposalId}`,
+      {},
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -425,7 +431,7 @@ export const Acceptproposal = async ({ projectId, proposalId, token }) => {
     if (error.response) {
       const err = new Error("An error occurred while fetching company data");
       err.code = error.response.status;
-      err.message = error.response.data;
+      err.message = error.response.data.message;
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");
@@ -434,10 +440,11 @@ export const Acceptproposal = async ({ projectId, proposalId, token }) => {
 
 export const Denyproposal = async ({ projectId, proposalId, token }) => {
   try {
-    const response = await axios.get(
+    const response = await axios.post(
       `${
         import.meta.env.VITE_BACKEND_URL
       }/proposal/deny?projectId=${projectId}&proposalId=${proposalId}`,
+      {},
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -449,7 +456,7 @@ export const Denyproposal = async ({ projectId, proposalId, token }) => {
     if (error.response) {
       const err = new Error("An error occurred while fetching company data");
       err.code = error.response.status;
-      err.message = error.response.data;
+      err.message = error.response.data.message;
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");
@@ -513,11 +520,19 @@ export const GetCompanyStatistics = async ({ companyId, token }) => {
   }
 };
 
-export const uploadProjectFile = async ({ token, data, projectId }) => {
+// freelancer endpoint
+export const uploadProjectFile = async ({
+  token,
+  data,
+  projectId,
+  isFreelancerUpload,
+}) => {
   try {
-    console.log(token, data, projectId);
+    // console.log(token, data, projectId);
     const response = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}/project/upload-files/${projectId}`,
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/project/upload-files/${projectId}?isFreelancerUpload=${isFreelancerUpload}`,
       data,
       {
         headers: {
@@ -531,8 +546,8 @@ export const uploadProjectFile = async ({ token, data, projectId }) => {
     if (error.response) {
       console.log("Error response:", error.response.data); // 👈 helpful
       const err = new Error("An error occurred while uploading file");
-      err.code = error.response.status;
-      err.message = error.response.data;
+      err.code = error.response.data.status;
+      err.message = error.response.data.message;
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");

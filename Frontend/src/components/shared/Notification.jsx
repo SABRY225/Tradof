@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   search,
   blackSupport,
@@ -8,88 +8,151 @@ import {
   blackOffers,
   chat,
 } from "../../assets/paths";
+import { socket } from "@/Util/socket";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "react-toastify";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const commonClasses =
   "font-epilogue outline-none border-[1px] text-[12px] border-[#D6D7D7] rounded-full p-2 px-3 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]";
 
-const notifications = [
-  {
-    type: "Support team",
-    message: "ay kalam fadee, ay kalam fadee,ay...",
-    age: "2 min age",
-  },
-  {
-    type: "Project date",
-    message: "ay kalam fadee, ay kalam fadee,ay...",
-    age: "2 min age",
-  },
-  {
-    type: "Finances",
-    message: "ay kalam fadee, ay kalam fadee,ay...",
-    age: "2 min age",
-  },
-  {
-    type: "Offers",
-    message: "ay kalam fadee, ay kalam fadee,ay...",
-    age: "2 min age",
-  },
-  {
-    type: "Project chat",
-    message: "ay kalam fadee, ay kalam fadee,aysaddddddddd",
-    age: "2 min age",
-  },
-  {
-    type: "Project chat",
-    message: "ay kalam fadee, ay kalam fadee,aysaddddddddd",
-    age: "2 min age",
-  },
-  {
-    type: "Project chat",
-    message: "chat message",
-    age: "2 min age",
-  },
-  {
-    type: "Project chat",
-    message: "chat message",
-    age: "2 min age",
-  },
-];
+function getTimeAgo(timestamp) {
+  const now = new Date();
+  const diff = Math.floor((now - new Date(timestamp)) / 1000); // difference in seconds
 
+  if (diff < 60) return `${diff}s ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  if (diff < 2592000) return `${Math.floor(diff / 86400)}d ago`;
+  if (diff < 31536000) return `${Math.floor(diff / 2592000)}mo ago`;
+  return `${Math.floor(diff / 31536000)}y ago`;
+}
+
+const getIcon = (type) => {
+  switch (type) {
+    case "Technical Support":
+      return blackSupport;
+    case "Calendar":
+      return blackCalender;
+    case "Payment":
+      return blackFinances;
+    case "Offer":
+      return blackOffers;
+    case "Message":
+      return chat;
+  }
+};
 export default function Notification({ classes }) {
+  const {
+    user: { userId },
+  } = useAuth();
+  const [notifications, setNotifications] = useState({
+    notifications: [],
+    unseenCount: 0,
+  });
+  const [open, setOpen] = useState(false);
+  const [selectedNote, setSelectedNote] = useState(null);
+
   const [searchTerm, setSearchTerm] = useState("");
+  const notificationRef = useRef(null);
 
-  const getIcon = (type) => {
-    switch (type) {
-      case "Support team":
-        return blackSupport;
-      case "Project date":
-        return blackCalender;
-      case "Finances":
-        return blackFinances;
-      case "Offers":
-        return blackOffers;
-      case "Project chat":
-        return chat;
+  useEffect(() => {
+    if (window.location.hash === "#notification") {
+      notificationRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+      notificationRef.current.classList.add("ring-2", "ring-gray-300");
+      const timeout = setTimeout(() => {
+        notificationRef.current.classList.remove("ring-2", "ring-gray-300");
+      }, 1500);
+      return () => clearTimeout(timeout);
     }
-  };
+  }, []);
 
-  // Filter notifications based on search input
-  const filteredNotifications = notifications.filter((note) =>
+  const filteredNotifications = notifications?.notifications.filter((note) =>
     note.message.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const markAsSeen = (notificationId) => {
+    // Optimistically update UI
+    setNotifications((prev) => ({
+      notifications: prev.notifications.map((note) =>
+        note._id === notificationId ? { ...note, seen: true } : note
+      ),
+      unseenCount: prev.unseenCount - 1,
+    }));
+
+    // Emit to backend
+    socket.emit("seenNotification", notificationId);
+  };
+  useEffect(() => {
+    socket.on("notificationSeen", ({ notificationId }) => {
+      console.log("Confirmed by server:", notificationId);
+    });
+
+    return () => {
+      socket.off("notificationSeen");
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!userId) return;
+    socket.emit("getNotifications", { projectId: "7", userId });
+    // console.log(projectId, senderId);
+    const handleNotificationList = (data) => {
+      console.log(data);
+      setNotifications(data);
+    };
+
+    // const handleNewNotification = (newMessage) => {
+    //   // console.log(newMessage.projectId, projectId);
+    //   if (+newMessage.userId === userId) {
+    //     setMessages((prevMessages) => [...prevMessages, newMessage]);
+    //   }
+    // };
+
+    const handleError = (error) => {
+      toast.error(error?.message || "Some thing wrong happen!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+      console.error("Socket Error:", error);
+    };
+    socket.on("notificationsList", handleNotificationList);
+    // socket.on("newMessage", handleNewMessage);
+    socket.on("error", handleError);
+
+    return () => {
+      socket.off("notificationsList", handleNotificationList);
+      // socket.off("newMessage", handleNewMessage);
+      socket.off("error", handleError);
+    };
+  }, [userId]);
+  console.log(notifications);
   return (
     <motion.div
-      initial={{ x: "50rem" }}
-      animate={{ x: "0rem" }}
-      exit={{ x: "50rem" }}
-      transition={{ type: "keyframes", duration: 0.8 }}
+      ref={notificationRef}
       className={`bg-card-color rounded-lg w-[350px] py-[20px] px-[14px] ${classes}`}
+      id="notification"
     >
       <div className="flex justify-between font-roboto-condensed text-[18px] border-b-2 border-main-color pb-2">
         Notification
         <span className="p-1 bg-main-color text-white rounded-full text-[12px] flex items-center justify-center">
-          5
+          {notifications.unseenCount}
         </span>
       </div>
       <div className="flex rounded-full my-4 h-[30px]">
@@ -103,26 +166,125 @@ export default function Notification({ classes }) {
         <img src={search} alt="search icon" className="p-2" />
       </div>
       <ul className=" custom-scrollbar space-y-2 overflow-y-auto max-h-[160px] lg:max-h-[520px]">
-        {filteredNotifications.map((note, index) => (
-          <li
-            key={index}
-            className="flex flex-col bg-white py-[8px] px-[10px] rounded-lg"
-          >
-            <h1 className="flex gap-2 font-roboto-condensed font-medium">
-              <img src={getIcon(note.type)} alt="" />
-              {note.type}
-            </h1>
-            <p className="flex items-end font-roboto-condensed font-light">
-              <span
-                className="truncate max-w-[240px] cursor-pointer"
-                title={note.message} // Show full message on hover
-              >
-                {note.message}
-              </span>
-              <span className="text-[9px] font-medium ml-auto">{note.age}</span>
-            </p>
-          </li>
-        ))}
+        {filteredNotifications.length === 0 && (
+          <p className="text-center">Not found notifications</p>
+        )}
+        {/* Unseen Notifications */}
+        {filteredNotifications
+          .filter((note) => !note.seen)
+          .map((note) => (
+            <Dialog
+              onOpenChange={(isOpen) => {
+                setOpen(isOpen, selectedNote);
+                // Mark as seen *when closing* and note was unseen
+                if (!isOpen && selectedNote && !selectedNote.seen) {
+                  markAsSeen(selectedNote._id);
+                }
+              }}
+            >
+              <DialogTrigger className="w-full">
+                <li
+                  key={note._id}
+                  className="flex flex-col bg-white py-[8px] px-[10px] rounded-lg relative"
+                  onClick={() => {
+                    setSelectedNote(note);
+                  }}
+                >
+                  {/* "New" label */}
+                  <span className="absolute top-1 right-2 text-[10px] bg-red-500 text-white px-1 rounded">
+                    New
+                  </span>
+                  <h1 className="flex gap-2 font-roboto-condensed font-medium">
+                    <img src={getIcon(note.type)} alt="" />
+                    {note.type}
+                  </h1>
+                  <p className="flex items-end font-roboto-condensed font-light">
+                    <span
+                      className="truncate max-w-[240px] cursor-pointer"
+                      title={note.message}
+                    >
+                      {note.message}
+                    </span>
+                    <span className="text-[9px] font-medium ml-auto">
+                      {getTimeAgo(note.timestamp)}
+                    </span>
+                  </p>
+                </li>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    <h1 className="flex gap-2 font-roboto-condensed font-medium">
+                      <img src={getIcon(note.type)} alt="" />
+                      {note.type}
+                    </h1>
+                  </DialogTitle>
+                  <DialogDescription className="text-black">
+                    {note.message}
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <span className="text-[9px] font-medium ml-auto">
+                    {getTimeAgo(note.timestamp)}
+                  </span>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          ))}
+
+        {/* Separator */}
+        {filteredNotifications.some((n) => !n.seen) &&
+          filteredNotifications.some((n) => n.seen) && (
+            <hr className="border-t border-gray-300 my-2" />
+          )}
+
+        {/* Seen Notifications */}
+        {filteredNotifications
+          .filter((note) => note.seen)
+          .map((note) => (
+            <Dialog>
+              <DialogTrigger className="w-full">
+                <li
+                  key={note._id}
+                  className="flex flex-col bg-white py-[8px] px-[10px] rounded-lg"
+                >
+                  <h1 className="flex gap-2 font-roboto-condensed font-medium">
+                    <img src={getIcon(note.type)} alt="" />
+                    {note.type}
+                  </h1>
+                  <p className="flex items-end font-roboto-condensed font-light">
+                    <span
+                      className="truncate max-w-[240px] cursor-pointer"
+                      title={note.message}
+                    >
+                      {note.message}
+                    </span>
+                    <span className="text-[9px] font-medium ml-auto">
+                      {getTimeAgo(note.timestamp)}
+                    </span>
+                  </p>
+                </li>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    <h1 className="flex gap-2 font-roboto-condensed font-medium">
+                      <img src={getIcon(note.type)} alt="" />
+                      {note.type}
+                    </h1>
+                  </DialogTitle>
+                  <DialogDescription className="text-black">
+                    {note.message}
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <span className="text-[9px] font-medium ml-auto">
+                    {getTimeAgo(note.timestamp)}
+                  </span>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          ))}
       </ul>
     </motion.div>
   );

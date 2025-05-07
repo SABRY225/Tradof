@@ -1,194 +1,206 @@
+import { useState, useEffect } from "react";
 import { blueOffers, openPage, rabash } from "@/assets/paths";
 import PageTitle from "@/UI/PageTitle";
 import { deleteProject, getUpcomingdProjects } from "@/Util/Https/companyHttp";
-import { Height } from "@mui/icons-material";
-import { Box, Container, InputAdornment, TextField } from "@mui/material";
-import Cookies from "js-cookie";
-import { SearchIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { FadeLoader } from "react-spinners";
+import { toast } from "react-toastify";
+
+const ITEMS_PER_PAGE = 20;
 
 function UpcomingProjects() {
-  const [data, setData] = useState([]);
-  const [searchQuery, setSearchQuery] = useState(""); 
-  const token = Cookies.get("token");
-  const userId = Cookies.get("userId");
+  const [searchQuery, setSearchQuery] = useState("");
+  const {
+    user: { userId, token },
+  } = useAuth();
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => deleteProject({ id, token }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["upcoming-projects", userId]);
+      toast.success("Project Deleted Successfully", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+    },
+    onError: (error) => {
+      toast.error(
+        error?.response?.data?.message || "Failed to delete project",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        }
+      );
+    },
+  });
+
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["upcoming-projects", userId, searchQuery],
+    queryFn: ({ pageParam = 1, signal }) =>
+      getUpcomingdProjects({
+        id: userId,
+        token,
+        page: pageParam,
+        pageSize: ITEMS_PER_PAGE,
+        search: searchQuery || undefined,
+      }),
+    getNextPageParam: (lastPage, pages) => {
+      const totalPages = Math.ceil(lastPage.count / ITEMS_PER_PAGE);
+      return pages.length < totalPages ? pages.length + 1 : undefined;
+    },
+    keepPreviousData: true,
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
+  });
+
+  const projects = data?.pages.flatMap((page) => page.items) || [];
 
   useEffect(() => {
-    const FatchData = async () => {
-      const data = await getUpcomingdProjects({ id: userId, token });
-      console.log(data);
-      
-      setData(data.items);
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+          document.documentElement.offsetHeight - 100 &&
+        hasNextPage &&
+        !isFetchingNextPage
+      ) {
+        fetchNextPage();
+      }
     };
-    FatchData();
-  }, []);
 
-  const filteredProjects = data.filter((project) =>
-    project.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const handleDelete = async (id) => {
-    try {
-      await deleteProject({id, token});
-      // setData(data.filter((project) => project.id !== id));
-    } catch (error) {
-      console.error("Error deleting project:", error);
-    }
-  };
 
   return (
-    <>
-      {/* <PageTitle title="Upcoming Project" subtitle="Project hasn’t been assigned to freelancer" /> */}
-      <PageTitle title="Upcoming Project"  />
-      {/* {filteredProjects?<Box sx={{
-        // margin:"250px"
-      }}>
-        <FadeLoader 
-      color="#000"
-      height={5}
-      width={5}
-      loading
-      margin={-1}
-      // radius={15}
-      // speedMultiplier={1}
+    <div className="bg-background-color">
+      <PageTitle
+        title="Upcoming Projects"
+        subtitle="Projects that haven't been assigned to freelancers"
       />
-      </Box>:""} */}
-      <Container className='pt-14'>
-      <div className="flex justify-around items-center  ">
-        <TextField
-          label="Search"
-          variant="outlined"
-          fullWidth
-          placeholder="Substring of project name"
-          sx={{
-            width: {md:'65%',xs:"90%"}, // يمكنك التحكم في العرض
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': {
-                borderColor: '#6C63FF', // تغيير لون الحدود هنا
-              },
-              '&:hover fieldset': {
-                borderColor: '#6C63FF', 
-              },
-              '&.Mui-focused fieldset': {
-                borderColor: '#6C63FF', // تغيير لون الحدود عند التركيز
-              },
-            },
-          }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-          value={searchQuery} // ربط القيمة بالحالة
-          onChange={(e) => setSearchQuery(e.target.value)} // تحديث النص المدخل في البحث
-        />
-      </div>
-      
-        {filteredProjects.length === 0 ? (
-          <p className="text-center my-28 font-bold text-3xl text-main-color">No Projects Found</p> // في حالة عدم وجود مشاريع تطابق البحث
-        ) : (
-          filteredProjects.map((project) => (
+      <div className="container max-w-screen-xl mx-auto w-full py-[30px] px-4">
+        {/* Top Filter Section */}
+        <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="relative w-full md:w-[300px]">
+              <input
+                type="text"
+                placeholder="Search projects..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full rounded px-3 py-2 pr-10 bg-transparent border border-[#D6D7D7] focus:outline-none focus:ring-2 focus:ring-main-color text-[14px]"
+              />
+              <img
+                src={blueOffers}
+                alt="search"
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4">
+          {projects.map((project) => (
             <div
-              key={project.id}
-              className=" bg-card-color py-[15px] px-[30px]  my-10 rounded-lg shadow"
+              key={project?.id}
+              className="bg-card-color py-[15px] px-[30px] rounded-lg shadow"
             >
               <div>
-                <div className="flex justify-between">
-                  <div className="md:text-[22px] font-bold">
-                    {project?.name}
-                  </div>
-                  <Box className="py-[5px] px-[20px] rounded-lg font-[500] text-main-color items-center" sx={{
-                    display:{md:"flex",xs:"none"}
-                  }}>
-                    <div><img
-                      src={blueOffers}
-                      alt="offers icon"
-                      width={23}
-                      className="mr-1"
-                    /></div>
-                    <Box sx={{
-                      fontSize:21
-                    }}>{project?.numberOfOffers} Offers</Box>
-                    <Link to={`/user/project/offer/${project.id}`} className="mx-5">
-                      <img src={openPage} alt="" width={23} />
+                <div className="flex justify-between items-center">
+                  <div className="text-[22px] font-bold">{project?.name}</div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 text-main-color">
+                      <img src={blueOffers} alt="offers icon" width={20} />
+                      <span className="text-[14px] font-medium">
+                        {project?.numberOfOffers} Offers
+                      </span>
+                    </div>
+                    <Link to={`/user/project/offer/${project.id}`}>
+                      <img
+                        src={openPage}
+                        alt="view offers"
+                        width={20}
+                        className="cursor-pointer"
+                      />
                     </Link>
-                  </Box>
+                  </div>
                 </div>
                 <div className="border border-main-color my-3"></div>
-                <ul>
-                  <li className="text-[12px] font-semibold mb-5">
-                    Project details:{" "}
-                    <div className="font-regular">{project?.description}</div>
-                  </li>
-                  <li className="text-[12px] font-semibold">
-                    Language pair:{" "}
+                <div className="text-[15px]">
+                  <div className="font-semibold mb-2">Project details</div>
+                  <div className="font-light">{project?.description}</div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                  <div className="text-[14px]">
+                    <span className="font-semibold">Language Pair:</span>{" "}
                     <span className="font-light">
-                      {project.languageFrom.languageName} (
-                      {project.languageFrom.languageCode}){" "}
-                      - {project.languageTo.languageName} (
-                      {project.languageTo.languageCode})
+                      {project?.languageFrom?.languageName} (
+                      {project?.languageFrom?.languageCode}) -{" "}
+                      {project?.languageTo?.languageName} (
+                      {project?.languageTo?.languageCode})
                     </span>
-                  </li>
-                  <li className="text-[12px] font-semibold">
-                    Category:{" "}
-                    <span className="font-light">{project?.specialization.name}</span>
-                  </li>
-                  <li className="text-[12px] font-semibold">
-                    Delivery time:{" "}
+                  </div>
+                  <div className="text-[14px]">
+                    <span className="font-semibold">Category:</span>{" "}
+                    <span className="font-light">
+                      {project?.specialization?.name}
+                    </span>
+                  </div>
+                  <div className="text-[14px]">
+                    <span className="font-semibold">Delivery Time:</span>{" "}
                     <span className="font-light">{project?.days} days</span>
-                  </li>
-                  <li className="text-[12px] font-semibold">
-                    Budget:{" "}
+                  </div>
+                  <div className="text-[14px]">
+                    <span className="font-semibold">Budget:</span>{" "}
                     <span className="font-light">
-                      $ {project?.minPrice} - $ {project?.maxPrice}
+                      ${project?.minPrice} - ${project?.maxPrice}
                     </span>
-                  </li>
-                </ul>
+                  </div>
+                </div>
+                <div className="flex justify-end mt-4">
+                  <button
+                    onClick={() => deleteMutation.mutate(project.id)}
+                    className="flex items-center gap-2 text-[#FF3B30] hover:opacity-80 transition-opacity"
+                  >
+                    <img src={rabash} alt="delete" width={20} />
+                    <span className="text-[14px] font-medium">Delete</span>
+                  </button>
+                </div>
               </div>
-              <Box className="flex flex-row ml-auto  items-end" sx={{
-                mt:{md:"2rem",xs:"1rem"},
-                justifyContent:{md:"end",xs:"space-around"}
-              }}>
-              <Box className="py-[5px] px-[20px] rounded-lg font-[500] text-main-color items-center" sx={{
-                    display:{md:"none",xs:"flex"}
-                  }}>
-                    <div><img
-                      src={blueOffers}
-                      alt="offers icon"
-                      width={17}
-                      className="mr-1"
-                    /></div>
-                    <Box sx={{
-                      fontSize:17
-                    }}>{project?.numberOfOffers} Offers</Box>
-                    <Link to={`/user/project/offer/${project.id}`} className="mx-5">
-                      <img src={openPage} alt={openPage} width={17} />
-                    </Link>
-                  </Box>
-              <button
-                  type="button"
-                  className="py-[5px] px-[20px] rounded-lg font-[500] text-[20px] text-[#FF3B30] flex"
-                  onClick={() => handleDelete(project.id)}
-                >
-                  <img
-                    src={rabash}
-                    alt="offers icon"
-                    width={20}
-                    className="mr-1"
-                  />
-                  Delete
-                </button>
-              </Box>
             </div>
-          ))
+          ))}
+        </div>
+        {isFetchingNextPage && (
+          <div className="text-center py-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-main-color mx-auto"></div>
+          </div>
         )}
-      </Container>
-      
-    </>
+      </div>
+    </div>
   );
 }
 

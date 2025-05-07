@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { IoMdSend } from "react-icons/io";
-import {
-  FaFileImage,
-  FaFileAlt,
-  FaTimes,
-} from "react-icons/fa";
+import { FaFileImage, FaFileAlt, FaTimes } from "react-icons/fa";
 import { MdAttachFile } from "react-icons/md";
 import logoIcon from "../assets/icons/logo.svg";
 import Loading from "@/pages/Loading";
+import { FadeLoader } from "react-spinners";
+import { rightArrow } from "@/assets/paths";
 
 const Chatbot = ({ user }) => {
   const [messages, setMessages] = useState([]);
@@ -20,7 +18,9 @@ const Chatbot = ({ user }) => {
   const getMessages = async () => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_NODE_URL}/technicalSupport/${user?.userId}`,
+        `${import.meta.env.VITE_BACKEND_NODE_URL}/technicalSupport/${
+          user?.userId
+        }`,
         { headers: { Authorization: `Bearer ${user?.token}` } }
       );
       setMessages(res.data.messages);
@@ -77,7 +77,7 @@ const Chatbot = ({ user }) => {
 
   const getFileIcon = (file) => {
     let fileName = "";
-    if (typeof file === 'string') {
+    if (typeof file === "string") {
       fileName = file;
     } else if (file && file.name) {
       fileName = file.name;
@@ -107,24 +107,34 @@ const Chatbot = ({ user }) => {
         <img src={logoIcon} alt="logo" style={styles.logo} />
         <span style={styles.title}>Tradof Team</span>
       </div>
-
-      <div style={styles.chatBody}>
+      <div style={styles.chatBody} className="custom-scrollbar">
         {messages.length === 0 ? (
-          <Loading />
+          <div className="flex items-center justify-center h-full w-full">
+            <FadeLoader
+              color="#000"
+              // cssOverride={{ width: "0px", height: "0px" }}
+              height={6}
+              width={6}
+              loading
+              margin={-7}
+              radius={10}
+              speedMultiplier={1}
+            />
+          </div>
         ) : (
           messages.map((msg, index) => {
             const isUser = msg.senderId === user?.userId;
-            
+
             return (
               <div key={index} style={styles.messageContainer(isUser)}>
                 <div style={styles.messageBubble(isUser)}>
                   {msg.message}
-                  {msg.file && (
+                  {/* {msg.file && (
                     <div style={styles.fileMessage}>
                       {getFileIcon(msg.file)}
                       {(() => {
                         let fileName = "";
-                        if (typeof msg.file === 'string') {
+                        if (typeof msg.file === "string") {
                           fileName = msg.file;
                         } else if (msg.file && msg.file.name) {
                           fileName = msg.file.name;
@@ -138,12 +148,12 @@ const Chatbot = ({ user }) => {
                           ".bmp",
                           ".webp",
                         ];
-                        if (imageExtensions.some((ext) =>
-                          lowerCaseFile.endsWith(ext)
-                        )) {
-                          return (
-                            <img src={msg.file} style={styles.fileLink} />
-                          );
+                        if (
+                          imageExtensions.some((ext) =>
+                            lowerCaseFile.endsWith(ext)
+                          )
+                        ) {
+                          return <img src={msg.file} style={styles.fileLink} />;
                         } else {
                           return (
                             <a
@@ -158,26 +168,24 @@ const Chatbot = ({ user }) => {
                         }
                       })()}
                     </div>
-                  )}
+                  )} */}
                 </div>
               </div>
             );
           })
         )}
       </div>
-
-      {selectedFile && (
+      {/* {selectedFile && (
         <div style={styles.filePreview}>
           {getFileIcon(selectedFile)}
           <span style={styles.fileName}>{selectedFile.name}</span>
           <FaTimes style={styles.removeIcon} onClick={removeFile} />
         </div>
-      )}
-
-      {uploadError && <p style={styles.error}>{uploadError}</p>} {/* عرض رسالة الخطأ */}
-
+      )} */}
+      {uploadError && <p style={styles.error}>{uploadError}</p>}{" "}
+      {/* عرض رسالة الخطأ */}
       <div style={styles.inputBox}>
-        <label style={styles.attachButton}>
+        {/* <label style={styles.attachButton}>
           <FaFileImage size={20} color="#7b61ff" />
           <input
             type="file"
@@ -185,9 +193,8 @@ const Chatbot = ({ user }) => {
             onChange={handleFileChange}
             style={{ display: "none" }}
           />
-        </label>
-        <input
-          type="text"
+        </label> */}
+        <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Message..."
@@ -202,7 +209,7 @@ const Chatbot = ({ user }) => {
           {uploading ? (
             <div style={styles.spinner} />
           ) : (
-            <IoMdSend color="#fff" size={20} />
+            <img src={rightArrow} alt="send" width={20} />
           )}
         </button>
       </div>
@@ -212,8 +219,8 @@ const Chatbot = ({ user }) => {
 
 const styles = {
   wrapper: {
-    width: 320,
-    height: 500,
+    width: 250,
+    height: 400,
     borderRadius: 12,
     overflow: "hidden",
     boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
@@ -225,17 +232,17 @@ const styles = {
   header: {
     backgroundColor: "#7b61ff",
     color: "#fff",
-    padding: "12px 16px",
+    padding: "10px 15px",
     display: "flex",
     alignItems: "center",
   },
   logo: {
-    marginRight: 8,
-    width: 24,
+    marginRight: 4,
+    width: 20,
   },
   title: {
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 12,
   },
   chatBody: {
     flex: 1,
@@ -257,6 +264,9 @@ const styles = {
     maxWidth: "75%",
     borderTopRightRadius: isUser ? 0 : 12,
     borderTopLeftRadius: isUser ? 12 : 0,
+    wordWrap: "break-word",
+    whiteSpace: "pre-wrap",
+    overflowWrap: "break-word",
   }),
   fileMessage: {
     display: "flex",
@@ -298,9 +308,11 @@ const styles = {
   },
   inputBox: {
     display: "flex",
-    padding: "10px 12px",
-    borderTop: "1px solid #eee",
+    padding: "8px",
     backgroundColor: "#fafafa",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "5px",
   },
   attachButton: {
     cursor: "pointer",
@@ -310,19 +322,23 @@ const styles = {
   },
   input: {
     flex: 1,
-    padding: "10px 14px",
+    padding: "5px 10px",
     borderRadius: 20,
     border: "1px solid #ccc",
     outline: "none",
-    fontSize: 14,
-    margin: "0 8px",
+    fontSize: 12,
+    resize: "none",
+    height: "32px",
+    minHeight: "32px",
+    maxHeight: "50px",
+    overflow: "hidden",
   },
   sendButton: {
-    backgroundColor: "#7b61ff",
+    // backgroundColor: "#7b61ff",
     border: "none",
     borderRadius: "50%",
-    width: 40,
-    height: 40,
+    width: 20,
+    height: 20,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",

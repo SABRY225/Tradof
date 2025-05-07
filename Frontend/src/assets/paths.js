@@ -39,10 +39,10 @@ import whitePlus from "./icons/whitePlus.svg";
 import closeWhite from "./icons/closeWhite.svg";
 import layer from "./icons/layer.svg";
 import Done_ring_round from "./icons/Done_ring_round.svg";
-import plus from './icons/plus.svg';
-import clock from './icons/clock.svg';
-import group_light2 from './icons/group_ligth2.svg';
-import calendar from './icons/calendar.svg';
+import plus from "./icons/plus.svg";
+import clock from "./icons/clock.svg";
+import group_light2 from "./icons/group_ligth2.svg";
+import calendar from "./icons/calendar.svg";
 import people from "./icons/people.svg";
 import group_list from "./icons/group_list.svg";
 import group_light from "./icons/group_ligth.svg";
@@ -54,11 +54,19 @@ import emptyStare from "./icons/emptyStare.svg";
 import folder_add from "./icons/folder_add.svg";
 import file from "./icons/file.svg";
 import send from "./icons/send.svg";
-import googleColor from './icons/googleColor.svg';
+import googleColor from "./icons/googleColor.svg";
 import meeting from "./icons/meeting.svg";
-import strongBox from './icons/strongBox.svg';
-import cardTick from './icons/card-tick.svg';
-import cardRemove from './icons/card-remove.svg';
+import strongBox from "./icons/strongBox.svg";
+import cardTick from "./icons/card-tick.svg";
+import cardRemove from "./icons/card-remove.svg";
+import folder from "./icons/folder.svg";
+import download from "./icons/download.svg";
+import xlsx from "./icons/Xlsx.svg";
+import docs from "./icons/Docs.svg";
+import image from "./icons/image.svg";
+import PDF from "./icons/Pdf.svg";
+import rightArrow from "./icons/rightArrow.svg";
+
 export {
   // a
   active,
@@ -90,6 +98,8 @@ export {
   darkPhone,
   dwonarrow,
   Done_ring_round,
+  download,
+  docs,
   // e
   emptyStare,
   // f
@@ -98,6 +108,7 @@ export {
   finances,
   folder_add,
   file,
+  folder,
   // g
   gmail,
   grayOffers,
@@ -108,6 +119,7 @@ export {
   googleColor,
   // h
   // i
+  image,
   // j
   // k
   // l
@@ -127,9 +139,11 @@ export {
   plus,
   person,
   people,
+  PDF,
   // q
   // r
   rabash,
+  rightArrow,
   // s
   share,
   search,
@@ -145,6 +159,7 @@ export {
   // w
   whitePlus,
   // x
+  xlsx,
   // y
   // z
 };

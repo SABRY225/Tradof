@@ -30,7 +30,7 @@ export const getAllSubscriptions = async () => {
     const response = await axios.get(
       `https://tradofserver.azurewebsites.net/api/package`
     );
-    
+
     return response.data.data;
   } catch (error) {
     if (error.response) {
@@ -87,13 +87,10 @@ export const getCountryById = async ({ signal, id }) => {
 };
 
 // get all languages for register
-export const getAllLanguages = async ({ signal }) => {
+export const getAllLanguages = async () => {
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/language`,
-      {
-        signal,
-      }
+      `${import.meta.env.VITE_BACKEND_URL}/language`
     );
     return response.data;
   } catch (error) {
@@ -108,13 +105,10 @@ export const getAllLanguages = async ({ signal }) => {
 };
 
 // get all specialization for register
-export const getAllSpecializations = async ({ signal }) => {
+export const getAllSpecializations = async () => {
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/specialization`,
-      {
-        signal,
-      }
+      `${import.meta.env.VITE_BACKEND_URL}/specialization`
     );
     return response.data;
   } catch (error) {
@@ -352,7 +346,7 @@ export const changePassword = async ({ signal, data }) => {
 };
 
 // SABRY API
-export const fatchDataUser = async ({userId,token}) => {
+export const fatchDataUser = async ({ userId, token }) => {
   try {
     const response = await axios.get(
       `${import.meta.env.VITE_BACKEND_URL}/auth/user/${userId}`,
@@ -426,11 +420,11 @@ export const fatchProjectCard = async ({ id, token }) => {
   }
 };
 
-export const sendFeedback=async({token,rate,reasonRate,idea})=>{
+export const sendFeedback = async ({ token, rate, reasonRate, idea }) => {
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_NODE_URL}/feedback`,
-      {rate,reasonRate,idea},
+      { rate, reasonRate, idea },
       {
         headers: {
           Authorization: `${token}`,
@@ -448,13 +442,14 @@ export const sendFeedback=async({token,rate,reasonRate,idea})=>{
     }
     throw new Error(error.message || "An unexpected error occurred");
   }
+};
 
-}
-
-export const searchAskQuestion = async({token,query})=>{
+export const searchAskQuestion = async ({ token, query }) => {
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_NODE_URL}/askQuestion/search?query=${query}`,
+      `${
+        import.meta.env.VITE_BACKEND_NODE_URL
+      }/askQuestion/search?query=${query}`,
       {
         headers: {
           Authorization: `${token}`,
@@ -472,13 +467,13 @@ export const searchAskQuestion = async({token,query})=>{
     }
     throw new Error(error.message || "An unexpected error occurred");
   }
-}
+};
 
-export const sendAskQuestion = async({token,question})=>{
+export const sendAskQuestion = async ({ token, question }) => {
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_NODE_URL}/askQuestion`,
-      {question},
+      { question },
       {
         headers: {
           Authorization: `${token}`,
@@ -496,7 +491,7 @@ export const sendAskQuestion = async({token,question})=>{
     }
     throw new Error(error.message || "An unexpected error occurred");
   }
-}
+};
 
 // rabi3 in code
 
@@ -660,4 +655,73 @@ export const signByGoogle = async () => {
     console.error("Login process timed out.");
     cleanup();
   }, 2 * 60 * 1000);
+};
+
+export const addReview = async ({ id }) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/user/increase-profile-view/${id}`,
+      {},
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error();
+      err.code = error.response.status;
+      err.message =
+        error.response.data?.message || "An error occurred while add review";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const settingNotification = async ({ token, data }) => {
+  try {
+    const response = await axios.patch(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/notification/setting`,
+      data,
+      {
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error();
+      err.code = error.response.status;
+      err.message =
+        error.response.data?.message || "An error occurred while set setting";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const getSettingNotification = async ({ token }) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/notification/setting`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    // console.log(response);
+    return response.data.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error();
+      err.code = error.response.status;
+      err.message =
+        error.response.data?.message || "An error occurred while get setting";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
 };

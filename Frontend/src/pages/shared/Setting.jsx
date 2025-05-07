@@ -43,9 +43,9 @@ export default function Setting() {
   };
 
   const socialMedia = data?.socialMedia || data?.freelancerSocialMedias;
-  console.log(socialMedia);
+  // console.log(socialMedia);
   return (
-    <div className="bg-background-color py-[50px]">
+    <div className="bg-background-color">
       <PageTitle title="Settings" subtitle="Edit your data" />
       <div className="container max-w-screen-xl mx-auto">
         {/* Edit Profile */}

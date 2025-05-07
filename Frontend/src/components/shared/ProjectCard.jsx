@@ -1,7 +1,7 @@
 import { useAuth } from "@/context/AuthContext";
 import ButtonFelid from "@/UI/ButtonFelid";
 import { askForReview } from "@/Util/Https/freelancerHttp";
-import { ProjectStatus } from "@/Util/projectStatus";
+import { ProjectStatus } from "@/Util/status";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useRevalidator } from "react-router-dom";
@@ -177,9 +177,7 @@ export default function ProjectCard({ projectDetails }) {
             <div className="step-three flex flex-col items-center space-y-1">
               <h1
                 className={`bg-main-color text-white rounded-full w-6 h-6 text-center ${
-                  projectDetails?.state !== "Finished"
-                    ? "bg-opacity-[0.5]"
-                    : ""
+                  projectDetails?.state !== "Finished" ? "bg-opacity-[0.5]" : ""
                 }`}
               >
                 3
