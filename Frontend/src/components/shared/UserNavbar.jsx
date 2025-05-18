@@ -1,17 +1,20 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-
 import {
-  logo,
-  profilePhoto,
-  calender,
-  notification,
-  droplist,
-} from "../../assets/paths.js";
+  Link,
+  redirect,
+  useLoaderData,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+
+import { logo, calender, notification, droplist } from "../../assets/paths.js";
 import DropList from "../../components/Navbar/DropList";
 import { useAuth } from "@/context/AuthContext.jsx";
 import Notification from "./Notification.jsx";
+import { getFreelancer } from "@/Util/Https/freelancerHttp.js";
+import { getCompany } from "@/Util/Https/companyHttp.js";
+import Cookies from "js-cookie";
 
 const CompanyList = [
   {
@@ -58,6 +61,8 @@ export default function UserNavbar() {
   const dropdownRef = useRef(null);
   const dropdownRefNotification = useRef(null);
   const [activePath, setActivePath] = useState(location.pathname);
+  const { person } = useLoaderData();
+  // console.log(person);
   useEffect(() => {
     setIsDropdownOpen(null);
     setIsNavOpen(false);
@@ -80,7 +85,6 @@ export default function UserNavbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  console.log(isDropdownOpen);
   return (
     <nav
       initial={{ y: "-15rem" }}
@@ -99,16 +103,22 @@ export default function UserNavbar() {
           <Link to="/user/calender">
             <img src={calender} alt="calender icon" />
           </Link>
-          <div ref={dropdownRefNotification} className="pt-[9px]">
-            <button
-              type="button"
-              onClick={() =>
-                setIsDropdownOpen((prev) => (prev ? null : "notification"))
-              }
-            >
-              <img src={notification} alt="notification icon" className="w-5" />
-            </button>
-          </div>
+          <Link to="/user/dashboard#notification">
+            <div ref={dropdownRefNotification} className="pt-[9px]">
+              <button
+                type="button"
+                onClick={() =>
+                  setIsDropdownOpen((prev) => (prev ? null : "notification"))
+                }
+              >
+                <img
+                  src={notification}
+                  alt="notification icon"
+                  className="w-5"
+                />
+              </button>
+            </div>
+          </Link>
           <div ref={dropdownRef}>
             <button
               type="button"
@@ -120,7 +130,7 @@ export default function UserNavbar() {
               <span className="sr-only">Open user menu</span>
               <img
                 className="rounded-full w-[40px] h-[40px] object-cover"
-                src={profilePhoto}
+                src={person?.profileImageUrl}
                 alt="user photo"
               />
             </button>
@@ -136,8 +146,9 @@ export default function UserNavbar() {
                   transition={{ duration: 0.2 }}
                 >
                   <DropList
-                    name="Mohamed Abdalrazek"
-                    email="abdalrazekmohamed6@gmail.com"
+                    name={person?.firstName + " " + person?.lastName}
+                    email={person?.email}
+                    photoImage={person?.profileImageUrl}
                   />
                 </motion.div>
               )}
@@ -183,3 +194,43 @@ export default function UserNavbar() {
     </nav>
   );
 }
+
+export const userDataLoader = async ({ request }) => {
+  const url = new URL(request.url);
+  const isShare = url.searchParams.get("share") === "true";
+  // console.log(isShare);
+  if (isShare) {
+    const dataParam = url.searchParams.get("data");
+    const role = url.searchParams.get("role");
+    const sharedData = dataParam
+      ? JSON.parse(decodeURIComponent(dataParam))
+      : null;
+    console.log(sharedData);
+    return { person: sharedData, role };
+  }
+
+  const token = Cookies.get("token");
+  const role = Cookies.get("role");
+  const userId = Cookies.get("userId");
+
+  if (!token || !role || !userId) {
+    return redirect("/auth");
+  }
+  console.log(token, role, userId);
+  try {
+    const personData =
+      role === "Freelancer"
+        ? await getFreelancer({
+            id: userId,
+            token,
+          })
+        : await getCompany({
+            id: userId,
+            token,
+          });
+    return { person: personData };
+  } catch (error) {
+    console.error("Failed to fetch project:", error);
+    throw new Response("Failed to load project data", { status: 500 });
+  }
+};

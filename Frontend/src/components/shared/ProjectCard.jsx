@@ -1,25 +1,76 @@
 import { useAuth } from "@/context/AuthContext";
 import ButtonFelid from "@/UI/ButtonFelid";
-import { reviewRequest } from "@/Util/Https/freelancerHttp";
+import { askForReview } from "@/Util/Https/freelancerHttp";
+import { ProjectStatus } from "@/Util/status";
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { useRevalidator } from "react-router-dom";
+import { finishProject } from "@/Util/Https/companyHttp";
 
 export default function ProjectCard({ projectDetails }) {
+  const { revalidate } = useRevalidator();
+
   const {
-    user: { token },
+    user: { userId, token, role },
   } = useAuth();
   const {
     mutate: requestReview,
     data,
     isPending,
   } = useMutation({
-    mutationFn: reviewRequest,
+    mutationFn: askForReview,
     onSuccess: (data) => {
-      console.log("Request sent successfully", data);
+      toast.success("Send review request successfully", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+      revalidate();
     },
     onError: (error) => {
-      console.error("Error sending request", error);
+      toast.error(error?.message || "Error sending request", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
     },
   });
+
+  const { mutate: Finished, isPending: isFinishing } = useMutation({
+    mutationFn: finishProject,
+    onSuccess: (data) => {
+      toast.success("Project finished successfully", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+      revalidate();
+    },
+    onError: (error) => {
+      toast.error(error?.message || "Error sending request", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+    },
+  });
+
   const isoString = projectDetails?.publicationDate;
   const date = new Date(isoString);
   const formattedDate = date.toLocaleString("en-US", {
@@ -36,8 +87,38 @@ export default function ProjectCard({ projectDetails }) {
     day: Math.floor(totalDays) % 7,
   };
   const handleClick = () => {
-    requestReview({ id: projectDetails?.id, token });
+    if (role === "Freelancer") {
+      requestReview({
+        projectId: projectDetails?.id,
+        token,
+        freelancerId: userId,
+      });
+    } else {
+      Finished({
+        token,
+        id: projectDetails?.id,
+      });
+    }
   };
+  let style = "";
+  console.log(projectDetails);
+  switch (projectDetails?.state) {
+    case "Active":
+      style = "text-[#00A200]";
+      break;
+    case "Pending":
+      style = "text-[#ffa200]";
+      break;
+    case "InProgress":
+      style = "text-[#A20000]";
+      break;
+    case "OnReviewing":
+      style = "text-[#007eff]";
+      break;
+    case "Finished":
+      style = "text-[#A26A00]";
+      break;
+  }
   return (
     <div className=" flex-1 h-[100%]">
       <h1 className="italic border-b-2 border-main-color w-fit ml-2 pl-2">
@@ -48,13 +129,7 @@ export default function ProjectCard({ projectDetails }) {
           <table className="border-separate border-spacing-x-2 text-[15px]">
             <tr>
               <td>Project state</td>
-              <td
-                className={`${
-                  projectDetails?.state === "accept"
-                    ? "text-green-500"
-                    : "text-second-color"
-                } font-semibold`}
-              >
+              <td className={`${style} font-semibold`}>
                 {projectDetails?.state}
               </td>
             </tr>
@@ -76,30 +151,59 @@ export default function ProjectCard({ projectDetails }) {
           <h1 className="font-medium">Project Status</h1>
           <div className="flex w-[80%] m-auto justify-between my-5">
             <div className="step-one flex flex-col items-center space-y-1">
-              <h1 className="bg-main-color text-white rounded-full w-6 h-6 text-center">
+              <h1
+                className={`bg-main-color text-white rounded-full w-6 h-6 text-center ${
+                  projectDetails?.state !== "Active" ? "bg-opacity-[0.5]" : ""
+                }`}
+              >
                 1
               </h1>
-              <h2 className="font-roboto-condensed">Work</h2>
+              <h2 className="font-roboto-condensed">Active</h2>
             </div>
             <div className="bg-main-color mt-3 flex-1 h-[2px] rounded"></div>
             <div className="step-two flex flex-col items-center space-y-1">
-              <h1 className="bg-main-color text-white rounded-full w-6 h-6 text-center bg-opacity-[0.5]">
+              <h1
+                className={`bg-main-color text-white rounded-full w-6 h-6 text-center ${
+                  projectDetails?.state !== "OnReviewing"
+                    ? "bg-opacity-[0.5]"
+                    : ""
+                }`}
+              >
                 2
               </h1>
               <h2>Review</h2>
             </div>
             <div className="bg-main-color mt-3 flex-1 h-[2px] rounded"></div>
             <div className="step-three flex flex-col items-center space-y-1">
-              <h1 className="bg-main-color text-white rounded-full w-6 h-6 text-center bg-opacity-[0.5]">
+              <h1
+                className={`bg-main-color text-white rounded-full w-6 h-6 text-center ${
+                  projectDetails?.state !== "Finished" ? "bg-opacity-[0.5]" : ""
+                }`}
+              >
                 3
               </h1>
               <h2 className="font-roboto-condensed">Finish</h2>
             </div>
           </div>
           <ButtonFelid
-            text="Request a review"
-            classes="bg-second-color px-2 py-1 font-regular m-auto"
+            text={
+              projectDetails?.state === "Active"
+                ? "Request a review"
+                : "Accept a project"
+            }
+            classes={`${
+              projectDetails?.state === "Active" && role === "CompanyAdmin"
+                ? "bg-gray-400 cursor-not-allowed"
+                : projectDetails?.state === "OnReviewing" &&
+                  role === "Freelancer"
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-second-color"
+            }  px-2 py-1 font-regular m-auto`}
             onClick={handleClick}
+            disable={
+              (projectDetails?.state === "Active" && role === "CompanyAdmin") ||
+              (projectDetails?.state === "OnReviewing" && role === "Freelancer")
+            }
           />
         </div>
       </div>

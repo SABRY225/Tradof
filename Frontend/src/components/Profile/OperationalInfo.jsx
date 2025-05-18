@@ -19,10 +19,12 @@ import { toast } from "react-toastify";
 export default function OperationalInfo({
   preferredLanguages,
   industriesServed,
+  isShared,
 }) {
-  const {
-    user: { userId, token },
-  } = useAuth();
+  const { user } = useAuth() || {};
+  const userId = user?.userId;
+  const token = user?.token;
+
   const [handleLanguage, setHandleLanguage] = useState([]);
   const [preferredLang, setPreferredLang] = useState(null);
   const [specialization, setSpecialization] = useState(null);

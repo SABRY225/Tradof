@@ -1,39 +1,104 @@
-import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { getSettingNotification, settingNotification } from "@/Util/Https/http";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { FadeLoader } from "react-spinners";
+import { toast } from "react-toastify";
 
 const notes = [
   {
-    key: "emailAlerts",
+    key: "sendEmail",
     title: "Activate sending email alerts",
     description: "Send a message if there is a project that suits you",
   },
   {
-    key: "offerAlerts",
+    key: "alertOffers",
     title: "Send alerts about any offers you make",
     description:
       "Send a message in case of approval or rejection of your offer",
   },
   {
-    key: "clientMessages",
+    key: "messageChat",
     title: "Special message alerts from any client",
     description: "Send an alert if the project owner sends you a message",
   },
 ];
 
 export default function Notifications() {
+  const { user } = useAuth();
+  const token = user?.token; // or get it from context
   const [notifications, setNotifications] = useState({
-    emailAlerts: true,
-    offerAlerts: false,
-    clientMessages: false,
+    sendEmail: false,
+    alertOffers: false,
+    messageChat: false,
+  });
+  console.log(token);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["notificationSettings"],
+    queryFn: () => getSettingNotification({ token }),
+    enabled: !!token, // only run if token exists
+  });
+  const mutation = useMutation({
+    mutationFn: ({ data }) => settingNotification({ token, data }),
+    onSuccess: () => {
+      toast.success("Set setting success", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+    },
+    onError: (error) => {
+      toast.error(error?.message || "set setting failed!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+    },
   });
 
+  useEffect(() => {
+    console.log(data);
+    setNotifications({
+      sendEmail: data?.sendEmail,
+      alertOffers: data?.alertOffers,
+      messageChat: data?.messageChat,
+    });
+  }, [data]);
   const toggleNotification = (key) => {
+    mutation.mutate({
+      data: {
+        ...notifications,
+        [key]: !notifications[key],
+      },
+      token,
+    });
     setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
   };
   return (
     <>
       {/* Notifications */}
-      <h1 className="text-[20px] font-roboto-condensed font-medium italic border-b-2 border-main-color w-fit mt-5 pl-5 ml-5">
+      <h1 className="flex items-center gap-6 text-[20px] font-roboto-condensed font-medium italic border-b-2 border-main-color w-fit mt-5 pl-5 ml-5">
         Notifications
+        {mutation.isPending && (
+          <FadeLoader
+            color="#000"
+            cssOverride={{ width: "0px", height: "0px" }}
+            height={3}
+            width={3}
+            loading
+            margin={-11}
+            radius={15}
+            speedMultiplier={1}
+          />
+        )}
       </h1>
       <div className="bg-card-color rounded-[8px] p-[30px]">
         <div className="space-y-3">

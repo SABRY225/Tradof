@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import person from "../../../assets/images/1560a64114a9372e.jpg";
 import { openPage } from "../../../assets/paths.js";
-import { ProjectStatus } from "../../../Util/projectStatus";
+import { ProjectStatus } from "../../../Util/status";
 import { getStartedProjects } from "@/Util/Https/companyHttp";
 import { useAuth } from "@/context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function StartProject() {
   const {
@@ -16,7 +17,7 @@ export default function StartProject() {
   });
   const navigate = useNavigate();
 
-  const { items } = data || [];
+  const { items } = data || { items: [] };
   if (isError) {
     console.error("Error fetching data:", error);
     toast.error("Error fetching data", {
@@ -64,7 +65,11 @@ export default function StartProject() {
               <li
                 key={project.id}
                 className="relative bg-white py-[10px] px-[30px] rounded-lg shadow"
-                onClick={() => navigate(`../project/${project.id}`)}
+                onClick={() =>
+                  +project?.status.statusValue === +ProjectStatus.Finished
+                    ? navigate(`../project/pay/${project.id}`)
+                    : navigate(`../project/${project.id}`)
+                }
               >
                 <div className="flex items-center gap-3">
                   <img
@@ -85,7 +90,9 @@ export default function StartProject() {
                 <ul>
                   <li className="text-[12px] font-semibold">
                     Start at:{" "}
-                    <span className="font-light">{project?.startDate}</span>
+                    <span className="font-light">
+                      {new Date(project?.startDate).toLocaleDateString()}
+                    </span>
                   </li>
                   <li className="text-[12px] font-semibold">
                     Deadline:{" "}
@@ -94,7 +101,7 @@ export default function StartProject() {
                   <li className="text-[12px] font-semibold">
                     Price:{" "}
                     <span className="font-light">
-                      ${project?.minPrice + " - " + project?.maxPrice}
+                      ${project?.price}
                     </span>
                   </li>
                 </ul>

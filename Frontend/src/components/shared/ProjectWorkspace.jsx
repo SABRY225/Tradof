@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 
 export default function Workspace({ files, projectId }) {
   const {
-    user: { token },
+    user: { token, role },
   } = useAuth();
   const [currentFiles, setCurrentFiles] = useState(files);
   const [fileId, setFileId] = useState(null);
@@ -47,10 +47,10 @@ export default function Workspace({ files, projectId }) {
       });
     },
   });
-  const { mutate: deleteFile , isPending: isDeleted} = useMutation({
+  const { mutate: deleteFile, isPending: isDeleted } = useMutation({
     mutationFn: deleteProjectFile,
     onSuccess: (data) => {
-      console.log("Error deleting file:", data);
+      console.log("success deleting file:", data);
       const updatedFiles = currentFiles.filter((file) => file.id !== fileId);
       setCurrentFiles(updatedFiles);
       toast.success("File is deleted", {
@@ -91,12 +91,22 @@ export default function Workspace({ files, projectId }) {
       if (!file) return;
       const formData = new FormData();
       formData.append("files", file);
+      formData.append("isFreelancerUpload", true); // Add it to formData ✨
       console.log("FormData:", formData);
       for (let [key, value] of formData.entries()) {
-        console.log(`${key}:`, value.name);
+        if (value instanceof File) {
+          console.log(`${key}:`, value.name); // if it's a file, show file name
+        } else {
+          console.log(`${key}:`, value); // if it's normal field (like "true"), show value directly
+        }
       }
 
-      addFile({ data: formData, token, projectId });
+      addFile({
+        data: formData,
+        isFreelancerUpload: true,
+        token,
+        projectId,
+      });
     });
     e.target.value = null;
   };
@@ -112,39 +122,44 @@ export default function Workspace({ files, projectId }) {
         Workspace
       </h1>
       <div className="space-y-[20px] bg-card-color rounded-[8px] px-[20px] py-[10px]">
-        <div className="flex justify-between items-center">
-          <h1 className="text-main-color font-medium">Upload files</h1>
-          <div className="flex items-center gap-5">
-            {isPending && (
-              <FadeLoader
-                color="#000"
-                cssOverride={{ width: "0px", height: "0px" }}
-                height={3}
-                width={3}
-                loading
-                margin={-11}
-                radius={15}
-                speedMultiplier={1}
-              />
-            )}
-            <button
-              onClick={handleClick}
-              className="bg-second-color text-white px-2 py-1 rounded-md flex items-center gap-2 font-medium"
-            >
-              <img src={folder_add} alt="" />
-              Add files
-            </button>
+        {role === "Freelancer" && (
+          <div className="flex justify-between items-center">
+            <h1 className="text-main-color font-medium">Upload files</h1>
+            <div className="flex items-center gap-5">
+              {isPending && (
+                <FadeLoader
+                  color="#000"
+                  cssOverride={{ width: "0px", height: "0px" }}
+                  height={3}
+                  width={3}
+                  loading
+                  margin={-11}
+                  radius={15}
+                  speedMultiplier={1}
+                />
+              )}
+              <button
+                onClick={handleClick}
+                className={`bg-second-color text-white px-2 py-1 rounded-md flex items-center gap-2 font-medium ${
+                  isPending ? "opacity-[0.8] cursor-not-allowed" : ""
+                }`}
+                disabled={isPending}
+              >
+                <img src={folder_add} alt="" />
+                Add files
+              </button>
 
-            <input
-              type="file"
-              name="file"
-              multiple
-              ref={fileInputRef}
-              onChange={handleFileUpload}
-              className="hidden"
-            />
+              <input
+                type="file"
+                name="file"
+                multiple
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+            </div>
           </div>
-        </div>
+        )}
         {!currentFiles || currentFiles.length === 0 ? (
           <p>No files uploaded for this project.</p>
         ) : (
@@ -198,12 +213,22 @@ export default function Workspace({ files, projectId }) {
                                 Download
                               </Link>
                             </button>
-                            <button
-                              className="text-red-600 font-medium text-[10px] hover:underline"
-                              onClick={() => handleDeleteFile({ id: file.id })}
-                            >
-                              Delete
-                            </button>
+
+                            {role === "Freelancer" && (
+                              <button
+                                className={`text-red-600 font-medium text-[10px] hover:underline ${
+                                  fileId === file.id && isDeleted
+                                    ? "opacity-[0.8] cursor-not-allowed"
+                                    : ""
+                                }`}
+                                onClick={() =>
+                                  handleDeleteFile({ id: file.id })
+                                }
+                                disabled={fileId === file.id && isDeleted}
+                              >
+                                Delete
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -227,12 +252,18 @@ function formatFileSize(bytes) {
 
 function getFileType(typeId) {
   switch (typeId) {
+    case 0:
+      return "PDF";
     case 1:
       return "Excel";
     case 2:
       return "Word";
     case 3:
-      return "PDF";
+      return "PNG";
+    case 4:
+      return "JPEG";
+    case 5:
+      return "JPG";
     default:
       return "Unknown";
   }

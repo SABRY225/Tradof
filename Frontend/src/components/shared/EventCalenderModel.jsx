@@ -177,8 +177,11 @@ export default function EventModel({
             )}{" "}
             <ButtonFelid
               type="submit"
-              classes="font-semibold text-[12px] px-[20px] py-[5px] bg-second-color"
+              classes={`font-semibold text-[12px] px-[20px] py-[5px] bg-second-color ${
+                isPending ? "opacity-[0.8] cursor-not-allowed" : ""
+              }`}
               text="Add event"
+              disabled={isPending}
             />
           </DialogFooter>
         </form>

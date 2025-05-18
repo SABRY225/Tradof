@@ -20,7 +20,6 @@ export default function Login() {
   const navigate = useNavigate();
   const { mutate, data, isPending } = useMutation({
     mutationFn: loginUser,
-    // onSuccess: (data) => {
     onSuccess: async (data) => {
       Cookies.set("token", data.token, {
         expires: 7,

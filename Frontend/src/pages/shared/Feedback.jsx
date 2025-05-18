@@ -1,18 +1,30 @@
-import { useState } from 'react';
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Container, Typography, TextField, Button, Box, Slider } from '@mui/material';
-import feedbackImg from '@/assets/images/feedback.png';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFaceFrown, faFaceFrownOpen, faFaceMeh, faFaceSmile } from '@fortawesome/free-solid-svg-icons';
-import { sendFeedback } from '@/Util/Https/http';
-import Cookies from 'js-cookie';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  Slider,
+} from "@mui/material";
+import feedbackImg from "@/assets/images/feedback.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFaceFrown,
+  faFaceFrownOpen,
+  faFaceMeh,
+  faFaceSmile,
+} from "@fortawesome/free-solid-svg-icons";
+import { sendFeedback } from "@/Util/Https/http";
+import Cookies from "js-cookie";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 function Feedback() {
   const [rating, setRating] = useState(50);
-  const [reason, setReason] = useState('');
-  const [idea, setIdea] = useState('');
+  const [reason, setReason] = useState("");
+  const [idea, setIdea] = useState("");
   const token = Cookies.get("token");
   const navigate = useNavigate();
 
@@ -24,11 +36,11 @@ function Feedback() {
         25: "Bad",
         50: "Good",
         75: "Very Good",
-        100: "Excellent"
+        100: "Excellent",
       };
 
       const rate = ratingsMap[rating];
-      if(!rate || !reason){
+      if (!rate || !reason) {
         toast.error("rete and reason for rate are required.", {
           position: "top-right",
           autoClose: 3000,
@@ -40,7 +52,12 @@ function Feedback() {
         });
       }
 
-      const data = await sendFeedback({ token, rate, reasonRate: reason, idea });
+      const data = await sendFeedback({
+        token,
+        rate,
+        reasonRate: reason,
+        idea,
+      });
       console.log("Feedback response:", data);
       toast.success(data?.message, {
         position: "top-right",
@@ -51,7 +68,7 @@ function Feedback() {
         draggable: false,
         progress: undefined,
       });
-      navigate("/user/dashboard")
+      navigate("/user/dashboard");
     } catch (error) {
       toast.error(error?.message, {
         position: "top-right",
@@ -65,11 +82,10 @@ function Feedback() {
     }
   };
 
-
-
   return (
     <>
       <div className="relative overflow-hidden">
+        <div className="bg-background-color absolute top-0 left-0 w-full h-full z-[-1]"></div>
         <motion.div
           initial={{ y: "-300rem" }}
           animate={{ y: "0" }}
@@ -89,10 +105,13 @@ function Feedback() {
           }}
         ></motion.div>
 
-        <Container maxWidth="xl" sx={{
-          py: 4,
-          mx: { xs: '0px', md: '100px' } 
-        }}>
+        <Container
+          maxWidth="xl"
+          sx={{
+            py: 4,
+            mx: { xs: "0px", md: "100px" },
+          }}
+        >
           <div className="flex gap-8 md:w-[90%] w-full">
             <motion.div
               initial={{ x: "-500rem" }}
@@ -100,38 +119,48 @@ function Feedback() {
               transition={{ type: "keyframes", duration: 1.2 }}
               className="flex flex-col gap-[30px] items-start py-8 px-4 w-full md:w-1/2"
             >
-              <Typography sx={{
-                fontSize: '46px',
-                color: 'white',
-                fontWeight: 500,
-                width: '100%',
-                fontFamily: 'Roboto, sans-serif'
-              }}>
+              <Typography
+                sx={{
+                  fontSize: "46px",
+                  color: "white",
+                  fontWeight: 500,
+                  width: "100%",
+                  fontFamily: "Roboto, sans-serif",
+                }}
+              >
                 Give us feedback
               </Typography>
 
-              <Typography sx={{
-                color: 'white',
-                opacity: 0.7,
-                fontFamily: 'Roboto, sans-serif',
-              }}>
-                What do you think of the issue search experience within Tradof projects
+              <Typography
+                sx={{
+                  color: "white",
+                  opacity: 0.7,
+                  fontFamily: "Roboto, sans-serif",
+                }}
+              >
+                What do you think of the issue search experience within Tradof
+                projects
               </Typography>
 
-              <Box sx={{ width: '100%', color: 'white', position: 'relative' }}>
-                <div style={{
-                  position: 'absolute',
-                  left: `${rating}%`,
-                  transform: 'translateX(-50%)',
-                  transition: 'left 0.3s ease',
-                }}>
-                  <FontAwesomeIcon 
+              <Box sx={{ width: "100%", color: "white", position: "relative" }}>
+                <div
+                  style={{
+                    position: "absolute",
+                    left: `${rating}%`,
+                    transform: "translateX(-50%)",
+                    transition: "left 0.3s ease",
+                  }}
+                >
+                  <FontAwesomeIcon
                     icon={
-                      rating <= 24 ? faFaceFrown :
-                      rating <= 49 ? faFaceFrownOpen :
-                      rating <= 74 ? faFaceMeh :
-                      faFaceSmile
-                    } 
+                      rating <= 24
+                        ? faFaceFrown
+                        : rating <= 49
+                        ? faFaceFrownOpen
+                        : rating <= 74
+                        ? faFaceMeh
+                        : faFaceSmile
+                    }
                     className="text-white text-3xl"
                   />
                 </div>
@@ -144,44 +173,48 @@ function Feedback() {
                     { value: 25 },
                     { value: 50 },
                     { value: 75 },
-                    { value: 100 }
+                    { value: 100 },
                   ]}
                   sx={{
-                    color: 'white',
-                    height: '16px',
+                    color: "white",
+                    height: "16px",
                     mt: 4,
-                    '& .MuiSlider-thumb': {
-                      bgcolor: 'white',
+                    "& .MuiSlider-thumb": {
+                      bgcolor: "white",
                     },
-                    '& .MuiSlider-track': {
-                      bgcolor: '#6C63FF',
+                    "& .MuiSlider-track": {
+                      bgcolor: "#6C63FF",
                     },
-                    '& .MuiSlider-rail': {
-                      bgcolor: 'white',
-                      opacity: 0.8
+                    "& .MuiSlider-rail": {
+                      bgcolor: "white",
+                      opacity: 0.8,
                     },
-                    '& .MuiSlider-mark': {
-                      bgcolor: 'white',
-                    }
+                    "& .MuiSlider-mark": {
+                      bgcolor: "white",
+                    },
                   }}
                 />
-                <Typography 
-                  sx={{ 
-                    color: 'white', 
-                    fontSize: '15px',
-                    position: 'absolute',
+                <Typography
+                  sx={{
+                    color: "white",
+                    fontSize: "15px",
+                    position: "absolute",
                     left: `${rating}%`,
-                    bottom: '-7px',
-                    transform: 'translateX(-50%)',
-                    transition: 'left 0.3s ease',
-                    whiteSpace: 'nowrap'
+                    bottom: "-7px",
+                    transform: "translateX(-50%)",
+                    transition: "left 0.3s ease",
+                    whiteSpace: "nowrap",
                   }}
                 >
-                  {rating <= 24 ? 'Very Poor' :
-                   rating <= 49 ? 'Poor' :
-                   rating <= 74 ? 'Good' :
-                   rating <= 99 ? 'Very Good' :
-                   'Excellent'}
+                  {rating <= 24
+                    ? "Very Poor"
+                    : rating <= 49
+                    ? "Poor"
+                    : rating <= 74
+                    ? "Good"
+                    : rating <= 99
+                    ? "Very Good"
+                    : "Excellent"}
                 </Typography>
               </Box>
 
@@ -200,27 +233,28 @@ function Feedback() {
                   }}
                   sx={{
                     mb: 3,
-                    '& .MuiOutlinedInput-root': {
-                      backgroundColor: 'transparent',
+                    "& .MuiOutlinedInput-root": {
+                      backgroundColor: "transparent",
                       borderRadius: 2,
-                      color: 'white'
+                      color: "white",
                     },
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: 'white'
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "white",
                     },
-                    '& .MuiInputLabel-root': {
-                      color: 'white',
-                      backgroundColor: '#6c63ff',
-                      px: 1
+                    "& .MuiInputLabel-root": {
+                      color: "white",
+                      backgroundColor: "#6c63ff",
+                      px: 1,
                     },
-                    '& textarea::placeholder': {
-                      color: 'rgba(255, 255, 255, 0.7)'
-                    }
+                    "& textarea::placeholder": {
+                      color: "rgba(255, 255, 255, 0.7)",
+                    },
                   }}
                 />
 
-                <Typography sx={{ color: 'white', mb: 3, opacity: 0.7 }}>
-                  If you have ideas to improve the experience, share them with us.
+                <Typography sx={{ color: "white", mb: 3, opacity: 0.7 }}>
+                  If you have ideas to improve the experience, share them with
+                  us.
                 </Typography>
 
                 <TextField
@@ -237,22 +271,22 @@ function Feedback() {
                   }}
                   sx={{
                     mb: 4,
-                    '& .MuiOutlinedInput-root': {
-                      backgroundColor: 'transparent',
+                    "& .MuiOutlinedInput-root": {
+                      backgroundColor: "transparent",
                       borderRadius: 2,
-                      color: 'white'
+                      color: "white",
                     },
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: 'white'
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "white",
                     },
-                    '& .MuiInputLabel-root': {
-                      color: 'white',
-                      backgroundColor: '#6c63ff',
-                      px: 1
+                    "& .MuiInputLabel-root": {
+                      color: "white",
+                      backgroundColor: "#6c63ff",
+                      px: 1,
                     },
-                    '& textarea::placeholder': {
-                      color: 'rgba(255, 255, 255, 0.7)'
-                    }
+                    "& textarea::placeholder": {
+                      color: "rgba(255, 255, 255, 0.7)",
+                    },
                   }}
                 />
 
@@ -263,11 +297,11 @@ function Feedback() {
                     sx={{
                       px: 4,
                       py: 1,
-                      bgcolor: '#FF6B6B',
-                      '&:hover': {
-                        bgcolor: '#FF5252'
+                      bgcolor: "#FF6B6B",
+                      "&:hover": {
+                        bgcolor: "#FF5252",
                       },
-                      borderRadius: 1
+                      borderRadius: 1,
                     }}
                   >
                     Send

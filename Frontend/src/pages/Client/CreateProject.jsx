@@ -180,9 +180,9 @@ export default function CreateProject() {
   };
 
   return (
-    <>
+    <div className="bg-background-color">
       <PageTitle title="Create Project" />
-      <div className="container max-w-screen-xl mx-auto p-4 w-full my-[30px]">
+      <div className="container max-w-screen-xl mx-auto p-4 w-full mt-[30px]">
         <h1 className="text-[20px] italic border-b-2 border-main-color w-fit pl-5 ml-5">
           Project Information
         </h1>
@@ -521,6 +521,19 @@ export default function CreateProject() {
           </div>
         </form>
       </div>
-    </>
+    </div>
   );
 }
+
+export const basicDataLoader = async () => {
+  try {
+    const languages = await getAllLanguages();
+    const specializations = await getAllSpecializations();
+    return { languages, specializations };
+  } catch (error) {
+    console.error("Failed to fetch languages and specializations:", error);
+    throw new Response("Failed to load languages and specializations", {
+      status: 500,
+    });
+  }
+};

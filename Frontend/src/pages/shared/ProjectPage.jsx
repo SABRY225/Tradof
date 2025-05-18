@@ -31,8 +31,13 @@ export default function ProjectPage() {
     budget: projectCard?.budget,
     duration: projectCard?.duration,
   };
-
-
+  const freelancerFiles = project?.files.filter(
+    (file) => file.isFreelancerUpload === true
+  );
+  // console.log(project);
+  const companyFiles = project?.files.filter(
+    (file) => file.isFreelancerUpload === false
+  );
   return (
     <div className="bg-background-color">
       <div className="container max-w-screen-xl mx-auto w-full p-5 py-[30px]">
@@ -50,8 +55,11 @@ export default function ProjectPage() {
             </div>
           </div>
           <div className="col-start-1 col-end-12 lg:col-start-4 lg:col-end-9 row-start-6 lg:row-start-1 row-end-6">
-            <ProjectDetails project={project} />
-            <Workspace files={project?.files || []} projectId={project?.id} />
+            <ProjectDetails
+              project={project}
+              projectFiles={companyFiles || []}
+            />
+            <Workspace files={freelancerFiles || []} projectId={project?.id} />
           </div>
           <div className="col-start-1 lg:col-start-9 col-end-12 row-start-12 lg:row-start-1">
             <Chatting

@@ -16,11 +16,13 @@ const DisableInput = ({ label, value }) => {
 };
 
 export default function ProfileInformation({ profileData }) {
+  
   const { data: country } = useQuery({
     queryKey: ["country"],
     queryFn: ({ signal }) =>
       getCountryById({ signal, id: profileData.country }),
   });
+
 
   return (
     <div>
@@ -34,7 +36,7 @@ export default function ProfileInformation({ profileData }) {
               src={profileData.image}
               alt="Profile"
               width={140}
-              className="h-[140px] rounded-full border-4 border-white shadow-lg"
+              className="h-[140px] rounded-full border-4 border-white shadow-lg object-cover"
             />
             <div className="space-y-1">
               <h3 className="text-xl font-bold font-poppins">

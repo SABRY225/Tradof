@@ -13,10 +13,11 @@ import Combobox from "../ui/Combobox";
 import { closeWhite } from "../../assets/paths";
 import { getAllSpecializations, queryClient } from "@/Util/Https/http";
 
-export default function ProfessionalDetails({ professionalDetails }) {
-  const {
-    user: { userId, token },
-  } = useAuth();
+export default function ProfessionalDetails({ professionalDetails, isShared }) {
+  const { user } = useAuth() || {};
+  const userId = user?.userId;
+  const token = user?.token;
+
   const [CV, setCV] = useState(professionalDetails.cv);
   const [specialization, setSpecialization] = useState(null);
   const { data: specializations } = useQuery({
@@ -119,7 +120,11 @@ export default function ProfessionalDetails({ professionalDetails }) {
           (temp) => temp.id === specialization
         )
       );
-      if (professionalDetails.certifications.find((temp) => temp.id === specialization)) {
+      if (
+        professionalDetails.certifications.find(
+          (temp) => temp.id === specialization
+        )
+      ) {
         toast.success("Specialization already exist", {
           position: "top-right",
           autoClose: 3000,
@@ -154,71 +159,78 @@ export default function ProfessionalDetails({ professionalDetails }) {
                 Download CV
               </Link>
             )}
-            <div className="flex items-center gap-5">
-              {isPending && (
-                <FadeLoader
-                  color="#000"
-                  cssOverride={{ width: "0px", height: "0px" }}
-                  height={3}
-                  width={3}
-                  loading
-                  margin={-11}
-                  radius={15}
-                  speedMultiplier={1}
+            {!isShared && (
+              <div className="flex items-center gap-5">
+                {isPending && (
+                  <FadeLoader
+                    color="#000"
+                    cssOverride={{ width: "0px", height: "0px" }}
+                    height={3}
+                    width={3}
+                    loading
+                    margin={-11}
+                    radius={15}
+                    speedMultiplier={1}
+                  />
+                )}
+                <label
+                  htmlFor="cv"
+                  className="cursor-pointer bg-second-color text-white px-3 py-1 rounded-lg text-sm font-poppins"
+                >
+                  {CV ? "Edit" : "Upload"}
+                </label>
+                <input
+                  type="file"
+                  name="cv"
+                  id="cv"
+                  className="hidden"
+                  onChange={handleFileChange}
                 />
-              )}
-              <label
-                htmlFor="cv"
-                className="cursor-pointer bg-second-color text-white px-3 py-1 rounded-lg text-sm font-poppins"
-              >
-                {CV ? "Edit" : "Upload"}
-              </label>
-              <input
-                type="file"
-                name="cv"
-                id="cv"
-                className="hidden"
-                onChange={handleFileChange}
-              />
-            </div>
+              </div>
+            )}
           </div>
         </div>
         <div className="flex flex-col gap-3">
           <h1 className="">Specializations</h1>
-          <div className="flex gap-5  items-center max-w-[400px] ">
-            {specializations && (
-              <Combobox
-                List={specializations}
-                initial="Select Specialization"
-                value={specialization}
-                onChange={(val) => {
-                  setSpecialization(val);
-                }}
-              />
-            )}
-            <button
-              type="button"
-              className="text-white bg-second-color rounded-md px-2"
-              onClick={handleAddSpecialization}
-            >
-              Add
-            </button>
-          </div>
+          {!isShared && (
+            <div className="flex gap-5  items-center max-w-[400px] ">
+              {specializations && (
+                <Combobox
+                  List={specializations}
+                  initial="Select Specialization"
+                  value={specialization}
+                  onChange={(val) => {
+                    setSpecialization(val);
+                  }}
+                />
+              )}
+              <button
+                type="button"
+                className="text-white bg-second-color rounded-md px-2"
+                onClick={handleAddSpecialization}
+              >
+                Add
+              </button>
+            </div>
+          )}
+
           <ul className="flex gap-2">
             {professionalDetails.certifications.map((certification, index) => (
               <li
                 key={certification.id}
-                className="flex w-fit bg-second-color text-white pl-2 rounded-sm"
+                className="flex w-fit bg-second-color text-white px-2 rounded-sm"
               >
                 <span>{certification.name}</span>
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleDeleteSpecialization({ id: certification.id })
-                  }
-                >
-                  <img src={closeWhite} />
-                </button>
+                {!isShared && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleDeleteSpecialization({ id: certification.id })
+                    }
+                  >
+                    <img src={closeWhite} />
+                  </button>
+                )}
               </li>
             ))}
           </ul>

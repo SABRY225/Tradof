@@ -1,91 +1,11 @@
 import { AnimatePresence, motion } from "motion/react";
-import { ProjectStatus } from "@/Util/projectStatus";
+import { ProjectStatus } from "@/Util/status";
 import photo from "../../../assets/images/1560a64114a9372e.jpg";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentProjects } from "@/Util/Https/freelancerHttp";
 import { useNavigate } from "react-router-dom";
-
-const projects = [
-  {
-    id: 1,
-    description: "Translation of an article about me sad dasad",
-    owner: {
-      image: photo,
-      name: "Mohamed Abdalrazek",
-    },
-    startAt: "2024-10-15",
-    deadlineByDays: "21",
-    status: ProjectStatus.ACTIVE,
-  },
-  {
-    id: 2,
-    description: "Translation of an article about me sad dasad",
-    owner: {
-      image: photo,
-      name: "Mohamed Abdalrazek",
-    },
-    startAt: "2024-10-15",
-    deadlineByDays: "21",
-    status: ProjectStatus.COMPLETED,
-  },
-  {
-    id: 3,
-    description: "Translation of an article about me sad dasad",
-    owner: {
-      image: photo,
-      name: "Mohamed Abdalrazek",
-    },
-    startAt: "2024-10-15",
-    deadlineByDays: "21",
-    status: ProjectStatus.INPROGRESS,
-  },
-  {
-    id: 4,
-    description: "Translation of an article about me sad dasad",
-    owner: {
-      image: photo,
-      name: "Mohamed Abdalrazek",
-    },
-    startAt: "2024-10-15",
-    deadlineByDays: "21",
-    status: ProjectStatus.INPROGRESS,
-  },
-  {
-    id: 5,
-    description: "Translation of an article about me sad dasad",
-    owner: {
-      image: photo,
-      name: "Mohamed Abdalrazek",
-    },
-    startAt: "2024-10-15",
-    deadlineByDays: "21",
-    status: ProjectStatus.INPROGRESS,
-  },
-  {
-    id: 6,
-    description: "Translation of an article about me sad dasad",
-    owner: {
-      image: photo,
-      name: "Mohamed Abdalrazek",
-    },
-    startAt: "2024-10-15",
-    deadlineByDays: "21",
-    status: ProjectStatus.INPROGRESS,
-  },
-  {
-    id: 7,
-    description: "Translation of an article about me sad dasad",
-    owner: {
-      image: photo,
-      name: "Mohamed Abdalrazek",
-    },
-    startAt: "2024-10-15",
-    deadlineByDays: "21",
-    status: ProjectStatus.INPROGRESS,
-  },
-];
 
 export default function CurrentProjects({ classes }) {
   const {
@@ -165,19 +85,25 @@ export default function CurrentProjects({ classes }) {
                 day < 10 ? "0" + day : day
               }/${year}`;
             };
-console.log(project?.startDate);
+            console.log(project?.startDate);
             const formattedStartDate = formatDate(project?.startDate);
             // const formattedEndDate = formatDate(project?.endDate);
 
             let style = "";
-            switch (project.status) {
-              case ProjectStatus.ACTIVE:
+            switch (+project?.status.statusValue) {
+              case +ProjectStatus.Active:
                 style = "text-[#00A200] bg-[#C3FFC3]";
                 break;
-              case ProjectStatus.INPROGRESS:
+              case +ProjectStatus.Pending:
+                style = "text-[#ffa200] bg-[#fff9c3]";
+                break;
+              case +ProjectStatus.InProgress:
                 style = "text-[#A20000] bg-[#FFC3C3]";
                 break;
-              case ProjectStatus.COMPLETED:
+              case +ProjectStatus.OnReviewing:
+                style = "text-[#007eff] bg-[#c3f3ff]";
+                break;
+              case +ProjectStatus.Finished:
                 style = "text-[#A26A00] bg-[#FFEAC3]";
                 break;
             }
@@ -185,7 +111,11 @@ console.log(project?.startDate);
             return (
               <motion.div
                 key={project.id}
-                onClick={() => navigate(`../project/${project.id}`)}
+                onClick={() =>
+                  +project?.status.statusValue === 4
+                    ? navigate(`../project/pay/${project.id}`)
+                    : navigate(`../project/${project.id}`)
+                }
                 className="bg-white border-b-[8px] border-background-color grid grid-cols-5 items-center"
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -210,7 +140,7 @@ console.log(project?.startDate);
                 <div className="p-3 text-[13px]">{deadlineByDays} days</div>
                 <div className="p-3 w-[80px]">
                   <div
-                    className={`w-[80px] rounded-lg font-[500] text-[13px] ${style}`}
+                    className={`w-[100px] text-center rounded font-[500] text-[13px] ${style}`}
                   >
                     {project?.status.statusName}
                   </div>

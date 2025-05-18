@@ -12,11 +12,9 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { FadeLoader } from "react-spinners";
 
-export default function TranslationServices({ languagesPairs }) {
+export default function TranslationServices({ languagesPairs, isShared }) {
   const [handleLanguage, setHandleLanguage] = useState([]);
-  const {
-    user: { userId, token },
-  } = useAuth();
+  const { user } = useAuth();
   const {
     handleSubmit,
     control,
@@ -115,8 +113,8 @@ export default function TranslationServices({ languagesPairs }) {
       console.log(selectedFrom, selectedTo);
       mutate({
         data: [{ languageFromId: selectedFrom, languageToId: selectedTo }],
-        token,
-        id: userId,
+        token: user?.token,
+        id: user?.userId,
       });
     } else {
       toast.error("Must be select both languages pair", {
@@ -132,7 +130,7 @@ export default function TranslationServices({ languagesPairs }) {
   };
 
   const handleDeleteLanguage = ({ id }) => {
-    deleteLang({ data: [id], token, id: userId });
+    deleteLang({ data: [id], token: user?.token, id: user?.userId });
   };
 
   // console.log(data);
@@ -142,67 +140,69 @@ export default function TranslationServices({ languagesPairs }) {
         Translation Services
       </h1>
       <div className="space-y-[20px] bg-card-color rounded-[8px] px-[50px] py-[30px]">
-        <div className="controls flex flex-col md:flex-row gap-5 justify-end">
-          {/* Language Pair */}
-          <div className="grid md:grid-cols-2 gap-4 flex-1">
-            <div className="max-w-[300px] md:w-full">
-              {handleLanguage && (
-                <Combobox
-                  List={handleLanguage}
-                  initial="From language"
-                  value={selectedFrom}
-                  onChange={(val) => {
-                    setValue("languagePair.from", val);
-                    clearErrors("languagePair.from");
-                  }}
+        {!isShared && (
+          <div className="controls flex flex-col md:flex-row gap-5 justify-end">
+            {/* Language Pair */}
+            <div className="grid md:grid-cols-2 gap-4 flex-1">
+              <div className="max-w-[300px] md:w-full">
+                {handleLanguage && (
+                  <Combobox
+                    List={handleLanguage}
+                    initial="From language"
+                    value={selectedFrom}
+                    onChange={(val) => {
+                      setValue("languagePair.from", val);
+                      clearErrors("languagePair.from");
+                    }}
+                  />
+                )}
+                {errors.languagePair?.from && (
+                  <p className="text-red-500 text-sm">
+                    {errors.languagePair.from.message}
+                  </p>
+                )}
+              </div>
+              <div className="max-w-[300px] md:w-full">
+                {handleLanguage && (
+                  <Combobox
+                    List={handleLanguage}
+                    initial="To language"
+                    value={selectedTo}
+                    onChange={(val) => {
+                      setValue("languagePair.to", val);
+                      clearErrors("languagePair.to");
+                    }}
+                  />
+                )}
+                {errors.languagePair?.to && (
+                  <p className="text-red-500 text-sm">
+                    {errors.languagePair.to.message}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              {isPending && (
+                <FadeLoader
+                  color="#000"
+                  cssOverride={{ width: "0px", height: "0px" }}
+                  height={3}
+                  width={3}
+                  loading
+                  margin={-11}
+                  radius={15}
+                  speedMultiplier={1}
                 />
               )}
-              {errors.languagePair?.from && (
-                <p className="text-red-500 text-sm">
-                  {errors.languagePair.from.message}
-                </p>
-              )}
-            </div>
-            <div className="max-w-[300px] md:w-full">
-              {handleLanguage && (
-                <Combobox
-                  List={handleLanguage}
-                  initial="To language"
-                  value={selectedTo}
-                  onChange={(val) => {
-                    setValue("languagePair.to", val);
-                    clearErrors("languagePair.to");
-                  }}
-                />
-              )}
-              {errors.languagePair?.to && (
-                <p className="text-red-500 text-sm">
-                  {errors.languagePair.to.message}
-                </p>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            {isPending && (
-              <FadeLoader
-                color="#000"
-                cssOverride={{ width: "0px", height: "0px" }}
-                height={3}
-                width={3}
-                loading
-                margin={-11}
-                radius={15}
-                speedMultiplier={1}
+              <ButtonFelid
+                text="Add new language pair"
+                type="button"
+                classes="font-semibold text-[13px] px-[18px] py-[5px] bg-second-color rounded-full"
+                onClick={handleAddLanguage}
               />
-            )}
-            <ButtonFelid
-              text="Add new language pair"
-              type="button"
-              classes="font-semibold text-[13px] px-[18px] py-[5px] bg-second-color rounded-full"
-              onClick={handleAddLanguage}
-            />
+            </div>
           </div>
-        </div>
+        )}
         <div className="max-h-[500px] overflow-y-auto">
           <table className="font-poppins min-w-full bg-white rounded-md overflow-auto">
             <thead className="bg-card-color">
@@ -229,15 +229,17 @@ export default function TranslationServices({ languagesPairs }) {
                     {pair.from.langCode}-{pair.from.countryCode} -{" "}
                     {pair.to.langCode}-{pair.to.countryCode}
                   </td>
-                  <td className="p-3 px-5">
-                    <button
-                      type="button"
-                      className="text-red-500 font-semibold"
-                      onClick={() => handleDeleteLanguage({ id: pair.id })}
-                    >
-                      Delete
-                    </button>
-                  </td>
+                  {!isShared && (
+                    <td className="p-3 px-5">
+                      <button
+                        type="button"
+                        className="text-red-500 font-semibold"
+                        onClick={() => handleDeleteLanguage({ id: pair.id })}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
