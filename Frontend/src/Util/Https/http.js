@@ -583,15 +583,15 @@ export const createEvent = async ({ token, data }) => {
       if (role === "Freelancer") {
         throw new Error("You not allow to create meetings.");
       }
-      if (!participation?.exist) {
-        // console.log(participation);
-        throw new Error("Not allow to create meeting with this user.");
-      }
       const participation = await checkFreelancerEmailExists({
         token,
         emailToCheck: data.people[0],
         companyId: userId,
       });
+      if (!participation?.exist) {
+        // console.log(participation);
+        throw new Error("Not allow to create meeting with this user.");
+      }
       newDate = {
         ...data,
         participation: {

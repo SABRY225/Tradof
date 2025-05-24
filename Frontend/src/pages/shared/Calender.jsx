@@ -225,7 +225,6 @@ export default function Calender() {
 
   const {
     mutate,
-    data: newEvent,
     isPending,
   } = useMutation({
     mutationFn: createEvent,
