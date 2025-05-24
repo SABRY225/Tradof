@@ -8,7 +8,6 @@ import {
   blackOffers,
   chat,
 } from "../../assets/paths";
-import { socket } from "@/Util/socket";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-toastify";
 import {
@@ -20,6 +19,7 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { useSocket } from "@/context/SocketProvider";
 
 const commonClasses =
   "font-epilogue outline-none border-[1px] text-[12px] border-[#D6D7D7] rounded-full p-2 px-3 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]";
@@ -54,6 +54,8 @@ export default function Notification({ classes }) {
   const {
     user: { userId },
   } = useAuth();
+    const socket = useSocket();
+
   const [notifications, setNotifications] = useState({
     notifications: [],
     unseenCount: 0,

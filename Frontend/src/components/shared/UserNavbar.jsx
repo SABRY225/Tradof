@@ -54,6 +54,7 @@ const FreelancerList = [
 export default function UserNavbar() {
   const {
     user: { role },
+    setUserData,
   } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(null);
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -62,7 +63,13 @@ export default function UserNavbar() {
   const dropdownRefNotification = useRef(null);
   const [activePath, setActivePath] = useState(location.pathname);
   const { person } = useLoaderData();
-  // console.log(person);
+
+  useEffect(() => {
+    if (person) {
+      setUserData(person);
+    }
+  }, [person]);
+
   useEffect(() => {
     setIsDropdownOpen(null);
     setIsNavOpen(false);

@@ -66,6 +66,8 @@ import docs from "./icons/Docs.svg";
 import image from "./icons/image.svg";
 import PDF from "./icons/Pdf.svg";
 import rightArrow from "./icons/rightArrow.svg";
+import video from "./icons/video.svg";
+import closeVideo from './icons/close-video.svg'
 
 export {
   // a
@@ -89,6 +91,7 @@ export {
   closeWhite,
   cardTick,
   cardRemove,
+  closeVideo,
   // d
   droplist,
   darkFacebook,
@@ -156,6 +159,7 @@ export {
   // u
   upperarrow,
   // v
+  video,
   // w
   whitePlus,
   // x

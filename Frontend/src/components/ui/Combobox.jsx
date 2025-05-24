@@ -19,7 +19,7 @@ import {
 
 export default function Combobox({ List, initial, value, onChange, className }) {
   const [open, setOpen] = React.useState(false);
-  // console.log(List, value);
+  console.log(List, value);
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>

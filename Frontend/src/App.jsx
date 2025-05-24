@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 import { MantineProvider } from "@mantine/core";
+import { StreamProvider } from "@/context/StreamContext";
 
 import "@mantine/core/styles.css";
 import "@mantine/core/styles/global.css";
@@ -59,6 +60,9 @@ import ProjectPage, { projectLoader } from "./pages/shared/ProjectPage";
 import ErrorPage from "./pages/ErrorPage";
 import PayProject, { payProjectLoader } from "./pages/shared/PayProject";
 import { userDataLoader } from "./components/shared/UserNavbar";
+import Waiting from "./pages/Meeting/Waiting";
+import Room from "./pages/Meeting/Room";
+import { SocketProvider } from "./context/SocketProvider";
 
 // create routes
 const router = createBrowserRouter([
@@ -88,6 +92,20 @@ const router = createBrowserRouter([
       { path: "sign-up", element: <Register /> },
       { path: "confirm-email", element: <ConfirmEmail /> },
       { path: "verify-email", element: <VerifyEmail /> },
+    ],
+  },
+  {
+    path: "/meeting",
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "waiting/:roomId",
+        element: <Waiting />,
+      },
+      {
+        path: "room/:roomId",
+        element: <Room />,
+      },
     ],
   },
   {
@@ -193,16 +211,18 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <>
-      <MantineProvider withGlobalStyles withNormalizeCSS>
-        <ToastContainer stacked position="top-center" autoClose={3000} />
-        <AuthProvider>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </AuthProvider>
-      </MantineProvider>
-    </>
+    <StreamProvider>
+      <SocketProvider>
+        <MantineProvider withGlobalStyles withNormalizeCSS>
+          <ToastContainer stacked position="top-center" autoClose={3000} />
+          <AuthProvider>
+            <QueryClientProvider client={queryClient}>
+              <RouterProvider router={router} />
+            </QueryClientProvider>
+          </AuthProvider>
+        </MantineProvider>
+      </SocketProvider>
+    </StreamProvider>
   );
 }
 
