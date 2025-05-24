@@ -8,6 +8,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import { Select, Space } from "antd";
 import { Button, Modal } from "antd";
 import TextArea from "antd/es/input/TextArea";
+import { useAuth } from "@/context/AuthContext";
 
 dayjs.extend(customParseFormat);
 const dateFormat = "YYYY-MM-DD HH:mm";
@@ -20,6 +21,9 @@ export default function EventModel({
   isPending,
   participation,
 }) {
+  const {
+    user: { role },
+  } = useAuth();
   const startDate = new Date(date);
   const endDate = new Date(startDate);
   endDate.setHours(endDate.getHours() + 1); // Add 1 hour
@@ -164,19 +168,21 @@ export default function EventModel({
                 clearErrors("description");
               }}
               placeholder="event description"
-              className="col-span-2"
+              className={role === "CompanyAdmin" ? "col-span-2" : "col-span-3"}
               autoSize={{ minRows: 1, maxRows: 5 }}
             />
-            <Select
-              defaultValue={formDate.isMeeting ? "Meeting" : "Event"}
-              style={{ width: 120 }}
-              onChange={() => setValue("isMeeting", !formDate.isMeeting)}
-              className="h-full max-h-[40px]"
-              options={[
-                { value: "event", label: "Event" },
-                { value: "meeting", label: "Meeting" },
-              ]}
-            />
+            {role === "CompanyAdmin" && (
+              <Select
+                defaultValue={formDate.isMeeting ? "Meeting" : "Event"}
+                style={{ width: 120 }}
+                onChange={(value) => setValue("isMeeting", value === "meeting")}
+                className="h-full max-h-[40px]"
+                options={[
+                  { value: "event", label: "Event" },
+                  { value: "meeting", label: "Meeting" },
+                ]}
+              />
+            )}
             {errors.description && (
               <p className="text-red-500 text-[12px] col-start-2 row-start-2">
                 {errors.description.message}

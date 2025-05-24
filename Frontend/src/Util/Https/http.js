@@ -577,19 +577,22 @@ export const createEvent = async ({ token, data }) => {
   const userId = Cookies.get("userId");
   const role = Cookies.get("role");
   try {
+    let newDate = data;
     console.log(token, data.people[0], userId);
-    const participation = await checkFreelancerEmailExists({
-      token,
-      emailToCheck: data.people[0],
-      companyId: userId,
-    });
-    // console.log(participation);
-    if (!participation?.exist) {
-      throw new Error("Not allow to create meeting with this user.");
-    }
-    const response = await axios.post(
-      `${import.meta.env.VITE_CALENDER_URL}/event`,
-      {
+    if (data.isMeeting) {
+      if (role === "Freelancer") {
+        throw new Error("You not allow to create meetings.");
+      }
+      if (!participation?.exist) {
+        // console.log(participation);
+        throw new Error("Not allow to create meeting with this user.");
+      }
+      const participation = await checkFreelancerEmailExists({
+        token,
+        emailToCheck: data.people[0],
+        companyId: userId,
+      });
+      newDate = {
         ...data,
         participation: {
           firstName: participation.freelancerFirstName,
@@ -599,7 +602,12 @@ export const createEvent = async ({ token, data }) => {
           email: participation.freelancerEmail,
           role: role === "CompanyAdmin" ? "Freelancer" : "CompanyAdmin",
         },
-      },
+      };
+    }
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_CALENDER_URL}/event`,
+      newDate,
       {
         headers: {
           Authorization: token,
@@ -792,5 +800,23 @@ export const getSettingNotification = async ({ token }) => {
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Event related endpoints
+export const deleteEvent = async ({ token, eventId }) => {
+  console.log(token, eventId);
+  try {
+    const response = await axios.delete(
+      `${import.meta.env.VITE_CALENDER_URL}/${eventId}`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
   }
 };

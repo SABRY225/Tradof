@@ -18,13 +18,21 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { colors, colorsKeys } from "@/Util/colors";
 import Cookies from "js-cookie";
-import { createCalender, createEvent, getAllEvents } from "@/Util/Https/http";
+import {
+  createCalender,
+  createEvent,
+  deleteEvent,
+  getAllEvents,
+} from "@/Util/Https/http";
 import { Link, useLoaderData } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import Loading from "../Loading";
 import { use } from "react";
+
+import { Loader2, Trash2 } from "lucide-react";
+import { Button } from "antd";
 
 dayjs.extend(customParseFormat);
 
@@ -39,7 +47,44 @@ const getRandomCalendarId = () => {
 const customComponents = {
   eventModal: ({ calendarEvent }) => {
     const { user } = useAuth();
-    console.log(user);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const queryClient = useQueryClient();
+    const token = Cookies.get("token");
+    console.log(calendarEvent);;
+    const handleDelete = async () => {
+      if (window.confirm("Are you sure you want to delete this event?")) {
+        try {
+          setIsDeleting(true);
+          await deleteEvent({ token, eventId: calendarEvent.id });
+          // Refetch all events
+          await queryClient.invalidateQueries(["events"]);
+          toast.success("Event deleted successfully", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            progress: undefined,
+          });
+          // Reload the page after successful deletion
+          window.location.reload();
+        } catch (error) {
+          toast.error(error.message || "Failed to delete event", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            progress: undefined,
+          });
+        } finally {
+          setIsDeleting(false);
+        }
+      }
+    };
+
     return (
       <div className="p-4 bg-white rounded-lg shadow-lg">
         <div className="space-y-3">
@@ -47,15 +92,30 @@ const customComponents = {
             <h3 className="text-xl font-semibold text-gray-800">
               {calendarEvent.title}
             </h3>
-            <span
-              className={`px-2 py-1 text-sm rounded-full ${
-                calendarEvent.isMeeting
-                  ? "bg-blue-100 text-blue-800"
-                  : "bg-green-100 text-green-800"
-              }`}
-            >
-              {calendarEvent.isMeeting ? "Meeting" : "Event"}
-            </span>
+            <div className="flex items-center gap-2">
+              <span
+                className={`px-2 py-1 text-sm rounded-full ${
+                  calendarEvent.isMeeting
+                    ? "bg-blue-100 text-blue-800"
+                    : "bg-green-100 text-green-800"
+                }`}
+              >
+                {calendarEvent.isMeeting ? "Meeting" : "Event"}
+              </span>
+              <Button
+                key="button"
+                color="danger"
+                variant="filled"
+                loading={isDeleting}
+                onClick={handleDelete}
+                className="text-red-500 w-fit"
+              >
+                <div className="flex items-center gap-2">
+                  <Trash2 className="h-4 w-4 text-red" />
+                  Delete
+                </div>
+              </Button>
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -219,6 +279,7 @@ export default function Calender() {
     placeholderData: (prev) => prev,
     retry: 1,
   });
+  console.log(data);
   const calender = useLoaderData();
   if (calender?.error) {
     toast.error(calendar?.message || "create calender failed!", {
@@ -317,6 +378,7 @@ export default function Calender() {
     if (hasLoadedRef.current || !data?.data) return;
 
     const transformEvent = (event) => ({
+      ...event,
       id: event._id,
       title: event.title,
       start: dayjs(event.startDate).format(dateFormat),
