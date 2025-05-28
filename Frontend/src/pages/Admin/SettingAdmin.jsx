@@ -1,89 +1,50 @@
 import AddAdmin from "@/components/Setting/AddAdmin"
-import CompanyEmployees from "@/components/Setting/CompanyEmployees"
-import EditProfile from "@/components/Setting/EditProfile"
+import EditProfileAdmin from "@/components/Setting/EditProfileAdmin"
 import Plans from "@/components/Setting/Plans"
-import Subscription from "@/components/Setting/Subscription"
+import { useAuth } from "@/context/AuthContext"
 import PageTitle from "@/UI/PageTitle"
+import { GetAllAdmins } from "@/Util/Https/adminHttp"
+import { fatchDataUser, getAllSubscriptions } from "@/Util/Https/http"
+import Cookies from "js-cookie"
+import { useEffect, useState } from "react"
 
 function SettingAdmin() {
-    const profileData=[]
-    const employees=[]
-    const subscriptionData=[]
-    const plans=[
-      {
-        planName:"Free",
-        Duration:"1 Month",
-        Price:"0 EUR"
-      }
-      ,
-      {
-        planName:"Free",
-        Duration:"1 Month",
-        Price:"0 EUR"
-      }
-      ,
-      {
-        planName:"Free",
-        Duration:"1 Month",
-        Price:"0 EUR"
-      }
-    ]
-    
-    
-    const admins = [
-      {
-        name: "Ahmed Nady",
-        jobTitle: "HR",
-        email: "dev.ahmed.nady@gmail.com",
-        password: "12345678910ma",
-        phone: "01023536355",
-        city: "Qena",
-        country: "Egypt",
-        permission: "Project Management",
-      },
-      // Duplicate entries to match the provided table structure
-      {
-        name: "Ahmed Nady",
-        jobTitle: "HR",
-        email: "dev.ahmed.nady@gmail.com",
-        password: "12345678910ma",
-        phone: "01023536355",
-        city: "Qena",
-        country: "Egypt",
-        permission: "Project Management",
-      },
-      {
-        name: "Ahmed Nady",
-        jobTitle: "HR",
-        email: "dev.ahmed.nady@gmail.com",
-        password: "12345678910ma",
-        phone: "01023536355",
-        city: "Qena",
-        country: "Egypt",
-        permission: "Project Management",
-      },
-      {
-        name: "Ahmed Nady",
-        jobTitle: "HR",
-        email: "dev.ahmed.nady@gmail.com",
-        password: "12345678910ma",
-        phone: "01023536355",
-        city: "Qena",
-        country: "Egypt",
-        permission: "Project Management",
-      },
-    ];
-    
-    
-    
-    
-        
+  const [profileData,setProfileDate] = useState(null);
+  const [admins,setAdmins] = useState([]);
+  const [plans,setPlans] = useState([]);
+const {
+    user: { userId, token },
+  } = useAuth();
+  console.log(userId);
+  
+  useEffect(()=>{
+    const fetchUser=async()=>{
+      const data=await fatchDataUser({userId,token});
+      setProfileDate(data)
+    }
+    const fetchAdmins=async()=>{
+      const data=await GetAllAdmins();
+      setAdmins(data)
+    }
+    const fetchPlans=async()=>{
+      const data=await getAllSubscriptions();
+      console.log(data);
+      
+      setPlans(data)
+    }
+    fetchUser();
+    fetchAdmins();
+    fetchPlans();
+  },[])
+
+
+
   return (
-<div className="bg-background-color py-[50px]">
+    <div className="bg-background-color py-[50px]">
       <PageTitle title="Settings" subtitle="Edit your data" />
       <div className="container max-w-screen-xl mx-auto">
-        <EditProfile profileData={profileData || []} />
-        <AddAdmin admins={admins } />
+        {/* <EditProfileAdmin profileData={profileData } /> */}
+        <AddAdmin admins={admins} />
         <Plans plans={plans} />
 
       </div>

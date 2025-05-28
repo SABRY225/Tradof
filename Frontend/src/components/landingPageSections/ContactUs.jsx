@@ -84,7 +84,7 @@ export default function ContactUs({ ...prams }) {
   return (
     <>
       <div
-        className="hidden polygon-background-2 z-[-1] absolute bg-[#d2d4f6] h-screen md:w-full w-[92vh] md:flex items-center justify-center "
+        className="hidden polygon-background-2 z-[-1] absolute bg-[#d2d4f6] h-screen w-full md:flex items-center justify-center "
         style={{
           clipPath: "polygon(0px 20%, 100% 0, 100% 100%, 0% 100%)",
         }}

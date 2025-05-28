@@ -11,6 +11,7 @@ function Plans({plans}) {
       <div className="flex justify-between  items-center  bg-background-color py-3 px-5  text-[17px] font-roboto-condensed font-bold border border-background-color rounded mt-5 text-main-color  ">
         <div>Plan name</div>
         <div>Duration</div>
+        <div>Description</div>
         <div>Price</div>
         <div>
           <ButtonFelid
@@ -24,9 +25,10 @@ function Plans({plans}) {
       {plans.map((plan, index) => (
               <>
               <div key={index} className="flex justify-between items-center px-5  bg-white py-3  text-[17px] font-roboto-condensed font-mono border-2 border-card-color rounded mt-1 text-black  ">
-              <div className="w-28">{plan.planName}</div>
-              <div className="w-28">{plan.Duration}</div>
-              <div className="w-24">{plan.Price}</div>
+              <div className="w-28">{plan.name}</div>
+              <div className="w-28">{plan.durationInMonths}</div>
+              <div className="w-28">{plan.description}</div>
+              <div className="w-24">{plan.price} EGP</div>
               <div>
                 <ButtonFelid
                   text="Delete"

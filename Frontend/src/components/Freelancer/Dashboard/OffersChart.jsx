@@ -12,38 +12,55 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useAuth } from "@/context/AuthContext";
+import { useQuery } from "@tanstack/react-query";
+import { getOffersChart } from "@/Util/Https/freelancerHttp";
+import { FadeLoader } from "react-spinners";
+import { toast } from "react-toastify";
 
-const chartData = [
-  { date: "2022-01-01", new: 450, complete: 300, active: 821, rejected: 654 },
-  { date: "2024-02-01", new: 380, complete: 420, active: 45, rejected: 530 },
-  { date: "2024-03-01", new: 520, complete: 120, active: 32, rejected: 410 },
-  { date: "2024-04-01", new: 140, complete: 550, active: 500, rejected: 290 },
-  { date: "2025-05-01", new: 600, complete: 350, active: 25, rejected: 310 },
-  { date: "2023-06-01", new: 480, complete: 400, active: 40, rejected: 270 },
-  { date: "2022-07-01", new: 510, complete: 380, active: 536, rejected: 295 },
-  { date: "2024-08-01", new: 560, complete: 330, active: 48, rejected: 305 },
-  { date: "2025-09-01", new: 430, complete: 500, active: 55, rejected: 280 },
-  { date: "2024-10-01", new: 490, complete: 440, active: 160, rejected: 315 },
-  { date: "2021-11-01", new: 530, complete: 460, active: 38, rejected: 325 },
-  { date: "2020-12-01", new: 570, complete: 420, active: 590, rejected: 300 },
-];
+const transform = ({ key, statusCounts }, year = 2022) => ({
+  date: `${year}-${String(key).padStart(2, "0")}`,
+  pending: statusCounts.Pending || 0,
+  accepted: statusCounts.Accepted || 0,
+  canceled: statusCounts.Canceled || 0,
+  declined: statusCounts.Declined || 0,
+});
 
 const chartConfig = {
-  new: { label: "New", color: "#6E90FF" },
-  complete: { label: "Complete", color: "#FABD5C" },
-  active: { label: "Active", color: "#40D186" },
-  rejected: { label: "Rejected", color: "#FF6669" },
+  pending: { label: "Pending", color: "#6E90FF" },
+  accepted: { label: "Accepted", color: "#FABD5C" },
+  canceled: { label: "Canceled", color: "#40D186" },
+  declined: { label: "Declined", color: "#FF6669" },
 };
 
 const commonClasses =
   "text-[10px] text-center outline-none border-[1px] border-[#D6D7D7] rounded  w-[50px] focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]";
 
 const OffersChart = ({ classes }) => {
-  const [year, setYear] = useState("2024");
-  const filteredData =
-    chartData.filter((item) => item.date.startsWith(year)) || [];
+  const {
+    user: { token },
+  } = useAuth();
+  const [year, setYear] = useState(new Date().getFullYear());
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["offerChart", year],
+    queryFn: ({ signal }) => getOffersChart({ signal, token, year: +year }),
+    staleTime: 1000 * 60 * 60, // 1 hour - data stays fresh
+    cacheTime: 1000 * 60 * 60 * 24, // 24 hours - cached in memory
+  });
 
-  console.log(filteredData);
+  if (isError) {
+    toast.error(error.message || "Something wrong happen", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: false,
+      progress: undefined,
+    });
+  }
+  const handleData = data ? data.map((item) => transform(item, +year)) : [];
+  console.log(handleData, year);
   return (
     <div
       className={`max-h-fit bg-card-color rounded-lg flex flex-grow ${classes}`}
@@ -64,12 +81,26 @@ const OffersChart = ({ classes }) => {
           />
         </CardHeader>
         <CardContent>
+          {isLoading && (
+            <div className="flex justify-center items-center">
+              <FadeLoader
+                color="#000"
+                cssOverride={{ width: "0px", height: "0px" }}
+                height={3}
+                width={3}
+                loading
+                margin={-11}
+                radius={15}
+                speedMultiplier={1}
+              />
+            </div>
+          )}
           <ChartContainer config={chartConfig}>
-            {filteredData?.length === 0 && (
+            {!isLoading && handleData?.length === 0 && (
               <p className="text-center">No Found data</p>
             )}
-            {filteredData?.length > 0 && (
-              <BarChart accessibilityLayer data={filteredData}>
+            {handleData?.length > 0 && (
+              <BarChart accessibilityLayer data={handleData}>
                 <XAxis
                   dataKey="date"
                   tickLine={false}
@@ -131,7 +162,7 @@ const OffersChart = ({ classes }) => {
                                 <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
                                   {item.payload.new + item.payload.complete}
                                   <span className="font-normal text-muted-foreground">
-                                    pj
+                                    p
                                   </span>
                                 </div>
                               </div>

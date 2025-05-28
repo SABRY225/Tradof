@@ -5,9 +5,49 @@ import { refreshToken as rToken } from "@/Util/Https/http";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState({ userId: null, role: null, token: null });
+  const [user, setUser] = useState({
+    userId: null,
+    role: null,
+    token: null,
+    email: null,
+    firstName: null,
+    lastName: null,
+    profileImageUrl: null,
+  });
 
-  // Function to refresh the token
+  const setUserData = (personData) => {
+    if (personData) {
+      // console.log(personData);
+      Cookies.set("email", personData.email, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      Cookies.set("firstName", personData.firstName, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      Cookies.set("lastName", personData.lastName, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      Cookies.set("profileImageUrl", personData.profileImageUrl, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      setUser((prev) => ({
+        ...prev,
+        email: personData.email,
+        firstName: personData.firstName,
+        lastName: personData.lastName,
+        profileImageUrl: personData.profileImageUrl,
+      }));
+    }
+  };
+
   const refreshToken = async () => {
     try {
       const oldRefreshToken = Cookies.get("refreshToken");
@@ -33,7 +73,7 @@ export const AuthProvider = ({ children }) => {
         });
 
         setUser((prevUser) => ({ ...prevUser, token: accessToken }));
-        return accessToken;
+        return { accessToken, newRefreshToken };
       }
     } catch (error) {
       console.error("Failed to refresh token", error);
@@ -46,6 +86,7 @@ export const AuthProvider = ({ children }) => {
     const token = Cookies.get("token");
     const userId = Cookies.get("userId");
     const role = Cookies.get("role");
+    let refreshToken = Cookies.get("refreshToken");
 
     if (!token || !userId || !role) {
       console.warn("Missing authentication data, logging out...");
@@ -61,10 +102,15 @@ export const AuthProvider = ({ children }) => {
       if (isExpired) {
         console.log("Token expired, attempting refresh...");
         const newToken = await refreshToken();
-        if (!newToken) return;
+        if (!newToken) throw new Error("Failed to refresh token");
+        refreshToken = newToken.newRefreshToken;
       }
-
-      setUser({ userId, role, token });
+      login({
+        userId,
+        role,
+        token,
+        refreshToken,
+      });
     } catch (error) {
       console.error("Error decoding token, logging out...");
       logout();
@@ -115,7 +161,7 @@ export const AuthProvider = ({ children }) => {
 
     setUser({ userId, role, token });
 
-    console.log("User logged in:", { userId, role, token });
+    console.warn("User logged in");
   };
 
   const logout = () => {
@@ -123,13 +169,25 @@ export const AuthProvider = ({ children }) => {
     Cookies.remove("refreshToken");
     Cookies.remove("userId");
     Cookies.remove("role");
+    Cookies.remove("email");
+    Cookies.remove("firstName");
+    Cookies.remove("lastName");
+    Cookies.remove("profileImageUrl");
 
-    setUser(null);
+    setUser({
+      userId: null,
+      role: null,
+      token: null,
+      email: null,
+      firstName: null,
+      lastName: null,
+      profileImageUrl: null,
+    });
     console.warn("User logged out.");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, setUserData }}>
       {children}
     </AuthContext.Provider>
   );

@@ -161,7 +161,7 @@ export const editProfile = async ({ signal, data, token }) => {
 export const createProject = async ({ signal, data, id, token }) => {
   try {
     const response = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}/project?companyId=${id}`,
+      `${import.meta.env.VITE_BACKEND_URL}/project`,
       data,
       {
         signal,
@@ -284,14 +284,12 @@ export const getEmployeeToCompany = async ({ signal, id, token }) => {
 export const changesPassword = async ({ signal, data, id, token }) => {
   try {
     const response = await axios.post(
-      `${
-        import.meta.env.VITE_BACKEND_URL
-      }/Company/${id}/ChangePassword`,
+      `${import.meta.env.VITE_BACKEND_URL}/Company/${id}/ChangePassword`,
       data,
       {
         signal,
         headers: {
-          Authorization: `Bearer ${token}`, 
+          Authorization: `Bearer ${token}`,
         },
       }
     );
@@ -309,10 +307,12 @@ export const changesPassword = async ({ signal, data, id, token }) => {
 };
 
 //  A.SABRY
-export const getStartedProjects = async ({ id, token}) => {
+export const getStartedProjects = async ({ id, token }) => {
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/project/allstartedprojects?companyId=${id}`,
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/project/allstartedprojects?companyId=${id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`, // Attach token here
@@ -322,7 +322,9 @@ export const getStartedProjects = async ({ id, token}) => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      const err = new Error("An error occurred while fetching company data");
+      const err = new Error(
+        "An error occurred while fetching start projects data"
+      );
       err.code = error.response.status;
       err.message = error.response.data;
       throw err;
@@ -331,20 +333,25 @@ export const getStartedProjects = async ({ id, token}) => {
   }
 };
 
-export const getUpcomingdProjects = async ({ id, token}) => {
+export const getUpcomingdProjects = async ({ id, token }) => {
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/project/allincomingprojects?companyId=${id}`,
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/project/unassigned-projects/company?companyId=${id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`, // Attach token here
         },
       }
     );
-    return response.data;
+    // console.log(response.data);
+    return response.data.data;
   } catch (error) {
     if (error.response) {
-      const err = new Error("An error occurred while fetching company data");
+      const err = new Error(
+        "An error occurred while fetching incoming projects data"
+      );
       err.code = error.response.status;
       err.message = error.response.data;
       throw err;
@@ -353,10 +360,10 @@ export const getUpcomingdProjects = async ({ id, token}) => {
   }
 };
 
-export const deleteProject = async ({ id, token}) => {
+export const deleteProject = async ({ id, token }) => {
   try {
-    console.log(id);
-    
+    // console.log(id);
+
     const response = await axios.delete(
       `${import.meta.env.VITE_BACKEND_URL}/project/${id}`,
       {
@@ -370,17 +377,24 @@ export const deleteProject = async ({ id, token}) => {
     if (error.response) {
       const err = new Error("An error occurred while deleting project");
       err.code = error.response.status;
-      err.message = error.response.data;
+      err.message = error.response.data.message;
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");
   }
-} ;
+};
 
-export const fatchCurrentOffers = async ({ PageIndex,ProjectId, token}) => {
+export const fatchCurrentOffers = async ({
+  PageIndex,
+  ProjectId,
+  token,
+  pageSize,
+}) => {
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/proposal?&PageSize=3&PageIndex=${PageIndex}&ProjectId=${ProjectId}`,
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/proposal?&pageSize=${pageSize}&PageIndex=${PageIndex}&ProjectId=${ProjectId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`, // Attach token here
@@ -399,10 +413,13 @@ export const fatchCurrentOffers = async ({ PageIndex,ProjectId, token}) => {
   }
 };
 
-export const Acceptproposal = async ({ projectId,proposalId, token}) => {
+export const Acceptproposal = async ({ projectId, proposalId, token }) => {
   try {
-    const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/proposal/accept?projectId=${projectId}&proposalId=${proposalId}`,
+    const response = await axios.post(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/proposal/accept?projectId=${projectId}&proposalId=${proposalId}`,
+      {},
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -414,20 +431,23 @@ export const Acceptproposal = async ({ projectId,proposalId, token}) => {
     if (error.response) {
       const err = new Error("An error occurred while fetching company data");
       err.code = error.response.status;
-      err.message = error.response.data;
+      err.message = error.response.data.message;
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
 
-export const Denyproposal = async ({projectId,proposalId, token}) => {
+export const Denyproposal = async ({ projectId, proposalId, token }) => {
   try {
-    const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/proposal/deny?projectId=${projectId}&proposalId=${proposalId}`,
+    const response = await axios.post(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/proposal/deny?projectId=${projectId}&proposalId=${proposalId}`,
+      {},
       {
         headers: {
-          Authorization: `Bearer ${token}`, 
+          Authorization: `Bearer ${token}`,
         },
       }
     );
@@ -436,28 +456,34 @@ export const Denyproposal = async ({projectId,proposalId, token}) => {
     if (error.response) {
       const err = new Error("An error occurred while fetching company data");
       err.code = error.response.status;
-      err.message = error.response.data;
+      err.message = error.response.data.message;
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
 
-
-export const GetCurrentSubscription = async({companyId,token})=>{
+export const GetCurrentSubscription = async ({ companyId, token }) => {
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_NODE_URL}/subscription/current-subscription/${companyId}`,
+      `${
+        import.meta.env.VITE_BACKEND_NODE_URL
+      }/subscription/current-subscription/${companyId}`,
       {
         headers: {
-          Authorization: `${token}`, 
+          Authorization: `${token}`,
         },
       }
     );
-    if(response.data.success==false && response.data.message=="No subscription found" ){
+    if (
+      response.data.success == false &&
+      response.data.message == "No subscription found"
+    ) {
       window.location.href = "/select-plan";
     }
-    
+    if (response.data.data.status == "pending") {
+      window.location.href = "/select-plan";
+    }
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -468,4 +494,141 @@ export const GetCurrentSubscription = async({companyId,token})=>{
     }
     throw new Error(error.message || "An unexpected error occurred");
   }
-}
+};
+
+export const GetCompanyStatistics = async ({ companyId, token }) => {
+  try {
+    const response = await axios.get(
+      `${
+        import.meta.env.VITE_BACKEND_NODE_URL
+      }/financial/company-statistics/${companyId}`,
+      {
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching company data");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// freelancer endpoint
+export const uploadProjectFile = async ({
+  token,
+  data,
+  projectId,
+  isFreelancerUpload,
+}) => {
+  try {
+    // console.log(token, data, projectId);
+    const response = await axios.post(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/project/upload-files/${projectId}?isFreelancerUpload=${isFreelancerUpload}`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          // "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log("Error response:", error.response.data); // 👈 helpful
+      const err = new Error("An error occurred while uploading file");
+      err.code = error.response.data.status;
+      err.message = error.response.data.message;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const deleteProjectFile = async ({ token, fileId }) => {
+  try {
+    const response = await axios.delete(
+      `${import.meta.env.VITE_BACKEND_URL}/project/delete-file/${fileId}`,
+      {
+        headers: {
+          "Content-Type": "application/json", // Ensure JSON format
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while delete file");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const companyChart = async ({ signal, token, id, year, month }) => {
+  try {
+    const response = await axios.get(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/project/countByMonth?companyId=${id}&year=${year}&month=${month}`,
+      {
+        signal,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    // console.log(response);
+    return response.data.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while fetch project charts");
+      err.code = error.response.status;
+      err.data.errors = error.response.data;
+      err.message = error.response.message;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const finishProject = async ({ signal, id, token }) => {
+  try {
+    const response = await axios.put(
+      `${import.meta.env.VITE_BACKEND_URL}/project/MarkAsFinished?Id=${id}`,
+      {},
+      {
+        signal,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    // console.log(response);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while fetch project charts");
+      err.code = error.response.status;
+      err.data.errors = error.response.data;
+      err.message = error.response.message;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};

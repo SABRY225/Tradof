@@ -17,9 +17,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export default function Combobox({ List, initial, value, onChange }) {
+export default function Combobox({ List, initial, value, onChange, className }) {
   const [open, setOpen] = React.useState(false);
-  // console.log(List, value);
+  console.log(List, value);
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -27,7 +27,7 @@ export default function Combobox({ List, initial, value, onChange }) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between flex flex-wrap h-fit"
+          className={cn("w-full justify-between flex flex-wrap h-fit", className)}  
         >
           {value ? List.find((item) => item.id === value)?.name : initial}
           {/* Display name */}
@@ -44,6 +44,7 @@ export default function Combobox({ List, initial, value, onChange }) {
                 <CommandItem
                   key={item.id}
                   value={item.id} // Use id as value for selection logic
+                  className="text-[12px]"
                   onSelect={(currentValue) => {
                     onChange(item.id); // Pass selected ID
                     setOpen(false);

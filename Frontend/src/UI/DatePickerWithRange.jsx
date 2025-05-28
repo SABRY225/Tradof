@@ -11,7 +11,7 @@ export default function DatePickerWithRange({
   onChange,
   ...props
 }) {
-  console.log(value[0]);
+  // console.log(value[0]);
   return (
     <Space direction="vertical" size={12} className={className}>
       <RangePicker

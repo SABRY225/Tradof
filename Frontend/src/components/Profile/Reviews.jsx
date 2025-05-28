@@ -17,11 +17,9 @@ import ButtonFelid from "@/UI/ButtonFelid";
 import { share, copy, checkedCopy } from "../../assets/paths";
 import { useState } from "react";
 
-export default function Reviews({ rating, reviews }) {
+export default function Reviews({ rating, reviews, isShared, currentURL }) {
   const [copied, setCopied] = useState(false);
   const location = useLocation();
-  const currentURL =
-    window.location.origin + location.pathname + location.search;
 
   const handleCopy = async () => {
     try {
@@ -34,54 +32,56 @@ export default function Reviews({ rating, reviews }) {
   };
   return (
     <>
-      <div className="container max-w-screen-xl mx-auto p-4 w-full my-[30px] flex justify-between items-center bg-card-color rounded-lg px-10">
+      <div className="container max-w-screen-xl mx-auto p-4 w-full  flex flex-col md:flex-row justify-between md:items-center bg-card-color rounded-lg px-10 space-y-2">
         <div className="flex md:space-x-24 flex-col md:flex-row">
           <div className="flex space-x-4">
             <span className="text-lg font-bold text-main-color">Rating</span>
-            <span className="italic">{rating} votes</span>
+            <span className="italic">{rating} stars</span>
           </div>
           <div className="flex space-x-4">
             <span className="text-lg font-bold text-main-color">Reviews</span>
-            <span className="italic">{reviews}</span>
+            <span className="italic">{reviews} review</span>
           </div>
         </div>
-        <AlertDialog>
-          <AlertDialogTrigger>
-            <ButtonFelid
-              as="span"
-              icon={share}
-              text="Share your profile"
-              type="button"
-              classes="text-[15px] px-[20px] py-[7px] bg-second-color rounded-full"
-            />
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Share your profile like</AlertDialogTitle>
-              <AlertDialogDescription className="text-black flex flex-col gap-10 font-roboto-condensed">
-                <span className="font-roboto-condensed text-gray-800">
-                  Now you can share your account with different sites and just
-                  click on the link below
-                </span>
-                <button
-                  type="button"
-                  onClick={handleCopy}
-                  className="bg-[#eef4ff] w-full flex justify-between px-4 py-2 border-2 border-[#a5c1ff] rounded-full"
-                >
-                  {currentURL}
-                  <motion.img
-                    layout
-                    src={copied ? checkedCopy : copy}
-                    alt="copy icon"
-                  />
-                </button>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        {!isShared && (
+          <AlertDialog>
+            <AlertDialogTrigger>
+              <ButtonFelid
+                as="span"
+                icon={share}
+                text="Share your profile"
+                type="button"
+                classes="text-[15px] px-[20px] py-[7px] bg-second-color rounded-full"
+              />
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Share your profile like</AlertDialogTitle>
+                <AlertDialogDescription className="text-black flex flex-col gap-10 font-roboto-condensed">
+                  <span className="font-roboto-condensed text-gray-800">
+                    Now you can share your account with different sites and just
+                    click on the link below
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopy}
+                    className="bg-[#eef4ff] flex justify-between px-4 py-2 border-2 border-[#a5c1ff] rounded-full "
+                  >
+                    <span className="truncate">Profile Link...</span>
+                    <motion.img
+                      layout
+                      src={copied ? checkedCopy : copy}
+                      alt="copy icon"
+                    />
+                  </button>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
       </div>
     </>
   );

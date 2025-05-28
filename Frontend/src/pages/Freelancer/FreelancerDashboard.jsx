@@ -6,9 +6,8 @@ import Notification from "@/components/shared/Notification";
 import Cookies from "js-cookie";
 
 export default function FreelancerDashboard() {
-    const token = Cookies.get("token");
-    console.log(token);
-    
+
+  
   return (
     <>
       <div className="py-8 px-10 bg-background-color overflow-hidden space-y-12">
@@ -22,12 +21,13 @@ export default function FreelancerDashboard() {
           <div className="order-4 lg:order-3 col-span-3 row-span-1">
             <DiscoverProject classes="discover" />
           </div>
-          <div className="order-2 lg:order-4 row-start-2 col-span-3 lg:col-span-1 lg:row-span-4 lg:row-start-1 lg:col-start-4 lg:space-y-6">
-            <Notification classes="notification hidden lg:block" />
-            <OffersChart classes="offers lg:max-w-[350px]" />
+          <div className="flex gap-5 lg:block order-2 lg:order-4 row-start-2 col-span-3 lg:col-span-1 lg:row-span-4 lg:row-start-1 lg:col-start-4 lg:space-y-6">
+            <Notification classes="notification max-h-[350px] lg:max-h-fit flex-1 hidden md:block" />
+            <OffersChart classes="offers w-full md:max-w-[350px]" />
           </div>
         </div>
       </div>
     </>
   );
 }
+

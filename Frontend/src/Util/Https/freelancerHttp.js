@@ -264,7 +264,7 @@ export const getStatistics = async ({ signal, id, token }) => {
 };
 
 // SABRY API
-export const AddOffer = async ({data,token})=>{
+export const AddOffer = async ({ data, token }) => {
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}/proposal`,
@@ -281,17 +281,19 @@ export const AddOffer = async ({data,token})=>{
       console.error("Server Error:", error);
       const err = new Error("An error occurred while adding offer");
       err.code = error.response.status;
-      err.message = error.response.data;
+      err.message = error.response.data.message;
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");
   }
-}
+};
 
-export const fatchProjects = async ({token}) => {
+export const fatchProjects = async ({ token }) => {
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/project/unassigned-projects?pageIndex=1&pageSize=10`,
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/project/unassigned-projects?pageIndex=1&pageSize=10`,
       {
         headers: {
           Authorization: `Bearer ${token}`, // Attach token here
@@ -304,6 +306,223 @@ export const fatchProjects = async ({token}) => {
       const err = new Error("An error occurred while fetching company data");
       err.code = error.response.status;
       err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const fatchOffers = async ({ userId, token }) => {
+  try {
+    const response = await axios.get(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/proposal/freelancer-proposals?freelancerId=${userId}&pageIndex=1&pageSize=4`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token here
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching offers data");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const GetFreelancerStatistics = async ({ freelancerId, token }) => {
+  try {
+    const response = await axios.get(
+      `${
+        import.meta.env.VITE_BACKEND_NODE_URL
+      }/financial/freelancer-statistics/${freelancerId}`,
+      {
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching company data");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      console.log(error);
+
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// rabi3 in code
+export const getCurrentProjects = async ({
+  signal,
+  token,
+  freelancerId,
+  pageIndex,
+  pageSize,
+}) => {
+  try {
+    const response = await axios.get(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/project/projects/freelancer?freelancerId=${freelancerId}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
+      {
+        signal,
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token here
+        },
+      }
+    );
+    console.log("response", response);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error(
+        "An error occurred while fetching freelancer projects"
+      );
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const getUnassignedProjects = async ({
+  signal,
+  indexPage,
+  pageSize,
+  token,
+}) => {
+  try {
+    const response = await axios.get(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/project/unassigned-projects?pageIndex=${indexPage}&pageSize=${pageSize}`,
+      {
+        signal,
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token here
+        },
+      }
+    );
+    console.log("response", response);
+    return response.data.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while fetching projects");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const reviewRequest = async ({ signal, id, token }) => {
+  try {
+    const response = await axios.put(
+      `${import.meta.env.VITE_BACKEND_URL}/project/SendReviewRequest/${id}`,
+      {},
+      {
+        signal,
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token here
+        },
+      }
+    );
+    console.log("response", response);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while fetching freelancer data");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const getOffersChart = async ({
+  signal,
+  token,
+  year = "",
+  month = "",
+  state = "",
+}) => {
+  // console.log(token);
+  try {
+    const response = await axios.get(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/proposal/countByMonth?year=${year}&month=${month}&status=${state}`,
+      {
+        signal,
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token here
+        },
+      }
+    );
+    // console.log("response", response);
+    return response.data.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error(
+        "An error occurred while fetching freelancer offer chart"
+      );
+      err.code = error.response.status;
+      err.message = error.response.data;
+      err.errors = error.errors;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const askForReview = async ({
+  signal,
+  projectId,
+  freelancerId,
+  token,
+}) => {
+  try {
+    const response = await axios.put(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/project/send-review-request?projectId=${projectId}&freelancerId=${freelancerId}`,
+      {},
+      {
+        signal,
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token here
+        },
+      }
+    );
+    console.log("response", response);
+    return response.data.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error(
+        "An error occurred while fetching freelancer offer chart"
+      );
+      err.code = error.response.status;
+      err.message = error.response.data;
+      err.errors = error.errors;
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");

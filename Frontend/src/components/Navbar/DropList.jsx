@@ -1,5 +1,4 @@
 import { useState } from "react";
-import photoImage from "../../assets/images/1560a64114a9372e.jpg";
 import profile from "../../assets/icons/profile.svg";
 import offers from "../../assets/icons/offers.svg";
 import finances from "../../assets/icons/finances.svg";
@@ -11,7 +10,7 @@ import settings from "../../assets/icons/settings.svg";
 import logout from "../../assets/icons/logout.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-export default function DropList({ name, email }) {
+export default function DropList({ name, email, photoImage }) {
   const { logout: leave } = useAuth();
   const navigate = useNavigate();
   const [list, setList] = useState([
@@ -20,13 +19,12 @@ export default function DropList({ name, email }) {
         {
           icon: finances,
           text: "Your Finances",
-          link:"/user/finances"
-
+          link: "/user/finances",
         },
         {
           icon: offers,
           text: "Ask Question",
-          link:"/user/ask-question"
+          link: "/user/ask-question",
         },
       ],
     },
@@ -35,7 +33,7 @@ export default function DropList({ name, email }) {
         {
           icon: calender,
           text: "Calendar",
-          link:"/user/calender"
+          link: "/user/calender",
         },
         // {
         //   icon: notification,
@@ -48,7 +46,7 @@ export default function DropList({ name, email }) {
         {
           icon: feedback,
           text: "Give us feedback",
-          link:"/user/feedback"
+          link: "/user/feedback",
         },
       ],
     },
@@ -57,13 +55,14 @@ export default function DropList({ name, email }) {
         {
           icon: settings,
           text: "Settings",
-          link:"/user/settings"
+          link: "/user/settings",
         },
         {
           icon: logout,
           text: "Log out",
           link: "/auth",
           onClick: () => {
+            console.log("logout");
             leave();
           },
         },

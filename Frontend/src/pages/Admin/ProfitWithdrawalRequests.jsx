@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
     Container,
     Typography,
@@ -17,7 +17,6 @@ import {
     useTheme
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
-import Footer from '@/components/shared/Footer';
 
 export default function ProfitWithdrawalRequests() {
     const [page, setPage] = useState(1);
@@ -169,7 +168,6 @@ export default function ProfitWithdrawalRequests() {
                     </Box>
                 </Container>
             </div>
-            <Footer borderColor={"#6c63ff"} />
         </div>
     );
 }
