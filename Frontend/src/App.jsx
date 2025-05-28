@@ -56,6 +56,7 @@ import SettingAdmin from "./pages/Admin/SettingAdmin";
 import SuccessPayment from "./pages/payment";
 import PlanPage from "./pages/PlanPage";
 import ProfitWithdrawalRequests from "./pages/Admin/ProfitWithdrawalRequests";
+import TeamPage from "./pages/TeamPage";
 import ProjectPage, { projectLoader } from "./pages/shared/ProjectPage";
 import ErrorPage from "./pages/ErrorPage";
 import PayProject, { payProjectLoader } from "./pages/shared/PayProject";
@@ -199,13 +200,13 @@ const router = createBrowserRouter([
   },
   {
     path: "test",
-    element: <ProfitWithdrawalRequests />,
-    errorElement: <ErrorPage />,
+
+    element: <TeamPage />,
   },
   {
     path: "test2",
-    element: <Finances />,
-    errorElement: <ErrorPage />,
+    element: <WithdrawProfits />,
+
   },
   {
     path: "*",
