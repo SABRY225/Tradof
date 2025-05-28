@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import logout from "../../assets/icons/logout.svg"
 
 import {
   logo,
@@ -25,7 +26,6 @@ const List = [
   { name: "Settings", link: "/admin/settings" },
 ];
 
-
 export default function AdminNavbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(null);
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -33,6 +33,9 @@ export default function AdminNavbar() {
   const dropdownRef = useRef(null);
   const dropdownRefNotification = useRef(null);
   const [activePath, setActivePath] = useState(location.pathname);
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
   useEffect(() => {
     setIsDropdownOpen(null);
     setIsNavOpen(false);
@@ -55,6 +58,15 @@ export default function AdminNavbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/auth");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   return (
     <nav
       initial={{ y: "-15rem" }}
@@ -70,56 +82,27 @@ export default function AdminNavbar() {
           </span>
         </Link>
         <div className="flex items-center md:order-2 space-x-3 ml-auto">
-          <div ref={dropdownRefNotification}>
-            <button
-              type="button"
-              onClick={() =>
-                setIsDropdownOpen((prev) => (prev ? null : "notification"))
-              }
-            >
-              <img src={notification} alt="notification icon" />
-            </button>
-          </div>
-          <div ref={dropdownRef}>
-            <button
-              type="button"
-              className="flex text-sm rounded-full border-2"
-              onClick={() =>
-                setIsDropdownOpen((prev) => (prev ? null : "profileMenu"))
-              }
-            >
-              <span className="sr-only">Open user menu</span>
-              <img
-                className="rounded-full w-[40px] h-[40px] object-cover"
-                src={profilePhoto}
-                alt="user photo"
-              />
-            </button>
-            <AnimatePresence>
-              {isDropdownOpen === "notification" && (
-                <Notification classes="md:hidden text-black absolute right-[10px] top-[100px] shadow-lg " />
-              )}
-              {isDropdownOpen === "profileMenu" && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <DropList
-                    name="Mohamed Abdalrazek"
-                    email="abdalrazekmohamed6@gmail.com"
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+          <Link to="/admin/dashboard#notification">
+            <div ref={dropdownRefNotification} className="pt-[9px]">
+              <button
+                type="button"
+                onClick={() =>
+                  setIsDropdownOpen((prev) => (prev ? null : "notification"))
+                }
+              >
+                <img
+                  src={notification}
+                  alt="notification icon"
+                  className="w-5"
+                />
+              </button>
+            </div>
+          </Link>
           <button
-            onClick={() => setIsNavOpen(!isNavOpen)}
-            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden focus:ring-2"
+            onClick={handleLogout}
+            className="px-4 py-2 text-white rounded-md transition-colors duration-200 font-medium flex items-center space-x-2"
           >
-            <span className="sr-only">Open main menu</span>
-            <img src={droplist} alt="drop list icon" />
+            <span>Logout</span>
           </button>
         </div>
         <div
@@ -128,26 +111,24 @@ export default function AdminNavbar() {
           } w-full md:flex md:w-auto md:order-1`}
         >
           <ul className="flex flex-col p-4 md:p-0 md:space-x-8 md:flex-row md:mt-0">
-            {List.map(
-              (item, index) => (
-                <motion.li
-                  key={index}
-                  whileHover={{ scale: 1.1, fontWeight: 500 }}
-                  transition={{ stiffness: 300, type: "keyframes" }}
-                  className="py-2 px-3 md:p-0"
+            {List.map((item, index) => (
+              <motion.li
+                key={index}
+                whileHover={{ scale: 1.1, fontWeight: 500 }}
+                transition={{ stiffness: 300, type: "keyframes" }}
+                className="py-2 px-3 md:p-0"
+              >
+                <Link
+                  to={item.link}
+                  className={`text-white font-roboto-condensed block ${
+                    activePath === item.link ? "text-[18px] font-medium" : ""
+                  }`}
+                  aria-current={activePath === item.link ? "page" : undefined}
                 >
-                  <Link
-                    to={item.link}
-                    className={`text-white font-roboto-condensed block ${
-                      activePath === item.link ? "text-[18px] font-medium" : ""
-                    }`}
-                    aria-current={activePath === item.link ? "page" : undefined}
-                  >
-                    {item.name}
-                  </Link>
-                </motion.li>
-              )
-            )}
+                  {item.name}
+                </Link>
+              </motion.li>
+            ))}
           </ul>
         </div>
       </motion.div>

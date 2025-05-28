@@ -63,6 +63,8 @@ import { userDataLoader } from "./components/shared/UserNavbar";
 import Waiting from "./pages/Meeting/Waiting";
 import Room from "./pages/Meeting/Room";
 import { SocketProvider } from "./context/SocketProvider";
+import AllFreelancers from "./pages/Admin/AllFreelancers";
+import AllCompanies from "./pages/Admin/AllCompanies";
 
 // create routes
 const router = createBrowserRouter([
@@ -191,6 +193,8 @@ const router = createBrowserRouter([
       { path: "withdrawal", element: <ProfitWithdrawalRequests /> },
       // work in progress
       { path: "finances", element: <AdminFinances /> },
+      { path: "freelancers", element: <AllFreelancers /> },
+      { path: "companies", element: <AllCompanies /> },
     ],
   },
   {

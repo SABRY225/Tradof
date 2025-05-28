@@ -236,9 +236,7 @@ export const getAllSubscriptions = async ({ signal, token }) => {
 export const getIncomeStatistics = async ({ signal, token }) => {
   try {
     const response = await axios.get(
-      `${
-        import.meta.env.VITE_BACKEND_NODE_URL
-      }/subscription/income-statistics`,
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/subscription/income-statistics`,
       {
         signal,
         headers: {
@@ -258,13 +256,10 @@ export const getIncomeStatistics = async ({ signal, token }) => {
   }
 };
 
-
 export const getAdminStatistics = async ({ signal, token }) => {
   try {
     const response = await axios.get(
-      `${
-        import.meta.env.VITE_BACKEND_NODE_URL
-      }/financial/admin-statistics`,
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/financial/admin-statistics`,
       {
         signal,
         headers: {
@@ -276,6 +271,78 @@ export const getAdminStatistics = async ({ signal, token }) => {
   } catch (error) {
     if (error.response) {
       const err = new Error("An error occurred while fetch income statistics");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const getDashboardStatistics = async ({ signal, token }) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/admin/GetDashboardStatistics`,
+      {
+        signal,
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error(
+        "An error occurred while fetching dashboard statistics"
+      );
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const getStatistics = async ({ token, year }) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/admin/GetStatistics`,
+      {
+        params: { year },
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+    return response.data.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching statistics");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const getFreelancersAndCompanies = async ({ token }) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/admin/GetFreelancersAndCompanies`,
+      {
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error(
+        "An error occurred while fetching freelancers and companies"
+      );
       err.code = error.response.status;
       err.message = error.response.data;
       throw err;

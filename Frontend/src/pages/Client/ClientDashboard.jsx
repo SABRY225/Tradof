@@ -12,9 +12,7 @@ export default function ClientDashboard() {
         <Charts classes="flex-grow" />
         <Notification classes="hidden lg:block" />
       </div>
-      <div
-        className="grid  grid-cols-1 md:grid-cols-2 gap-[20px]"
-      >
+      <div className="grid  grid-cols-1 md:grid-cols-2 gap-[20px]">
         <StartProject />
         <UpcomingProject />
       </div>

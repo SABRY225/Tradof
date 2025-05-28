@@ -3,11 +3,18 @@ import { useAuth } from "@/Context/AuthContext";
 
 import Footer from "@/components/shared/Footer";
 import AdminNavbar from "@/components/shared/AdminNavbar";
+import { useEffect } from "react";
 
 export default function AdminLayout() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  if (!user) navigate("/auth");
+  console.log(user);
+  useEffect(() => {
+    if (user.role !== "admin") {
+      navigate("/auth");
+      return null;
+    }
+  }, [user]);
   return (
     <>
       <AdminNavbar />

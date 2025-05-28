@@ -4,23 +4,46 @@ import Projects from "@/components/AvailableProjects/Projects";
 import { Box } from "@mui/material";
 import { Minus, Plus } from "lucide-react";
 import Combobox from "../../components/ui/Combobox";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useLoaderData } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { getUnassignedProjects } from "@/Util/Https/freelancerHttp";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { getAllSpecializations } from "@/Util/Https/http";
 
 const commonClasses =
   "font-epilogue outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]";
 
 const ITEMS_PER_PAGE = 20;
 
+const DELIVERY_TIME_OPTIONS = [
+  { label: "Less than 0 week", value: 0 },
+  { label: "From 1 to 2 weeks", value: 14 },
+  { label: "From 2 weeks to 3 month", value: 90 },
+  { label: "From one month to three month", value: 90 },
+  { label: "More than 3 months", value: 90 },
+];
+
 export default function AvailableProjects() {
   const [handleLanguage, setHandleLanguage] = useState([]);
+  const [selectedSpecialization, setSelectedSpecialization] = useState();
+  const [selectedLanguages, setSelectedLanguages] = useState({
+    languageFromId: undefined,
+    languageToId: undefined,
+  });
+  const [selectedDeliveryTime, setSelectedDeliveryTime] = useState();
+  const [selectedBudget, setSelectedBudget] = useState();
+  const [searchQuery, setSearchQuery] = useState("");
   const { languages } = useLoaderData();
   const {
     user: { userId, token },
   } = useAuth();
+
+  const { data: specializations, isLoading: isLoadingSpecializations } =
+    useQuery({
+      queryKey: ["specializations"],
+      queryFn: getAllSpecializations,
+    });
 
   const {
     data,
@@ -31,13 +54,27 @@ export default function AvailableProjects() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["unassigned-projects", userId],
+    queryKey: [
+      "unassigned-projects",
+      userId,
+      selectedSpecialization,
+      selectedLanguages,
+      selectedDeliveryTime,
+      selectedBudget,
+    ],
     queryFn: ({ pageParam = 1, signal }) =>
       getUnassignedProjects({
         signal,
         token,
-        indexPage: pageParam,
-        pageSize: ITEMS_PER_PAGE,
+        filter: {
+          indexPage: pageParam,
+          pageSize: ITEMS_PER_PAGE,
+          specializationId: selectedSpecialization,
+          languageFromId: selectedLanguages?.languageFromId,
+          languageToId: selectedLanguages?.languageToId,
+          deliveryTimeInDays: selectedDeliveryTime,
+          budget: selectedBudget,
+        },
       }),
     getNextPageParam: (lastPage, pages) => {
       const totalPages = Math.ceil(lastPage.count / ITEMS_PER_PAGE);
@@ -48,8 +85,19 @@ export default function AvailableProjects() {
     cacheTime: 10 * 60 * 1000,
   });
 
-  const projects = data?.pages.flatMap((page) => page.items) || [];
-  const totalCount = data?.pages[0]?.count || 0;
+  const allProjects = data?.pages.flatMap((page) => page.items) || [];
+
+  const filteredProjects = useMemo(() => {
+    return allProjects.filter((project) => {
+      if (
+        searchQuery &&
+        !project.name.toLowerCase().includes(searchQuery.toLowerCase())
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }, [allProjects, searchQuery]);
 
   useEffect(() => {
     if (languages) {
@@ -77,12 +125,17 @@ export default function AvailableProjects() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+  const handleBudgetChange = (type, value) => {
+    const newValue = Math.max(
+      0,
+      Number(value) + (type === "increase" ? 1 : -1)
+    );
+    setSelectedBudget(newValue);
+  };
+
   return (
     <div className="bg-background-color">
-      <PageTitle
-        title="Available Projects"
-        // subtitle="You can see all projects or search for the projects that suit you."
-      />
+      <PageTitle title="Available Projects" />
       <div className="container max-w-screen-xl mx-auto w-full py-[30px] px-4">
         <div className="flex flex-col lg:flex-row gap-[20px]">
           <aside className="w-full lg:w-[400px] mt-16 p-4 lg:p-6 h-fit lg:sticky lg:top-20 border-r-0 lg:border-r-2 border-main-color border-dashed">
@@ -98,6 +151,8 @@ export default function AvailableProjects() {
                 type="text"
                 placeholder="Substring of project name"
                 className="text-sm w-full rounded px-3 py-2 pr-10 bg-transparent border border-[#D6D7D7] focus:outline-none focus:ring-2 focus:ring-main-color placeholder:text-[14px]"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
               <img
                 src={search}
@@ -106,20 +161,28 @@ export default function AvailableProjects() {
               />
             </div>
             <div className="text-[14px] mb-6">
-              <h3 className="font-medium font-epilogue mb-2">Categories</h3>
+              <h3 className="font-medium font-epilogue mb-2">
+                Specializations
+              </h3>
               <ul className="space-y-2">
-                {[...Array(6)].map((_, i) => (
-                  <li key={i} className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id={`cat${i}`}
-                      className="accent-main-color"
-                    />
-                    <label htmlFor={`cat${i}`} className="text-[14px]">
-                      List Item
-                    </label>
-                  </li>
-                ))}
+                {isLoadingSpecializations ? (
+                  <li className="text-center">Loading specializations...</li>
+                ) : (
+                  specializations?.map((spec) => (
+                    <li key={spec.id} className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id={`spec${spec.id}`}
+                        className="accent-main-color"
+                        checked={selectedSpecialization === spec.id}
+                        onChange={() => setSelectedSpecialization(spec.id)}
+                      />
+                      <label htmlFor={`spec${spec.id}`} className="text-[14px]">
+                        {spec.name}
+                      </label>
+                    </li>
+                  ))
+                )}
               </ul>
             </div>
 
@@ -130,18 +193,38 @@ export default function AvailableProjects() {
                 <div className="w-full overflow-hidden">
                   {handleLanguage && (
                     <Combobox
-                      List={handleLanguage}
+                      List={[
+                        { id: undefined, name: "From language" },
+                        ...handleLanguage,
+                      ]}
                       initial="From language"
                       className="text-[12px]"
+                      value={selectedLanguages?.languageFromId}
+                      onChange={(fromId) =>
+                        setSelectedLanguages((prev) => ({
+                          ...prev,
+                          languageFromId: fromId,
+                        }))
+                      }
                     />
                   )}
                 </div>
                 <div className="w-full">
                   {handleLanguage && (
                     <Combobox
-                      List={handleLanguage}
+                      List={[
+                        { id: undefined, name: "To language" },
+                        ...handleLanguage,
+                      ]}
                       initial="To language"
                       className="text-[12px]"
+                      value={selectedLanguages?.languageToId}
+                      onChange={(toId) =>
+                        setSelectedLanguages((prev) => ({
+                          ...prev,
+                          languageToId: toId,
+                        }))
+                      }
                     />
                   )}
                 </div>
@@ -151,25 +234,21 @@ export default function AvailableProjects() {
             <div className="text-[14px] mb-6">
               <h3 className="font-medium font-epilogue mb-2">Delivery time</h3>
               <ul className="space-y-2">
-                {[
-                  "Less than 0 week",
-                  "From 1 to 2 weeks",
-                  "From 2 weeks to 3 month",
-                  "From one month to three month",
-                  "More than 3 months",
-                ].map((label, i) => (
+                {DELIVERY_TIME_OPTIONS.map((option, i) => (
                   <li key={i} className="flex items-center gap-2">
                     <input
                       type="radio"
                       name="delivery"
-                      id={`delivery${i}`}
+                      id={`delivery-${i}`}
                       className="peer accent-main-color"
+                      checked={selectedDeliveryTime === option.value}
+                      onChange={() => setSelectedDeliveryTime(option.value)}
                     />
                     <label
-                      htmlFor={`delivery${i}`}
+                      htmlFor={`delivery-${i}`}
                       className="text-[14px] cursor-pointer"
                     >
-                      {label}
+                      {option.label}
                     </label>
                   </li>
                 ))}
@@ -184,16 +263,24 @@ export default function AvailableProjects() {
                     type="number"
                     className={`w-full pr-10 ${commonClasses}`}
                     placeholder="Min budget ($)"
+                    value={selectedBudget || ""}
+                    onChange={(e) => setSelectedBudget(Number(e.target.value))}
                   />
                   <button
                     type="button"
                     className="outlet-none absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-500 text-main-color"
+                    onClick={() =>
+                      handleBudgetChange("decrease", selectedBudget || 0)
+                    }
                   >
                     <Minus className="w-4 h-4" />
                   </button>
                   <button
                     type="button"
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-main-color"
+                    onClick={() =>
+                      handleBudgetChange("increase", selectedBudget)
+                    }
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -204,7 +291,7 @@ export default function AvailableProjects() {
           {/* Main Content */}
           <main className="flex-1">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4">
-              {projects.map((project) => (
+              {filteredProjects.map((project) => (
                 <Projects key={project.id} project={project} />
               ))}
             </div>

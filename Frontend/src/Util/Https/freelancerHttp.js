@@ -1,4 +1,5 @@
 import axios from "axios";
+import { uploadImage } from "./http";
 
 export const getFreelancer = async ({ signal, id, token }) => {
   try {
@@ -163,10 +164,15 @@ export const deleteSpecialization = async ({ signal, data, id, token }) => {
 };
 
 export const editProfile = async ({ signal, data, id, token }) => {
+  console.log(data);
   try {
+    const imageURL = await uploadImage({ imageURL: data.profileImageUrl });
     const response = await axios.put(
       `${import.meta.env.VITE_BACKEND_URL}/freelancers/${id}`,
-      data,
+      {
+        ...data,
+        profileImageUrl: imageURL,
+      },
       {
         signal,
         headers: {
@@ -180,7 +186,9 @@ export const editProfile = async ({ signal, data, id, token }) => {
       console.error("Server Error:", error);
       const err = new Error("An error occurred while edit profile");
       err.code = error.response.status;
-      err.message = error.response.data;
+      err.message = Object.entries(error.response.data.errors)
+        .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
+        .join(" ");
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");
@@ -398,18 +406,12 @@ export const getCurrentProjects = async ({
   }
 };
 
-export const getUnassignedProjects = async ({
-  signal,
-  indexPage,
-  pageSize,
-  token,
-}) => {
+export const getUnassignedProjects = async ({ signal, token, filter }) => {
   try {
     const response = await axios.get(
-      `${
-        import.meta.env.VITE_BACKEND_URL
-      }/project/unassigned-projects?pageIndex=${indexPage}&pageSize=${pageSize}`,
+      `${import.meta.env.VITE_BACKEND_URL}/project/unassigned-projects`,
       {
+        params: { ...filter },
         signal,
         headers: {
           Authorization: `Bearer ${token}`, // Attach token here

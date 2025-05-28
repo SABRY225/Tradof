@@ -37,7 +37,7 @@ const CustomTooltip = ({ active, payload }) => {
 
   return (
     <div className="p-2 bg-black text-white border rounded shadow-lg text-black">
-      <p className="font-bold">{payload[0].payload.month}</p>
+      <p className="font-bold">Current data in {payload[0].payload.month}</p>
       {payload.map((entry, index) => (
         <div key={index} className="flex items-center gap-2">
           <span
@@ -57,10 +57,14 @@ const CustomTooltip = ({ active, payload }) => {
 
 export function LineChartCard({ data, classes }) {
   const [filter, setFilter] = useState("yearly");
-  const getMaxValue = ({data}) => {
-    return Math.max(
-      ...data.map((d) => Math.max(d.companies, d.freelancer, d.projects.number))
-    ) + 50;
+  const getMaxValue = ({ data }) => {
+    return (
+      Math.max(
+        ...data.map((d) =>
+          Math.max(d.companies, d.freelancer, d.projects.number)
+        )
+      ) + 50
+    );
   };
 
   return (
@@ -82,46 +86,6 @@ export function LineChartCard({ data, classes }) {
             <span className="block bg-[#C893FD] w-2 h-2 rounded-full"></span>
             Projects
           </div>
-        </div>
-        <div className="relative ml-auto md:ml-0 filters bg-[#F8F8FF] py-[10px] px-[20px] rounded-full flex gap-[30px] w-max">
-          <motion.div
-            layoutId="filter"
-            transition={{ type: "keyframes", stiffness: 300, damping: 20 }}
-            className={`absolute z-[0] bg-[#1E1B39] w-[75px] h-full rounded-full top-0 ${
-              filter === "weekly"
-                ? "left-0"
-                : filter === "yearly"
-                ? "right-0"
-                : "left-[4.5rem]"
-            }`}
-          ></motion.div>
-          <button
-            type="button"
-            className={`z-[1] text-[12px] ${
-              filter === "weekly" ? "text-white" : "text-black"
-            }`}
-            onClick={() => setFilter("weekly")}
-          >
-            Weekly
-          </button>
-          <button
-            type="button"
-            className={`z-[1] text-[12px] ${
-              filter === "monthly" ? "text-white" : "text-black"
-            }`}
-            onClick={() => setFilter("monthly")}
-          >
-            Monthly
-          </button>
-          <button
-            type="button"
-            className={`z-[1] text-[12px] ${
-              filter === "yearly" ? "text-white" : "text-black"
-            }`}
-            onClick={() => setFilter("yearly")}
-          >
-            Yearly
-          </button>
         </div>
       </div>
       <div className="min-w-[800px]">
@@ -145,7 +109,7 @@ export function LineChartCard({ data, classes }) {
             />
             <YAxis
               type="number"
-              domain={[0, getMaxValue({data})]} // Scale from 0 to max number in the dataset
+              domain={[0, getMaxValue({ data })]} // Scale from 0 to max number in the dataset
               axisLine={false}
               tickLine={false}
               tickMargin={8}
