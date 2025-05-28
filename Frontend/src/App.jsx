@@ -57,6 +57,7 @@ import SettingAdmin from "./pages/Admin/SettingAdmin";
 import SuccessPayment from "./pages/payment";
 import PlanPage from "./pages/PlanPage";
 import ProfitWithdrawalRequests from "./pages/Admin/ProfitWithdrawalRequests";
+import TeamPage from "./pages/TeamPage";
 
 // create routes
 const router = createBrowserRouter([
@@ -138,11 +139,11 @@ const router = createBrowserRouter([
   },
   {
     path: "test",
-    element: <ProfitWithdrawalRequests />,
+    element: <TeamPage />,
   },
   {
     path: "test2",
-    element: <Finances />,
+    element: <WithdrawProfits />,
   },
   {
     path: "*",
