@@ -163,6 +163,8 @@ export const deleteSpecialization = async ({ signal, data, id, token }) => {
 };
 
 export const editProfile = async ({ signal, data, id, token }) => {
+  console.log(data);
+  
   try {
     const response = await axios.put(
       `${import.meta.env.VITE_BACKEND_URL}/freelancers/${id}`,
@@ -523,6 +525,28 @@ export const askForReview = async ({
       err.code = error.response.status;
       err.message = error.response.data;
       err.errors = error.errors;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const GetFreelancerProjectsFinancials = async ({ token }) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/financial/projects-freelancer`,
+      {
+        headers: {
+          Authorization: `${token}`, 
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while Get Financial Projects Freelancer");
+      err.code = error.response.status;
+      err.message = error.response.data.message;
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");

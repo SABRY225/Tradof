@@ -3,121 +3,89 @@ import PageTitle from "@/UI/PageTitle";
 import {
   Box,
   Button,
-  Container,
   Typography,
   Paper,
   Grid,
-  TextField,
-  InputAdornment,
   Avatar,
   Tabs,
   Tab,
-  Pagination,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import { useAuth } from "@/context/AuthContext";
-import { GetCompanyStatistics } from "@/Util/Https/companyHttp";
-import { GetFreelancerStatistics } from "@/Util/Https/freelancerHttp";
+import { GetCompanyProjectsFinancials, GetCompanyStatistics } from "@/Util/Https/companyHttp";
+import { GetFreelancerProjectsFinancials, GetFreelancerStatistics } from "@/Util/Https/freelancerHttp";
 import { search } from "@/assets/paths";
+import Loading from "../Loading";
 
 export default function Finances() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statistics, setStatistics] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
-  const [page, setPage] = useState(1);
   const {
     user: { userId, token, role },
   } = useAuth();
 
-  useEffect(() => {
-    const fetchStatistics = async () => {
+const [transactions, setTransactions] = useState([]);
+const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  const fetchStatistics = async () => {
+    try {
+      setLoading(true);
       let data;
-      if (role == "Freelancer") {
+      let data2;
+      if (role === "Freelancer") {
         data = await GetFreelancerStatistics({ freelancerId: userId, token });
+        data2 = await GetFreelancerProjectsFinancials({ token });
+        console.log("true");
+        
       } else {
         data = await GetCompanyStatistics({ companyId: userId, token });
+        data2 = await GetCompanyProjectsFinancials({ token });
       }
       setStatistics(data.data);
-    };
-    fetchStatistics();
-  }, []);
-  // Mock data for transactions
-  const transactions = [
-    {
-      id: 1,
-      user: "Ahmed Nady Issa",
-      status: "PAID",
-      title: "Translation of an article about medical tools",
-      date: "3 days ago",
-      duration: "2 days",
-      price: 50.0,
-    },
-    {
-      id: 2,
-      user: "Ahmed Nady Issa",
-      status: "Pending",
-      title: "Translation of an article about medical tools",
-      date: "3 days ago",
-      duration: "2 days",
-      price: 50.0,
-    },
-    {
-      id: 3,
-      user: "Ahmed Nady Issa",
-      status: "PAID",
-      title: "Translation of an article about medical tools",
-      date: "3 days ago",
-      duration: "2 days",
-      price: 50.0,
-    },
-    {
-      id: 4,
-      user: "Ahmed Nady Issa",
-      status: "Pending",
-      title: "Translation of an article about medical tools",
-      date: "3 days ago",
-      duration: "2 days",
-      price: 50.0,
-    },
-    {
-      id: 5,
-      user: "Ahmed Nady Issa",
-      status: "PAID",
-      title: "Translation of an article about medical tools",
-      date: "3 days ago",
-      duration: "2 days",
-      price: 50.0,
-    },
-    {
-      id: 6,
-      user: "Ahmed Nady Issa",
-      status: "Pending",
-      title: "Translation of an article about medical tools",
-      date: "3 days ago",
-      duration: "2 days",
-      price: 50.0,
-    },
-  ];
+      setTransactions(data2.data);
+
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchStatistics();
+}, []);
+
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
 
-  const handlePageChange = (event, value) => {
-    setPage(value);
-  };
+
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
 
-  const filteredTransactions =
-    activeTab === 0
-      ? transactions
-      : transactions.filter(
-          (t) => t.status === (activeTab === 1 ? "PAID" : "Pending")
-        );
+const filteredTransactions = transactions
+  .filter((t) => {
+    if (activeTab === 1) return t.paymentStatus === "paid";
+    if (activeTab === 2) return t.paymentStatus === "pending";
+    return true;
+  })
+  .filter((t) => {
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      t?.user?.firstName?.toLowerCase().includes(searchLower) ||
+      t?.user?.lastName?.toLowerCase().includes(searchLower) ||
+      t?.prjectData?.name?.toLowerCase().includes(searchLower)
+    );
+  });
+
+
+if (loading) return <p>
+  <Loading />
+</p>;
+console.log(filteredTransactions);
 
   return (
     <div className="bg-background-color">
@@ -292,19 +260,19 @@ export default function Finances() {
                       px: 2,
                       py: 0.5,
                       bgcolor:
-                        transaction.status === "PAID" ? "#4caf50" : "#ff6b6b",
+                        transaction.paymentStatus === "paid" ? "#4caf50" : "#ff6b6b",
                       color: "white",
                       borderBottomLeftRadius: "8px",
                       fontSize: "0.75rem",
                       fontWeight: 500,
                     }}
                   >
-                    {transaction.status}
+                    {transaction.paymentStatus === "paid"?"PAID":"Pending"}
                   </Box>
 
                   <Box sx={{ display: "flex", alignItems: "center", mb: 1.5 }}>
                     <Avatar
-                      src={`https://ui-avatars.com/api/?name=${transaction.user}&background=6c63ff&color=fff`}
+                      src={transaction.user.profileImageUrl}
                       alt={transaction.user}
                       sx={{ width: 36, height: 36, mr: 1.5 }}
                     />
@@ -313,20 +281,13 @@ export default function Finances() {
                         variant="subtitle2"
                         sx={{ fontWeight: 500, color: "#333" }}
                       >
-                        {transaction.user}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        className="flex"
-                      >
-                        <p>Job Title</p>
+                        {transaction.user.firstName}{" "}{transaction.user.lastName}
                       </Typography>
                     </Box>
                   </Box>
 
                   <Typography variant="body2" sx={{ fontWeight: 500, mb: 1.5 }}>
-                    {transaction.title}
+                    {transaction.prjectData.name}
                   </Typography>
 
                   <Box
@@ -345,7 +306,7 @@ export default function Finances() {
                         Posted:
                       </Typography>
                       <Typography variant="caption" sx={{ fontWeight: 500 }}>
-                        {transaction.date}
+                        {new Date(transaction.prjectData.posted).toDateString()}
                       </Typography>
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -357,7 +318,7 @@ export default function Finances() {
                         Delivery time:
                       </Typography>
                       <Typography variant="caption" sx={{ fontWeight: 500 }}>
-                        {transaction.duration}
+                        {transaction.prjectData.deliveryTime}
                       </Typography>
                     </Box>
                   </Box>
@@ -385,7 +346,7 @@ export default function Finances() {
                       Offer price
                     </Typography>
                     <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                      ${transaction.price.toFixed(1)}
+                      ${transaction.prjectData.depoistPrice.toFixed(1)}
                     </Typography>
                   </Box>
                 </Paper>
@@ -393,23 +354,6 @@ export default function Finances() {
             ))}
           </Grid>
 
-          {/* Pagination */}
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-            <Pagination
-              count={5}
-              page={page}
-              onChange={handlePageChange}
-              sx={{
-                "& .MuiPaginationItem-root": {
-                  color: "#6c63ff",
-                },
-                "& .Mui-selected": {
-                  bgcolor: "#6c63ff !important",
-                  color: "white !important",
-                },
-              }}
-            />
-          </Box>
         </div>
       </div>
     </div>

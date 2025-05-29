@@ -1,6 +1,5 @@
 import { file, meeting, send, whitePlus } from "@/assets/paths";
 import { useEffect, useRef, useState } from "react";
-import { socket } from "../../Util/socket";
 import { toast } from "react-toastify";
 
 import {
@@ -18,6 +17,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createEvent } from "@/Util/Https/http";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import { useSocket } from "@/context/SocketProvider";
 
 dayjs.extend(customParseFormat);
 const dateFormat = "YYYY-MM-DD HH:mm";
@@ -76,6 +76,8 @@ export default function Chatting({
   freelancerEmail,
   companyEmail,
 }) {
+  const socket = useSocket();
+
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const contentRef = useRef(null);

@@ -526,11 +526,88 @@ export const createCalender = async ({ token }) => {
   }
 };
 
-export const createEvent = async ({ token, data }) => {
+// Function to check if email exists in freelancer emails from the API
+export const checkFreelancerEmailExists = async ({
+  token,
+  emailToCheck,
+  companyId,
+}) => {
   try {
+    const response = await axios.get(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/project/allstartedprojects?companyId=${companyId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token here
+        },
+      }
+    );
+
+    const { data } = response;
+    const matchedItem = data.items.find((item) => {
+      console.log("Checking item:", item.freelancerEmail); // Debug log
+      return (
+        item.freelancerEmail &&
+        item.freelancerEmail.toLowerCase() === emailToCheck.toLowerCase()
+      );
+    });
+    return {
+      exist: matchedItem !== undefined,
+      freelancerFirstName: matchedItem?.freelancerFirstName || null,
+      freelancerLastName: matchedItem?.freelancerLastName || null,
+      freelancerId: matchedItem?.freelancerId || null,
+      freelancerProfileImageUrl: matchedItem?.freelancerProfileImageUrl || null,
+      freelancerEmail: matchedItem?.freelancerEmail || null,
+    };
+  } catch (error) {
+    if (error.response) {
+      const err = new Error();
+      err.code = error.response.status;
+      err.message =
+        error.response.data?.message ||
+        "An error occurred while creating event";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const createEvent = async ({ token, data }) => {
+  const userId = Cookies.get("userId");
+  const role = Cookies.get("role");
+  try {
+    let newDate = data;
+    console.log(token, data.people[0], userId);
+    if (data.isMeeting) {
+      if (role === "Freelancer") {
+        throw new Error("You not allow to create meetings.");
+      }
+      const participation = await checkFreelancerEmailExists({
+        token,
+        emailToCheck: data.people[0],
+        companyId: userId,
+      });
+      if (!participation?.exist) {
+        // console.log(participation);
+        throw new Error("Not allow to create meeting with this user.");
+      }
+      newDate = {
+        ...data,
+        participation: {
+          firstName: participation.freelancerFirstName,
+          lastName: participation.freelancerLastName,
+          id: participation.freelancerId,
+          profileImageUrl: participation.freelancerProfileImageUrl,
+          email: participation.freelancerEmail,
+          role: role === "CompanyAdmin" ? "Freelancer" : "CompanyAdmin",
+        },
+      };
+    }
+
     const response = await axios.post(
       `${import.meta.env.VITE_CALENDER_URL}/event`,
-      data,
+      newDate,
       {
         headers: {
           Authorization: token,
@@ -723,5 +800,23 @@ export const getSettingNotification = async ({ token }) => {
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Event related endpoints
+export const deleteEvent = async ({ token, eventId }) => {
+  console.log(token, eventId);
+  try {
+    const response = await axios.delete(
+      `${import.meta.env.VITE_CALENDER_URL}/${eventId}`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
   }
 };

@@ -5,7 +5,48 @@ import { refreshToken as rToken } from "@/Util/Https/http";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState({ userId: null, role: null, token: null });
+  const [user, setUser] = useState({
+    userId: null,
+    role: null,
+    token: null,
+    email: null,
+    firstName: null,
+    lastName: null,
+    profileImageUrl: null,
+  });
+
+  const setUserData = (personData) => {
+    if (personData) {
+      // console.log(personData);
+      Cookies.set("email", personData.email, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      Cookies.set("firstName", personData.firstName, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      Cookies.set("lastName", personData.lastName, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      Cookies.set("profileImageUrl", personData.profileImageUrl, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      setUser((prev) => ({
+        ...prev,
+        email: personData.email,
+        firstName: personData.firstName,
+        lastName: personData.lastName,
+        profileImageUrl: personData.profileImageUrl,
+      }));
+    }
+  };
 
   const refreshToken = async () => {
     try {
@@ -128,13 +169,25 @@ export const AuthProvider = ({ children }) => {
     Cookies.remove("refreshToken");
     Cookies.remove("userId");
     Cookies.remove("role");
+    Cookies.remove("email");
+    Cookies.remove("firstName");
+    Cookies.remove("lastName");
+    Cookies.remove("profileImageUrl");
 
-    setUser(null);
+    setUser({
+      userId: null,
+      role: null,
+      token: null,
+      email: null,
+      firstName: null,
+      lastName: null,
+      profileImageUrl: null,
+    });
     console.warn("User logged out.");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, setUserData }}>
       {children}
     </AuthContext.Provider>
   );

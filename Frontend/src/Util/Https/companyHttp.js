@@ -384,6 +384,30 @@ export const deleteProject = async ({ id, token }) => {
   }
 };
 
+export const GetCompanyProjectsFinancials = async ({ token }) => {
+  try {
+    // console.log(id);
+
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/financial/projects-company`,
+      {
+        headers: {
+          Authorization: `${token}`, // Attach token here
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while Get Financial Projects Company");
+      err.code = error.response.status;
+      err.message = error.response.data.message;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
 export const fatchCurrentOffers = async ({
   PageIndex,
   ProjectId,
@@ -627,6 +651,30 @@ export const finishProject = async ({ signal, id, token }) => {
       err.code = error.response.status;
       err.data.errors = error.response.data;
       err.message = error.response.message;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const getSubscriptionData = async ({id, token }) => {
+  try {
+    console.log(id);
+    
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/subscription/remaining-time/${id}`,
+      {
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    
+    if (error.response) {
+      const err = new Error("An error occurred while fetch remaining subscription by company");
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");

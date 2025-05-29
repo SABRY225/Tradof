@@ -16,35 +16,35 @@ const StartedProjects = () => {
     user: { userId, token },
   } = useAuth();
 
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["started-projects", userId, filter, searchQuery],
-    queryFn: ({ pageParam = 1, signal }) =>
-      getStartedProjects({
-        id: userId,
-        token,
-        page: pageParam,
-        pageSize: ITEMS_PER_PAGE,
-        status: filter === "All" ? undefined : filter,
-        search: searchQuery || undefined,
-      }),
-    getNextPageParam: (lastPage, pages) => {
-      const totalPages = Math.ceil(lastPage.count / ITEMS_PER_PAGE);
-      return pages.length < totalPages ? pages.length + 1 : undefined;
-    },
-    keepPreviousData: true,
-    staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
-  });
+const {
+  data,
+  isLoading,
+  isError,
+  error,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+} = useInfiniteQuery({
+  queryKey: ["started-projects", userId],
+  queryFn: ({ pageParam = 1, signal }) =>
+    getStartedProjects({
+      id: userId,
+      token,
+      page: pageParam,
+      pageSize: ITEMS_PER_PAGE,
+    }),
+  getNextPageParam: (lastPage, pages) => {
+    const totalPages = Math.ceil(lastPage.count / ITEMS_PER_PAGE);
+    return pages.length < totalPages ? pages.length + 1 : undefined;
+  },
+  keepPreviousData: true,
+  staleTime: 5 * 60 * 1000,
+  cacheTime: 10 * 60 * 1000,
+});
 
-  const projects = data?.pages.flatMap((page) => page.items) || [];
+
+   const allProjects = data?.pages.flatMap((page) => page.items) || [];
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,7 +61,25 @@ const StartedProjects = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
-  console.log(projects);
+ 
+const filteredProjects = allProjects.filter((project) => {
+  if (filter === "All") return true;
+
+  const statusMap = {
+    Pending: ProjectStatus.Pending,
+    Review: ProjectStatus.OnReviewing,
+    Finished: ProjectStatus.Finished,
+    InProgress: ProjectStatus.InProgress,
+  };
+
+  return +project.status.statusValue === statusMap[filter];
+});
+ console.log(filteredProjects);
+
+const searchedProjects = filteredProjects.filter((project) =>
+  project?.name.toLowerCase().includes(searchQuery.toLowerCase())
+);
+
   return (
     <div className="bg-background-color">
       <PageTitle
@@ -75,7 +93,7 @@ const StartedProjects = () => {
             <div className="flex items-center gap-4">
               <div className="text-[16px] font-semibold">State:</div>
               <div className="flex gap-4">
-                {["All", "Active", "Review", "Complete"].map((state) => (
+                {["All","Pending", "InProgress","Review","Finished"].map((state) => (
                   <label
                     key={state}
                     className="flex items-center gap-2 cursor-pointer"
@@ -107,7 +125,7 @@ const StartedProjects = () => {
         </div>
 
         <div className="grid grid-cols-1 gap-4">
-          {projects.map((project) => {
+          {searchedProjects.length > 0 ? searchedProjects.map((project) => {
             let style = "";
             switch (+project?.status.statusValue) {
               case +ProjectStatus.Active:
@@ -141,7 +159,7 @@ const StartedProjects = () => {
                       />
                       <div className="text-[16px] font-bold ml-2">
                         <div>
-                          {project?.firstName} {project?.lastName}
+                          {project?.freelancerFirstName} {project?.freelancerLastName}
                         </div>
                         <div className="text-[13px] font-light">
                           {project?.email}
@@ -184,7 +202,11 @@ const StartedProjects = () => {
                 </div>
               </div>
             );
-          })}
+          }):(
+    <div className="text-center text-gray-500 text-[23px] py-8 pb-72">
+      No projects Started Now.
+    </div>
+  )}
         </div>
         {isFetchingNextPage && (
           <div className="text-center py-4">

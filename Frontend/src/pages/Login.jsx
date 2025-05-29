@@ -49,12 +49,15 @@ export default function Login() {
         }
   
       } catch (err) {
-        // لو مفيش اشتراك أو فيه Error، يتوجه لاختيار الخطة
         console.error("Subscription error:", err);
         navigate("/select-plan");
       }
     },
     onError: (error) => {
+      // console.log(error.response);
+      if(error?.message=="Error checking subscription."){
+        navigate("/select-plan");
+      }else{
       toast.error(error?.message || "Login failed!", {
         position: "top-right",
         autoClose: 3000,
@@ -65,6 +68,8 @@ export default function Login() {
         progress: undefined,
       });
       setError(error.message);
+      }
+
     },
   });
   const {
@@ -75,7 +80,6 @@ export default function Login() {
     mutationFn: signByGoogle,
     onSuccess: (data) => {
       console.log("Google login data:", data);
-     
       // navigate("/user/dashboard");
     },
     onError: (error) => {

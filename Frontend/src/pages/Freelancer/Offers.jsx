@@ -49,8 +49,8 @@ function Offers() {
         token,
         page: pageParam,
         pageSize: ITEMS_PER_PAGE,
-        status: filter === "All" ? undefined : filter,
-        search: searchQuery || undefined,
+        // status: filter === "All" ? undefined : filter,
+        // search: searchQuery || undefined,
       }),
     getNextPageParam: (lastPage, pages) => {
       const totalPages = Math.ceil(lastPage.count / ITEMS_PER_PAGE);
@@ -79,7 +79,26 @@ function Offers() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  // console.log(offers);
+  const allOffers = data?.pages.flatMap((page) => page.items) || [];
+
+// فلترة حسب الفلتر المحدد
+const filteredOffers = allOffers.filter((offer) => {
+  const statusMap = {
+    Accepted: 1,
+    Declined: 2,
+    Canceled: 3,
+    Pending: 0,
+  };
+
+  if (filter === "All") return true;
+  return offer.proposalStatus === statusMap[filter];
+});
+
+// بحث حسب العنوان أو الوصف مثلاً
+const searchedOffers = filteredOffers.filter((offer) =>
+  offer.projecttitle.toLowerCase().includes(searchQuery.toLowerCase())
+);
+
 
   return (
     <div className="bg-background-color">
@@ -96,7 +115,7 @@ function Offers() {
                 onChange={(e) => setFilter(e.target.value)}
                 className="flex gap-4"
               >
-                {["All", "Active", "Review", "Complete"].map((state) => (
+                {["All", "Pending", "Accepted", "Declined","Canceled"].map((state) => (
                   <FormControlLabel
                     key={state}
                     value={state}
@@ -125,7 +144,7 @@ function Offers() {
         </div>
 
         <div className="grid grid-cols-1 gap-4">
-          {offers.map((offer) => {
+          {searchedOffers.map((offer) => {
             let style = "";
             switch (+offer?.proposalStatus) {
               case +OfferStatus.Accepted:
