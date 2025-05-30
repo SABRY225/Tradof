@@ -1,5 +1,3 @@
-import { motion } from "motion/react";
-
 import Charts from "@/components/Client/dashboard/Charts";
 import Notification from "@/components/shared/Notification";
 import StartProject from "@/components/Client/dashboard/StartProject";
@@ -12,9 +10,7 @@ export default function ClientDashboard() {
         <Charts classes="flex-grow" />
         <Notification classes="hidden lg:block" />
       </div>
-      <div
-        className="grid  grid-cols-1 md:grid-cols-2 gap-[20px]"
-      >
+      <div className="grid  grid-cols-1 md:grid-cols-2 gap-[20px]">
         <StartProject />
         <UpcomingProject />
       </div>

@@ -1,96 +1,105 @@
 import { openPage } from "@/assets/paths";
-import photo from '../../../assets/images/1560a64114a9372e.jpg';
+import photo from "../../../assets/images/1560a64114a9372e.jpg";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const companies = [
-  {
-    id: 1,
-    name: "Mohamed Abdalrazek",
-    email: "abdalrazekmohmed6@gmail.com",
-    image: photo,
-    leftDays: 356,
-    jopTitle: "jop title",
-    is_blocked: false,
-  },
-  {
-    id: 2,
-    image: photo,
-    name: "Mohamed Abdalrazek",
-    email: "abdalrazekmohmed6@gmail.com",
-    leftDays: 356,
-    jopTitle: "jop title",
-    is_blocked: true,
-  },
-  {
-    id: 3,
-    image: photo,
+export default function Companies({ companies = [] }) {
+  const navigate = useNavigate();
+  const [displayCount, setDisplayCount] = useState(7);
+  const displayedCompanies = companies.slice(0, displayCount);
+  const hasMore = displayCount < companies.length;
 
-    name: "Mohamed Abdalrazek",
-    email: "abdalrazekmohmed6@gmail.com",
-    leftDays: 356,
-    jopTitle: "jop title",
-    is_blocked: false,
-  },
-  {
-    id: 4,
-    image: photo,
-    name: "Mohamed Abdalrazek",
-    email: "abdalrazekmohmed6@gmail.com",
-    leftDays: 356,
-    jopTitle: "jop title",
-    is_blocked: true,
-  },
-  {
-    id: 5,
-    image: photo,
-    name: "Mohamed Abdalrazek",
-    email: "abdalrazekmohmed6@gmail.com",
-    leftDays: 356,
-    jopTitle: "jop title",
-    is_blocked: false,
-  },
-];
+  const handleShowMore = () => {
+    setDisplayCount((prev) => prev + 7);
+  };
 
-export default function Companies() {
+  const truncateText = (text, maxLength = 15) => {
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + "...";
+  };
+
   return (
     <div>
       <div className="mb-2 flex justify-between">
         <h1 className="font-medium text-[18px]">Companies</h1>
-        <img src={openPage} alt="" />
+        <img
+          src={openPage}
+          alt="View all companies"
+          className="cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => navigate("/admin/companies")}
+        />
       </div>
-      <div className="flex flex-col gap-3">
-        {companies.map((freelancer) => (
-          <div
-            key={freelancer.id}
-            className="bg-white p-3 px-5 rounded-md shadow-md flex w-full justify-between items-center gap-3"
-          >
-            <div className="flex flex-col md:flex-row items-center gap-2 text-center">
-              <img
-                src={freelancer.image}
-                alt="person photo"
-                className="w-10 h-10 object-cover rounded-full"
-              />
-              <div>
-                <p className="font-roboto-condensed">{freelancer.name}</p>
-                <p className="font-epilogue italic text-gray-400 text-[12px]">
-                  {freelancer.jopTitle}
-                </p>
-              </div>
-            </div>
-            <p className="font-roboto-condensed break-all">
-              {freelancer.email}
-            </p>
-            <p className="font-epilogue text-main-color font-semibold text-[13px]">
-              {freelancer.leftDays} day left
-            </p>
-            <p
-              className="font-epilogue font-semibold"
-              style={{ color: !freelancer.is_blocked ? "#FF0000" : "#3DCF3D" }}
-            >
-              {freelancer.is_blocked ? "Unblock" : "Block"}
-            </p>
-          </div>
-        ))}
+      <div className="bg-white rounded-lg shadow-md">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-gray-50 border-b">
+                <th className="px-6 py-4 text-left font-semibold">Name</th>
+                <th className="px-6 py-4 text-left font-semibold">Email</th>
+                <th className="px-6 py-4 text-left font-semibold">Phone</th>
+                <th className="px-6 py-4 text-left font-semibold">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {displayedCompanies.map((company) => (
+                <tr
+                  key={company.id}
+                  className="hover:bg-gray-50 transition-colors"
+                >
+                  <td className="px-6 py-4">
+                    <div className="flex items-center space-x-3">
+                      <img
+                        src={photo}
+                        alt="person photo"
+                        className="w-10 h-10 object-cover rounded-full"
+                      />
+                      <div>
+                        <p
+                          className="font-roboto-condensed truncate max-w-[200px]"
+                          title={`${company.firstName} ${company.lastName}`}
+                        >
+                          {truncateText(
+                            `${company.firstName} ${company.lastName}`
+                          )}
+                        </p>
+                        <p className="font-epilogue italic text-gray-400 text-[12px]">
+                          Company Admin
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <p
+                      className="font-roboto-condensed truncate max-w-[300px]"
+                      title={company.email}
+                    >
+                      {truncateText(company.email, 40)}
+                    </p>
+                  </td>
+                  <td className="px-6 py-4">
+                    <p className="font-epilogue text-main-color font-semibold text-[13px]">
+                      {company.phoneNumber}
+                    </p>
+                  </td>
+                  <td className="px-6 py-4">
+                    <p className="font-epilogue font-semibold cursor-pointer text-red-600 hover:text-red-700">
+                      Block
+                    </p>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
+      {hasMore && (
+        <button
+          onClick={handleShowMore}
+          className="w-full mt-4 py-2 text-main-color font-semibold hover:bg-gray-50 rounded-md transition-colors"
+        >
+          Show More
+        </button>
+      )}
     </div>
   );
 }

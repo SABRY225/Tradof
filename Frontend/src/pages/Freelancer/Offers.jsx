@@ -143,7 +143,7 @@ const searchedOffers = filteredOffers.filter((offer) =>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-4 mb-10">
           {searchedOffers.map((offer) => {
             let style = "";
             switch (+offer?.proposalStatus) {
@@ -278,6 +278,11 @@ const searchedOffers = filteredOffers.filter((offer) =>
               </div>
             );
           })}
+            {!isLoading && searchedOffers.length === 0 && (
+            <div className="text-center text-gray-500 py-8 text-lg mb-44">
+              No projects Not found
+            </div>
+          )}
         </div>
         {isFetchingNextPage && (
           <div className="text-center py-4">

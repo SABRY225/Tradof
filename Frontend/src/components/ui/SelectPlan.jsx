@@ -1,5 +1,4 @@
 // components/SelectPlan.jsx
-import { getAllSubscriptions } from "@/Util/Https/http";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -12,7 +11,7 @@ export default function SelectPlan({ onPlanSelect }) {
     const fetchPlans = async () => {
       try {
         const response = await axios.get(
-          `https://tradofserver.azurewebsites.net/api/package`
+          `https://tradofapi-production.up.railway.app/api/package`
         );
         console.log(response);
         

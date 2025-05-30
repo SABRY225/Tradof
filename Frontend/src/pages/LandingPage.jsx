@@ -7,6 +7,7 @@ import ContactUs from "../components/landingPageSections/ContactUs";
 import { useQuery } from "@tanstack/react-query";
 import { getAllSubscriptions } from "@/Util/Https/http";
 import { useLoaderData } from "react-router-dom";
+import TeamPage from "./TeamPage";
 
 export default function LandingPage() {
   const { cards } = useLoaderData();
@@ -32,6 +33,12 @@ export default function LandingPage() {
         label="check top 5 rated companies and translators"
       />
       <TopRatedSection />
+      <BreakSection
+        id="Rated"
+        text="Developer Team"
+        label="The development team of the Tradof platform and application"
+      />
+      <TeamPage />
       {/* <BreakSection id="Contact Us" text='Contact Us' label='Get in touch with our support team' /> */}
       <ContactUs id="Contact Us" />
     </div>

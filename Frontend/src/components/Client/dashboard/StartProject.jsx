@@ -101,7 +101,7 @@ export default function StartProject() {
                   <li className="text-[12px] font-semibold">
                     Price:{" "}
                     <span className="font-light">
-                      ${project?.price}
+                      {project?.price} EGP
                     </span>
                   </li>
                 </ul>

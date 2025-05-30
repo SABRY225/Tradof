@@ -116,12 +116,12 @@ export default function UpcomingProject() {
                     </li>
                     <li className="text-[12px] font-semibold">
                       Delivery time:{" "}
-                      <span className="font-light">${project?.days} days</span>
+                      <span className="font-light">{project?.days} days</span>
                     </li>
                     <li className="text-[12px] font-semibold">
                       Budget:{" "}
                       <span className="font-light">
-                        ${project?.minPrice} - ${project?.maxPrice}
+                        {project?.minPrice} EGP - {project?.maxPrice} EGP
                       </span>
                     </li>
                   </ul>

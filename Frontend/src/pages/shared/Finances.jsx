@@ -16,6 +16,7 @@ import { GetCompanyProjectsFinancials, GetCompanyStatistics } from "@/Util/Https
 import { GetFreelancerProjectsFinancials, GetFreelancerStatistics } from "@/Util/Https/freelancerHttp";
 import { search } from "@/assets/paths";
 import Loading from "../Loading";
+import { useNavigate } from "react-router-dom";
 
 export default function Finances() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -27,7 +28,7 @@ export default function Finances() {
 
 const [transactions, setTransactions] = useState([]);
 const [loading, setLoading] = useState(true);
-
+const Navigate=useNavigate();
 useEffect(() => {
   const fetchStatistics = async () => {
     try {
@@ -85,7 +86,7 @@ const filteredTransactions = transactions
 if (loading) return <p>
   <Loading />
 </p>;
-console.log(filteredTransactions);
+console.log(statistics);
 
   return (
     <div className="bg-background-color">
@@ -107,6 +108,7 @@ console.log(filteredTransactions);
                   py: 0.75,
                   fontSize: "0.875rem",
                 }}
+                onClick={()=>Navigate("/user/withdraw-profits")}
               >
                 Withdraw Profits
               </Button>
@@ -129,7 +131,7 @@ console.log(filteredTransactions);
                 Total balance
               </Typography>
               <Typography variant="h3" sx={{ fontWeight: 700 }}>
-                $ {statistics?.totalBalance}
+                 {statistics?.totalBalance} EGP
               </Typography>
             </Box>
 
@@ -152,8 +154,8 @@ console.log(filteredTransactions);
                 </Typography>
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
                   {role == "Freelancer"
-                    ? `$ ${statistics?.availableBalance}`
-                    : `$ ${statistics?.previousBalance}`}
+                    ? ` ${statistics?.availableBalance} EGP`
+                    : ` ${statistics?.previousBalance} EGP`}
                 </Typography>
               </Grid>
               <Grid
@@ -170,7 +172,7 @@ console.log(filteredTransactions);
                   Pending Amounts
                 </Typography>
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                  $ {statistics?.pendingBalance}
+                   {statistics?.pendingBalance} EGP
                 </Typography>
               </Grid>
             </Grid>
@@ -346,7 +348,7 @@ console.log(filteredTransactions);
                       Offer price
                     </Typography>
                     <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                      ${transaction.prjectData.depoistPrice.toFixed(1)}
+                      {transaction.prjectData.depoistPrice.toFixed(1)} EGP
                     </Typography>
                   </Box>
                 </Paper>

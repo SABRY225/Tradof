@@ -128,7 +128,7 @@ function OfferProjectCard({ offerProject }) {
               </tr>
               <tr>
                 <td>Budget</td>
-                <td className="font-light">{`$${projectDetails?.budget?.minPrice} - $${projectDetails?.budget?.maxPrice}`}</td>
+                <td className="font-light">{`${projectDetails?.budget?.minPrice} EGP - ${projectDetails?.budget?.maxPrice} EGP`}</td>
               </tr>
               <tr>
                 <td>Duration</td>

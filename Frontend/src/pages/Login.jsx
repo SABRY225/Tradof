@@ -26,16 +26,16 @@ export default function Login() {
         secure: true,
         sameSite: "Strict",
       });
-  
+
       login({
         userId: data.userId,
         role: data.role,
         token: data.token,
         refreshToken: data.refreshToken,
       });
-  
+
       try {
-        if(data.role=="CompanyAdmin"){
+        if (data.role == "CompanyAdmin") {
           await GetCurrentSubscription({
             companyId: data.userId,
             token: data.token,
@@ -47,7 +47,6 @@ export default function Login() {
         } else {
           navigate("/user/dashboard");
         }
-  
       } catch (err) {
         console.error("Subscription error:", err);
         navigate("/select-plan");
@@ -80,7 +79,6 @@ export default function Login() {
     mutationFn: signByGoogle,
     onSuccess: (data) => {
       console.log("Google login data:", data);
-      // navigate("/user/dashboard");
     },
     onError: (error) => {
       toast.error(error?.message || "Google login failed!", {
@@ -95,7 +93,6 @@ export default function Login() {
       setError(error.message);
     },
   });
-  
 
   const {
     control,
@@ -113,7 +110,8 @@ export default function Login() {
   useEffect(() => {
     console.log(user);
     if (user) {
-      navigate("/user/dashboard");
+      if (user.role === "admin") navigate("/admin/dashboard");
+      else navigate("/user/dashboard");
     }
   }, []);
 

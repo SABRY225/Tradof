@@ -55,23 +55,23 @@ export default function ProjectOwnerCard({ ownerCard }) {
             </tr>
           </table>
         </div>
-        <div className="flex flex-col items-center space-y-2">
+        {/* <div className="flex flex-col items-center space-y-2">
           <h1 className="font-medium font-roboto">
             You can add rate for{" "}
             {role === "Freelancer" ? "Company" : "Freelancer"}
           </h1>
           <div className="flex space-x-2">
-            <img src={stare} alt="" />
-            <img src={stare} alt="" />
-            <img src={stare} alt="" />
-            <img src={stare} alt="" />
-            <img src={emptyStare} alt="" />
+            <img src={stare} alt="value-1" />
+            <img src={stare} alt="value-2" />
+            <img src={stare} alt="value-3" />
+            <img src={stare} alt="value-4" />
+            <img src={emptyStare} alt="value-5" />
           </div>
           <p className="italic text-[12px] w-[90%] text-center">
             Please share with us your opinion about your dealings with the
             customer.
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );

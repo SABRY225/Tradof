@@ -26,7 +26,7 @@ export default function UserLayout() {
   // console.log(user);
   // Redirect unauthenticated user
   useEffect(() => {
-    if (!isShare && (!user || !user?.role)) {
+    if (!isShare && (!user || !user?.role || user?.role === "admin")) {
       navigate("/auth");
       return null;
     }

@@ -130,6 +130,7 @@ export const deleteSpecialization = async ({ signal, data, id, token }) => {
 };
 
 export const editProfile = async ({ signal, data, token }) => {
+
   try {
     const imageURL = await uploadImage({ imageURL: data.profileImageUrl });
     const response = await axios.put(
@@ -151,14 +152,16 @@ export const editProfile = async ({ signal, data, token }) => {
       console.log(error);
       const err = new Error("An error occurred while edit profile");
       err.code = error.response.status;
-      err.message = error.response.data;
+      err.message = Object.entries(error.response.data.errors)
+        .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
+        .join(" ");;
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
 
-export const createProject = async ({ signal, data, id, token }) => {
+export const createProject = async ({ signal, data, token }) => {
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}/project`,
@@ -338,7 +341,7 @@ export const getUpcomingdProjects = async ({ id, token }) => {
     const response = await axios.get(
       `${
         import.meta.env.VITE_BACKEND_URL
-      }/project/unassigned-projects/company?companyId=${id}`,
+      }/project/unassigned-projects?companyId=${id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`, // Attach token here

@@ -79,6 +79,8 @@ const filteredProjects = allProjects.filter((project) => {
 const searchedProjects = filteredProjects.filter((project) =>
   project?.name.toLowerCase().includes(searchQuery.toLowerCase())
 );
+console.log(searchedProjects);
+
 
   return (
     <div className="bg-background-color">
@@ -124,7 +126,7 @@ const searchedProjects = filteredProjects.filter((project) =>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-4 mb-10">
           {searchedProjects.length > 0 ? searchedProjects.map((project) => {
             let style = "";
             switch (+project?.status.statusValue) {
@@ -162,7 +164,7 @@ const searchedProjects = filteredProjects.filter((project) =>
                           {project?.freelancerFirstName} {project?.freelancerLastName}
                         </div>
                         <div className="text-[13px] font-light">
-                          {project?.email}
+                          {project?.freelancerEmail}
                         </div>
                       </div>
                     </div>
@@ -176,7 +178,7 @@ const searchedProjects = filteredProjects.filter((project) =>
                     </div>
                   </div>
                   <div className="text-[22px] font-bold mt-2">
-                    {project?.title}
+                    {project?.name}
                   </div>
                   <div className="border border-main-color my-3"></div>
                   <div className="text-[15px]">
@@ -196,7 +198,7 @@ const searchedProjects = filteredProjects.filter((project) =>
                     </div>
                     <div className="text-[14px]">
                       <span className="font-semibold">Price:</span>{" "}
-                      <span className="font-light">${project?.price}</span>
+                      <span className="font-light"> {project?.price} EGP</span>
                     </div>
                   </div>
                 </div>

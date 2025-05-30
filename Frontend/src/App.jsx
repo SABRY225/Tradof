@@ -56,6 +56,7 @@ import SettingAdmin from "./pages/Admin/SettingAdmin";
 import SuccessPayment from "./pages/payment";
 import PlanPage from "./pages/PlanPage";
 import ProfitWithdrawalRequests from "./pages/Admin/ProfitWithdrawalRequests";
+import TeamPage from "./pages/TeamPage";
 import ProjectPage, { projectLoader } from "./pages/shared/ProjectPage";
 import ErrorPage from "./pages/ErrorPage";
 import PayProject, { payProjectLoader } from "./pages/shared/PayProject";
@@ -63,6 +64,8 @@ import { userDataLoader } from "./components/shared/UserNavbar";
 import Waiting from "./pages/Meeting/Waiting";
 import Room from "./pages/Meeting/Room";
 import { SocketProvider } from "./context/SocketProvider";
+import AllFreelancers from "./pages/Admin/AllFreelancers";
+import AllCompanies from "./pages/Admin/AllCompanies";
 
 // create routes
 const router = createBrowserRouter([
@@ -143,7 +146,6 @@ const router = createBrowserRouter([
           },
           { path: "start", element: <StartedProjects /> },
           { path: "upcoming", element: <UpcomingProjects /> },
-          // work in progress
           { path: ":projectId", element: <ProjectPage /> },
           {
             path: "pay/:projectId",
@@ -173,7 +175,6 @@ const router = createBrowserRouter([
       { path: "offers", element: <Offers /> },
       { path: "feedback", element: <Feedback /> },
       { path: "ask-question", element: <AskQuestion /> },
-      // work in progress
       { path: "finances", element: <Finances /> },
       { path: "withdraw-profits", element: <WithdrawProfits /> },
     ],
@@ -191,17 +192,19 @@ const router = createBrowserRouter([
       { path: "withdrawal", element: <ProfitWithdrawalRequests /> },
       // work in progress
       { path: "finances", element: <AdminFinances /> },
+      { path: "freelancers", element: <AllFreelancers /> },
+      { path: "companies", element: <AllCompanies /> },
     ],
   },
   {
     path: "test",
-    element: <ProfitWithdrawalRequests />,
-    errorElement: <ErrorPage />,
+
+    element: <TeamPage />,
   },
   {
     path: "test2",
-    element: <Finances />,
-    errorElement: <ErrorPage />,
+    element: <WithdrawProfits />,
+
   },
   {
     path: "*",

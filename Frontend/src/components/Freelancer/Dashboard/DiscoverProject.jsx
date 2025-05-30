@@ -100,7 +100,7 @@ export default function DiscoverProject({ classes }) {
             <div className="flex gap-2">
               <img src={grayBudget} alt="icon" width={15} />
               <p className="text-gray-500 text-[12px]">
-                ${project?.minPrice} - ${project?.maxPrice}
+                {project?.minPrice} EGP - {project?.maxPrice} EGP
               </p>
             </div>
           </div>

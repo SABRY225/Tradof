@@ -28,7 +28,7 @@ export const refreshToken = async ({ oldToken }) => {
 export const getAllSubscriptions = async () => {
   try {
     const response = await axios.get(
-      `https://tradofserver.azurewebsites.net/api/package`
+      `https://tradofapi-production.up.railway.app/api/package`
     );
 
     return response.data.data;
@@ -818,5 +818,29 @@ export const deleteEvent = async ({ token, eventId }) => {
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
+  }
+};
+
+export const createProjectRating = async ({ token, data }) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/project/create-rating`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while creating project rating");
+      err.code = error.response.status;
+      err.message = error.response.data?.message || "Failed to create rating";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
   }
 };

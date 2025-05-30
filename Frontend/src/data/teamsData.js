@@ -35,8 +35,8 @@ export const teamsData = [
         ],
     },
     {
-        name: "Mohamed Abdalrazek",
-        image: profilePhoto,
+        name: "Ahmed Sabry",
+        image: "sabry.jpg",
         subtitle: "Full Stack Developer (MERN)",
         media: [
             {
@@ -68,8 +68,8 @@ export const teamsData = [
         ],
     },
     {
-        name: "Mohamed Abdalrazek",
-        image: profilePhoto,
+        name: "Ahmed Nady",
+        image:"nady.png",
         subtitle: "Full Stack Developer (MERN)",
         media: [
             {
@@ -101,8 +101,8 @@ export const teamsData = [
         ],
     },
     {
-        name: "Mohamed Abdalrazek",
-        image: profilePhoto,
+        name: "Mohmed Hagag",
+        image: "hgaga.png",
         subtitle: "Full Stack Developer (MERN)",
         media: [
             {
@@ -134,8 +134,8 @@ export const teamsData = [
         ],
     },
     {
-        name: "Mohamed Abdalrazek",
-        image: profilePhoto,
+        name: "Youssef Ghareb",
+        image: "Youssef Ghareb.png",
         subtitle: "Full Stack Developer (MERN)",
         media: [
             {
@@ -167,8 +167,8 @@ export const teamsData = [
         ],
     },
     {
-        name: "Mohamed Abdalrazek",
-        image: profilePhoto,
+        name: "Ahmed Kamal",
+        image: "kamal.jpg",
         subtitle: "Full Stack Developer (MERN)",
         media: [
             {
@@ -200,8 +200,8 @@ export const teamsData = [
         ],
     },
     {
-        name: "Mohamed Abdalrazek",
-        image: profilePhoto,
+        name: "Ahmed Nasser",
+        image: "nasser.jpg",
         subtitle: "Full Stack Developer (MERN)",
         media: [
             {

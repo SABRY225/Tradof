@@ -4,14 +4,12 @@ import PageTitle from "@/UI/PageTitle";
 import { deleteProject, getUpcomingdProjects } from "@/Util/Https/companyHttp";
 import { useAuth } from "@/context/AuthContext";
 import {
-  useInfiniteQuery,
+  useQuery,
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-
-const ITEMS_PER_PAGE = 20;
 
 function UpcomingProjects() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -23,78 +21,31 @@ function UpcomingProjects() {
   const deleteMutation = useMutation({
     mutationFn: (id) => deleteProject({ id, token }),
     onSuccess: () => {
-      queryClient.invalidateQueries(["upcoming-projects", userId]);
-      toast.success("Project Deleted Successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      queryClient.invalidateQueries(["all-upcoming-projects", userId]);
+      toast.success("Project Deleted Successfully");
     },
     onError: (error) => {
-      toast.error(
-        error?.response?.data?.message || "Failed to delete project",
-        {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        }
-      );
+      toast.error(error?.response?.data?.message || "Failed to delete project");
     },
   });
 
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["upcoming-projects", userId, searchQuery],
-    queryFn: ({ pageParam = 1, signal }) =>
+  // Load all projects once
+  const { data, isLoading } = useQuery({
+    queryKey: ["all-upcoming-projects", userId],
+    queryFn: () =>
       getUpcomingdProjects({
         id: userId,
         token,
-        page: pageParam,
-        pageSize: ITEMS_PER_PAGE,
-        search: searchQuery || undefined,
+        page: 1,
+        pageSize: 1000, // assuming you won't have more than 1000
       }),
-    getNextPageParam: (lastPage, pages) => {
-      const totalPages = Math.ceil(lastPage.count / ITEMS_PER_PAGE);
-      return pages.length < totalPages ? pages.length + 1 : undefined;
-    },
-    keepPreviousData: true,
     staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
   });
 
-  const projects = data?.pages.flatMap((page) => page.items) || [];
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + document.documentElement.scrollTop >=
-          document.documentElement.offsetHeight - 100 &&
-        hasNextPage &&
-        !isFetchingNextPage
-      ) {
-        fetchNextPage();
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
-
+  // Filter projects based on search query (client-side)
+  const projects = data?.items?.filter((project) =>
+    project?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
 
   return (
     <div className="bg-background-color">
@@ -103,27 +54,22 @@ function UpcomingProjects() {
         subtitle="Projects that haven't been assigned to freelancers"
       />
       <div className="container max-w-screen-xl mx-auto w-full py-[30px] px-4">
-        {/* Top Filter Section */}
+        {/* Search Bar */}
         <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="relative w-full md:w-[300px]">
+            <div className="relative w-full md:w-[400px] flex gap-2">
               <input
                 type="text"
                 placeholder="Search projects..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded px-3 py-2 pr-10 bg-transparent border border-[#D6D7D7] focus:outline-none focus:ring-2 focus:ring-main-color text-[14px]"
-              />
-              <img
-                src={blueOffers}
-                alt="search"
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4"
+                className="w-full rounded px-3 py-2 bg-transparent border border-[#D6D7D7] focus:outline-none focus:ring-2 focus:ring-main-color text-[14px]"
               />
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-4 mb-14">
           {projects.map((project) => (
             <div
               key={project?.id}
@@ -177,7 +123,7 @@ function UpcomingProjects() {
                   <div className="text-[14px]">
                     <span className="font-semibold">Budget:</span>{" "}
                     <span className="font-light">
-                      ${project?.minPrice} - ${project?.maxPrice}
+                      {project?.minPrice} EGP - {project?.maxPrice} EGP
                     </span>
                   </div>
                 </div>
@@ -193,8 +139,17 @@ function UpcomingProjects() {
               </div>
             </div>
           ))}
+
+          {/* No Results Message */}
+          {!isLoading && projects.length === 0 && (
+            <div className="text-center text-gray-500 py-8 text-lg mb-44">
+              No projects found with that name.
+            </div>
+          )}
         </div>
-        {isFetchingNextPage && (
+
+        {/* Loading Indicator */}
+        {isLoading && (
           <div className="text-center py-4">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-main-color mx-auto"></div>
           </div>
