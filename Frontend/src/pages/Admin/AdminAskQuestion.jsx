@@ -16,6 +16,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { AnswerAskQuestion, fetchAskQuestion } from '@/Util/Https/adminHttp';
 import Cookies from 'js-cookie';
 import { searchAskQuestion } from '@/Util/Https/http';
+import PageTitle from '@/UI/PageTitle';
 
 function AdminAskQuestion() {
   const [currentAnswer, setCurrentAnswer] = useState('');
@@ -68,7 +69,11 @@ function AdminAskQuestion() {
   };
 
   return (
-    <div className="flex  min-h-screen bg-[#f5f7ff]">
+           <div className='bg-[#f5f7ff]'>
+            <PageTitle title="Ask Questions" subtitle="" />
+
+    <div className="flex  min-h-screen ">
+      
       <div className="flex-grow">
         <Container maxWidth="lg" sx={{ py: 4 }}>
           <Grid container spacing={3} >
@@ -272,6 +277,7 @@ function AdminAskQuestion() {
       </div>
 
     </div>
+           </div>
   );
 }
 

@@ -49,13 +49,13 @@ export default function Login() {
         }
       } catch (err) {
         console.error("Subscription error:", err);
-        navigate("/select-plan");
+        navigate(`/select-plan/${data.token}`);
       }
     },
     onError: (error) => {
       // console.log(error.response);
       if(error?.message=="Error checking subscription."){
-        navigate("/select-plan");
+        navigate(`/select-plan/${data.token}`);
       }else{
       toast.error(error?.message || "Login failed!", {
         position: "top-right",

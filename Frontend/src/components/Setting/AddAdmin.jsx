@@ -7,7 +7,7 @@ function AddAdmin({ admins }) {
 
   return (
     <div>
-      <h1 className="text-[23px] font-roboto-condensed font-bold  w-fit mt-5  ">
+      <h1 className="text-[23px] font-roboto-condensed font-bold  w-fit mt-8  ">
         Admins
       </h1>
       <div className="flex justify-between  items-center  bg-background-color py-3 px-5  text-[17px] font-roboto-condensed font-bold border border-background-color rounded mt-5 text-main-color  ">

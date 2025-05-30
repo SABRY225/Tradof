@@ -1,46 +1,32 @@
-
-
-import ButtonFelid from "@/UI/ButtonFelid";
-import Plus from "../../assets/icons/plus.svg";
-function Plans({plans}) {
+function Plans({ plans }) {
   return (
-    <div>
-      <h1 className="text-[23px] font-roboto-condensed font-bold  w-fit mt-5  ">
-      Plans
+    <div className="max-w-7xl mx-auto p-1">
+      <h1 className="text-[28px] font-roboto-condensed font-bold  text-primary-color my-5">
+        Plans
       </h1>
-      <div className="flex justify-between  items-center  bg-background-color py-3 px-5  text-[17px] font-roboto-condensed font-bold border border-background-color rounded mt-5 text-main-color  ">
-        <div>Plan name</div>
-        <div>Duration</div>
-        <div>Description</div>
-        <div>Price</div>
-        <div>
-          <ButtonFelid
-            text="ADD"
-            icon={Plus}
-            classes="flex-row bg-second-color px-[25px] py-[8px]"
-            type="button"
-          />
-        </div>
-      </div>
-      {plans.map((plan, index) => (
-              <>
-              <div key={index} className="flex justify-between items-center px-5  bg-white py-3  text-[17px] font-roboto-condensed font-mono border-2 border-card-color rounded mt-1 text-black  ">
-              <div className="w-28">{plan.name}</div>
-              <div className="w-28">{plan.durationInMonths}</div>
-              <div className="w-28">{plan.description}</div>
-              <div className="w-24">{plan.price} EGP</div>
-              <div>
-                <ButtonFelid
-                  text="Delete"
-                  classes="flex-row text-second-color px-[25px] py-[8px]"
-                  type="button"
-                />
-              </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {plans.map((plan, index) => (
+          <div
+            key={index}
+            className="bg-white p-5 rounded-lg shadow-lg border border-gray-200 hover:shadow-2xl transition-shadow duration-300 ease-in-out"
+          >
+            <h2 className="text-xl font-semibold text-main-color mb-3">{plan.name}</h2>
+            <div className="text-gray-600 text-sm mb-4">
+              <span className="font-medium">Duration:</span> {plan.durationInMonths} months
             </div>
-              </>
-          ))}
+            <p className="text-gray-700 text-sm mb-4">{plan.description}</p>
+            <div className="flex justify-between items-center mt-4">
+              <div className="text-xl font-bold text-main-color">{plan.price} EGP</div>
+              <button className="bg-primary-color text-white py-2 px-4 rounded-md hover:bg-opacity-80 transition duration-300">
+                Select Plan
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
-  )
+  );
 }
 
-export default Plans
+export default Plans;

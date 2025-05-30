@@ -94,7 +94,7 @@ console.log(statistics);
       <div className="container max-w-screen-xl mx-auto p-4 w-full mt-[30px]">
         <div className="space-y-[20px] rounded-[8px]">
           {/* Withdraw Button */}
-          {role == "Freelancer" && (
+          {role == "Freelancer" && statistics?.availableBalance>100 && (
             <Box sx={{ mb: 4, display: "flex", justifyContent: "flex-start" }}>
               <Button
                 variant="contained"
@@ -108,7 +108,7 @@ console.log(statistics);
                   py: 0.75,
                   fontSize: "0.875rem",
                 }}
-                onClick={()=>Navigate("/user/withdraw-profits")}
+                onClick={()=>Navigate(`/user/withdraw-profits/${statistics?.availableBalance}`)}
               >
                 Withdraw Profits
               </Button>

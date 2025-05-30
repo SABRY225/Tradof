@@ -49,7 +49,7 @@ export default function Freelancers({ freelancers = [] }) {
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-3">
                       <img
-                        src={photo}
+                        src={freelancer?.profileImageUrl ? freelancer.profileImageUrl : photo}
                         alt="person photo"
                         className="w-10 h-10 object-cover rounded-full"
                       />

@@ -40,7 +40,7 @@ const {
 
 
   return (
-    <div className="bg-background-color py-[50px]">
+    <div className="bg-background-color pb-10">
       <PageTitle title="Settings" subtitle="Edit your data" />
       <div className="container max-w-screen-xl mx-auto">
         {/* <EditProfileAdmin profileData={profileData } /> */}

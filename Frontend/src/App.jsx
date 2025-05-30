@@ -78,7 +78,7 @@ const router = createBrowserRouter([
     ],
   },
   { path: "success-payment", element: <SuccessPayment /> },
-  { path: "select-plan", element: <PlanPage /> },
+  { path: "select-plan/:token", element: <PlanPage /> },
   {
     path: "/loading",
     element: <Loading />,
@@ -176,7 +176,7 @@ const router = createBrowserRouter([
       { path: "feedback", element: <Feedback /> },
       { path: "ask-question", element: <AskQuestion /> },
       { path: "finances", element: <Finances /> },
-      { path: "withdraw-profits", element: <WithdrawProfits /> },
+      { path: "withdraw-profits/:amountMoney", element: <WithdrawProfits /> },
     ],
   },
   {

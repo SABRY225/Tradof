@@ -1,5 +1,6 @@
 import axios from "axios";
 import { uploadImage } from "./http";
+import { toast } from "react-toastify";
 
 export const getFreelancer = async ({ signal, id, token }) => {
   try {
@@ -271,7 +272,7 @@ export const getStatistics = async ({ signal, id, token }) => {
   }
 };
 
-// SABRY API
+
 export const AddOffer = async ({ data, token }) => {
   try {
     const response = await axios.post(
@@ -367,6 +368,33 @@ export const GetFreelancerStatistics = async ({ freelancerId, token }) => {
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const sendWithdrawRequest = async ({formData,token}) => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_NODE_URL}/financial/request-withdrawProfits`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': `${token}`,
+      },
+      body: JSON.stringify(formData),
+    });
+   console.log(response);
+   
+    if (response.ok) {
+      const data = await response.json();
+      toast.success("Withdrawal successful!");
+    
+    } else {
+      throw new Error("There was an error processing your withdrawal.");
+    }
+  } catch (error) {
+    console.log(error);
+    
+    toast.error("An error occurred. Please check your connection and try again.");
+    console.error("Error:", error);
   }
 };
 

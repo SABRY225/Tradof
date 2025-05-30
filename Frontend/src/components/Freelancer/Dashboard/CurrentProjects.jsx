@@ -48,6 +48,8 @@ export default function CurrentProjects({ classes }) {
       setCurrentPage((prev) => prev - 1);
     }
   };
+  console.log(items);
+  
   return (
     <motion.div
       initial={{ x: "-50rem" }}

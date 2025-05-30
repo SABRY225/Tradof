@@ -8,6 +8,8 @@ import { ApproveFeedback, DanyFeedback, fetchFeedback } from '@/Util/Https/admin
 import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import Loading from '../Loading';
+import PageTitle from '@/UI/PageTitle';
 
 function AdminFeedback() {
   const [feedbacks, setFeedbacks] = useState([]);
@@ -60,14 +62,16 @@ function AdminFeedback() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f5f7ff]">
+                  <PageTitle title="Feedback" subtitle="" />
+      
       <div className="flex-grow">
         <Container maxWidth="lg" sx={{ py: 4 }}>
+          {feedbacks.length>0 ? <>
           <Box sx={{ mb: 2 }}>
             <Typography variant="h6" sx={{ fontWeight: 500, mb: 2 }}>
               Last Feedback
             </Typography>
           </Box>
-
           <TableContainer component={Paper} sx={{ borderRadius: '10px', mb: 4 }}>
             <Table sx={{ minWidth: isMobile ? 500 : 650 }}>
               <TableBody>
@@ -116,6 +120,8 @@ function AdminFeedback() {
               </TableBody>
             </Table>
           </TableContainer>
+          </>:<Loading />}
+
         </Container>
       </div>
 
