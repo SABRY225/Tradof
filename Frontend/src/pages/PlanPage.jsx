@@ -4,12 +4,12 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
 import { useAuth } from "@/context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 export default function PlanPage() {
     const {
       user: { userId, role },
     } = useAuth();
-  const token = Cookies.get("token");
+  const {token} = useParams();
   const navigate = useNavigate();
 
   const handlePlanSelect = async(planId) => {

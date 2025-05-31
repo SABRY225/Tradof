@@ -66,6 +66,8 @@ import Room from "./pages/Meeting/Room";
 import { SocketProvider } from "./context/SocketProvider";
 import AllFreelancers from "./pages/Admin/AllFreelancers";
 import AllCompanies from "./pages/Admin/AllCompanies";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 // create routes
 const router = createBrowserRouter([
@@ -77,6 +79,8 @@ const router = createBrowserRouter([
       { index: true, element: <LandingPage />, loader: subscriptionsLoader }, // Default route
     ],
   },
+  { path: "service", element: <TermsOfService /> },
+  { path: "privacy-policy", element: <PrivacyPolicy /> },
   { path: "success-payment", element: <SuccessPayment /> },
   { path: "select-plan/:token", element: <PlanPage /> },
   {

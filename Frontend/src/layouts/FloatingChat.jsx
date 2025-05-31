@@ -3,7 +3,6 @@ import { useState } from "react";
 import { MdSupportAgent } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
 import Chatbot from "./Chatbot";
-import { BiSupport } from "react-icons/bi";
 import { motion, AnimatePresence } from "framer-motion";
 
 const FloatingChat = ({ user }) => {

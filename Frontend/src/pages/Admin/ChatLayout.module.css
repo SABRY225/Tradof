@@ -41,8 +41,15 @@
   .userMessage {
     background-color: #6200ee; /* لون رسائل المستخدم */
     color: white;
-    align-self: flex-end; /* محاذاة رسائل المستخدم إلى اليمين */
+    align-self: flex-start; 
   }
+    
+  .otherMessage {
+    background-color: #6200ee; /* لون رسائل المستخدم */
+    color: white;
+    align-self: flex-end; 
+  }
+  
   
   .chatInputArea {
     padding: 16px;

@@ -140,19 +140,23 @@ export const GetAllAdmins = async () => {
   }
 };
 // add admin
-export const AddAdmin = async ({ data, token }) => {
+export const addAdmin = async ({ data }) => {
   try {
+    console.log(data);
+    
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}/admin/AddAdmin`,
-      { data },
+      data ,
       {
         headers: {
-          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       }
     );
     return response.data;
   } catch (error) {
+    console.log(error);
+    
     if (error.response) {
       const err = new Error("An error occurred while add admin");
       err.code = error.response.status;
@@ -209,6 +213,49 @@ export const EditPlan = async ({ data, id, token }) => {
   }
 };
 
+export const getMessagesList = async (token) => {
+  try {
+    const res = await axios.get(`${import.meta.env.VITE_BACKEND_NODE_URL}/technicalSupport`, {
+      headers: { Authorization: `${token}` },
+    });
+    return res.data.messages;
+  } catch (err) {
+    console.error("Error fetching messages list:", err);
+    throw err;
+  }
+};
+
+export const getChatMessages = async (userId, token) => {
+  try {
+    const res = await axios.get(`${import.meta.env.VITE_BACKEND_NODE_URL}/technicalSupport/${userId}`, {
+      headers: { Authorization: `${token}` },
+    });
+    return res.data.messages;
+  } catch (err) {
+    console.error(`Error fetching chat messages for user ${userId}:`, err);
+    throw err;
+  }
+};
+
+export const sendMessage = async (receiverId, message, file, token) => {
+  const formData = new FormData();
+  formData.append("receiverId", receiverId);
+  formData.append("message", message);
+  if (file) formData.append("file", file);
+
+  try {
+    const res = await axios.post(`${import.meta.env.VITE_BACKEND_NODE_URL}/technicalSupport/admin`, formData, {
+      headers: {
+        Authorization: `${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return res.data;
+  } catch (err) {
+    console.error("Error sending message:", err);
+    throw err;
+  }
+};
 // rabi3 in code
 export const getAllSubscriptions = async ({ signal, token }) => {
   try {

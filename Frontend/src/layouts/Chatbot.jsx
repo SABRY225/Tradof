@@ -1,38 +1,30 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { IoMdSend } from "react-icons/io";
-import { FaFileImage, FaFileAlt, FaTimes } from "react-icons/fa";
-import { MdAttachFile } from "react-icons/md";
+import { useState, useEffect, useCallback } from "react";
 import logoIcon from "../assets/icons/logo.svg";
-import Loading from "@/pages/Loading";
 import { FadeLoader } from "react-spinners";
 import { rightArrow } from "@/assets/paths";
+import { getMessages, sendMessage } from "@/Util/Https/http";
 
 const Chatbot = ({ user }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState(""); // حالة لعرض رسالة خطأ
+  const [uploadError, setUploadError] = useState("");
+  const [isPolling, setIsPolling] = useState(true); // حالة لتحديد إذا كنا في حالة polling أم لا
 
-  const getMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_NODE_URL}/technicalSupport/${
-          user?.userId
-        }`,
-        { headers: { Authorization: `Bearer ${user?.token}` } }
-      );
-      setMessages(res.data.messages);
+      const fetchedMessages = await getMessages(user?.userId, user?.token);
+      setMessages(fetchedMessages);
     } catch (err) {
-      console.error("Error fetching messages:", err);
+      console.error(err);
     }
-  };
+  }, [user?.userId, user?.token]);
 
-  const sendMessage = async () => {
+  const handleSendMessage = async () => {
     if (!input.trim() && !selectedFile) return;
     setUploading(true);
-    setUploadError(""); // مسح أي خطأ سابق
+    setUploadError("");
 
     const formData = new FormData();
     formData.append("senderId", user?.userId);
@@ -40,66 +32,25 @@ const Chatbot = ({ user }) => {
     if (selectedFile) formData.append("file", selectedFile);
 
     try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_NODE_URL}/technicalSupport`,
-        formData,
-        {
-          headers: {
-            Authorization: `${user?.token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      setMessages((prev) => [...prev, res.data.message]);
+      const newMessage = await sendMessage(user?.userId, user?.token, formData);
+      setMessages((prev) => [...prev, newMessage]);
       setInput("");
       setSelectedFile(null);
     } catch (err) {
-      console.error("Error sending message:", err);
+      console.error(err);
       setUploadError("حدث خطأ أثناء رفع الملف.");
     } finally {
       setUploading(false);
     }
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (!file.type.startsWith("image/")) {
-        setUploadError("من فضلك قم برفع صورة فقط.");
-        setSelectedFile(null);
-        return;
-      }
-      setSelectedFile(file);
-      setUploadError(""); // مسح أي خطأ سابق
-    }
-  };
-
-  const getFileIcon = (file) => {
-    let fileName = "";
-    if (typeof file === "string") {
-      fileName = file;
-    } else if (file && file.name) {
-      fileName = file.name;
-    }
-
-    const lowerCaseFile = fileName.toLowerCase();
-    const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"];
-    if (imageExtensions.some((ext) => lowerCaseFile.endsWith(ext))) {
-      return <FaFileImage style={styles.fileIcon} />;
-    }
-    return <FaFileAlt style={styles.fileIcon} />; // عرض أيقونة عامة إذا لم تكن صورة
-  };
-
-  const removeFile = () => setSelectedFile(null);
-
   useEffect(() => {
-    if (user?.userId) {
-      getMessages();
-      const interval = setInterval(getMessages, 5000);
+    if (user?.userId && isPolling) {
+      fetchMessages();
+      const interval = setInterval(fetchMessages, 5000); // polling كل 15 ثانية بدلاً من 5
       return () => clearInterval(interval);
     }
-  }, [user?.userId]);
+  }, [fetchMessages, isPolling, user?.userId]);
 
   return (
     <div style={styles.wrapper}>
@@ -112,9 +63,8 @@ const Chatbot = ({ user }) => {
           <div className="flex items-center justify-center h-full w-full">
             <FadeLoader
               color="#000"
-              // cssOverride={{ width: "0px", height: "0px" }}
-              height={6}
-              width={6}
+              height={8}
+              width={8}
               loading
               margin={-7}
               radius={10}
@@ -124,87 +74,29 @@ const Chatbot = ({ user }) => {
         ) : (
           messages.map((msg, index) => {
             const isUser = msg.senderId === user?.userId;
-
             return (
               <div key={index} style={styles.messageContainer(isUser)}>
                 <div style={styles.messageBubble(isUser)}>
                   {msg.message}
-                  {/* {msg.file && (
-                    <div style={styles.fileMessage}>
-                      {getFileIcon(msg.file)}
-                      {(() => {
-                        let fileName = "";
-                        if (typeof msg.file === "string") {
-                          fileName = msg.file;
-                        } else if (msg.file && msg.file.name) {
-                          fileName = msg.file.name;
-                        }
-                        const lowerCaseFile = fileName.toLowerCase();
-                        const imageExtensions = [
-                          ".jpg",
-                          ".jpeg",
-                          ".png",
-                          ".gif",
-                          ".bmp",
-                          ".webp",
-                        ];
-                        if (
-                          imageExtensions.some((ext) =>
-                            lowerCaseFile.endsWith(ext)
-                          )
-                        ) {
-                          return <img src={msg.file} style={styles.fileLink} />;
-                        } else {
-                          return (
-                            <a
-                              href={msg.file}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={styles.fileLink}
-                            >
-                              {fileName.split("/").pop()}
-                            </a>
-                          );
-                        }
-                      })()}
-                    </div>
-                  )} */}
                 </div>
               </div>
             );
           })
         )}
       </div>
-      {/* {selectedFile && (
-        <div style={styles.filePreview}>
-          {getFileIcon(selectedFile)}
-          <span style={styles.fileName}>{selectedFile.name}</span>
-          <FaTimes style={styles.removeIcon} onClick={removeFile} />
-        </div>
-      )} */}
-      {uploadError && <p style={styles.error}>{uploadError}</p>}{" "}
-      {/* عرض رسالة الخطأ */}
+      {uploadError && <p style={styles.error}>{uploadError}</p>}
       <div style={styles.inputBox}>
-        {/* <label style={styles.attachButton}>
-          <FaFileImage size={20} color="#7b61ff" />
-          <input
-            type="file"
-            accept="image/*" // لقبول جميع أنواع الصور
-            onChange={handleFileChange}
-            style={{ display: "none" }}
-          />
-        </label> */}
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Message..."
           style={styles.input}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
         />
         <button
-          onClick={sendMessage}
+          onClick={handleSendMessage}
           style={styles.sendButton}
-          disabled={uploading || uploadError} // تعطيل الزر في حالة الرفع أو وجود خطأ
+          disabled={uploading || uploadError}
         >
           {uploading ? (
             <div style={styles.spinner} />
@@ -219,8 +111,8 @@ const Chatbot = ({ user }) => {
 
 const styles = {
   wrapper: {
-    width: 250,
-    height: 400,
+    width: 300,
+    height: 500,
     borderRadius: 12,
     overflow: "hidden",
     boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
@@ -268,43 +160,10 @@ const styles = {
     whiteSpace: "pre-wrap",
     overflowWrap: "break-word",
   }),
-  fileMessage: {
-    display: "flex",
-    alignItems: "center",
-    marginTop: 8,
-    padding: 8,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    borderRadius: 6,
-  },
-  fileIcon: {
-    marginRight: 8,
-    fontSize: 18,
-  },
-  fileLink: {
-    color: "#fff",
-    textDecoration: "none",
-    "&:hover": {
-      textDecoration: "underline",
-    },
-  },
-  filePreview: {
-    display: "flex",
-    alignItems: "center",
-    padding: "8px 12px",
-    backgroundColor: "#f5f5f5",
-    borderRadius: 8,
-    margin: "0 12px 8px",
-  },
-  fileName: {
-    fontSize: 12,
-    flex: 1,
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  },
-  removeIcon: {
-    cursor: "pointer",
-    marginLeft: 8,
+  error: {
     color: "#ff4444",
+    textAlign: "center",
+    marginTop: 10,
   },
   inputBox: {
     display: "flex",
@@ -313,12 +172,6 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     gap: "5px",
-  },
-  attachButton: {
-    cursor: "pointer",
-    padding: "8px",
-    display: "flex",
-    alignItems: "center",
   },
   input: {
     flex: 1,
@@ -334,7 +187,6 @@ const styles = {
     overflow: "hidden",
   },
   sendButton: {
-    // backgroundColor: "#7b61ff",
     border: "none",
     borderRadius: "50%",
     width: 20,

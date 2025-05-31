@@ -506,10 +506,10 @@ export const GetCurrentSubscription = async ({ companyId, token }) => {
       response.data.success == false &&
       response.data.message == "No subscription found"
     ) {
-      window.location.href = "/select-plan";
+      window.location.href = `/select-plan/${token}`;
     }
     if (response.data.data.status == "pending") {
-      window.location.href = "/select-plan";
+      window.location.href = `/select-plan/${token}`;
     }
     return response.data;
   } catch (error) {

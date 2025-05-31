@@ -44,7 +44,7 @@ const {
       <PageTitle title="Settings" subtitle="Edit your data" />
       <div className="container max-w-screen-xl mx-auto">
         {/* <EditProfileAdmin profileData={profileData } /> */}
-        <AddAdmin admins={admins} />
+       <AddAdmin admins={admins} setAdmins={setAdmins} />
         <Plans plans={plans} />
 
       </div>
