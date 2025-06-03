@@ -67,7 +67,9 @@ import { SocketProvider } from "./context/SocketProvider";
 import AllFreelancers from "./pages/Admin/AllFreelancers";
 import AllCompanies from "./pages/Admin/AllCompanies";
 import TermsOfService from "./pages/TermsOfService";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
+import AdminReports from "./pages/Admin/AdminReports";
+import Invoices from "./pages/shared/Invoices";
+// import Privacy from "./pages/PrivacyPolicy";
 
 // create routes
 const router = createBrowserRouter([
@@ -80,7 +82,7 @@ const router = createBrowserRouter([
     ],
   },
   { path: "service", element: <TermsOfService /> },
-  { path: "privacy-policy", element: <PrivacyPolicy /> },
+  // { path: "privacy", element: <Privacy /> },
   { path: "success-payment", element: <SuccessPayment /> },
   { path: "select-plan/:token", element: <PlanPage /> },
   {
@@ -170,6 +172,7 @@ const router = createBrowserRouter([
       },
       { path: "settings", element: <Setting />, loader: settingsLoader },
       { path: "dashboard", element: <Dashboard /> },
+      { path: "invoices", element: <Invoices /> },
       {
         path: "calender",
         element: <Calender />,
@@ -194,7 +197,6 @@ const router = createBrowserRouter([
       { path: "technical-support", element: <AdminTechnicalSupport /> },
       { path: "feedback", element: <AdminFeedback /> },
       { path: "withdrawal", element: <ProfitWithdrawalRequests /> },
-      // work in progress
       { path: "finances", element: <AdminFinances /> },
       { path: "freelancers", element: <AllFreelancers /> },
       { path: "companies", element: <AllCompanies /> },

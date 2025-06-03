@@ -2,6 +2,8 @@ import React from "react";
 
 
 const EmployeeTable = ({ employees }) => {
+  console.log(employees);
+  
   return (
     <div className="overflow-x-auto p-4">
       <table className="min-w-full rounded-lg overflow-auto">

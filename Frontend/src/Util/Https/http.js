@@ -872,3 +872,16 @@ export const sendMessage = async (userId, token, formData) => {
     throw new Error("Error sending message: " + error.message);
   }
 };
+
+export const getTopRatedUsers = async () => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/project/top-rated-users`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch top-rated users");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching top-rated users:", error);
+    return [];
+  }
+};

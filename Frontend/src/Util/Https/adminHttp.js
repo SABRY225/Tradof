@@ -71,11 +71,55 @@ export const DanyFeedback = async ({ token, id }) => {
   }
 };
 // get Profit Withdrawal Requests
-
+export const getProfitWithdrawalRequests = async (token) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/financial/request-withdrawProfits`,
+      {
+        headers: {
+          "Authorization": token,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetch request withdrawProfits");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
 // edit status Withdrawal Requests
+export const editProfitWithdrawalRequests = async ({token,requestId,paymentStatus}) => {
+  try {
+    const response = await axios.patch(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/financial/request-withdrawProfits/${requestId}`,
+      {paymentStatus},
+      {
+        headers: {
+          "Authorization": token,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while edit request withdrawProfits");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
 
 //get ask-question not answer
 export const fetchAskQuestion = async ({ token }) => {
+  console.log(token);
+  
   try {
     const response = await axios.get(
       `${import.meta.env.VITE_BACKEND_NODE_URL}/askQuestion/unanswered`,

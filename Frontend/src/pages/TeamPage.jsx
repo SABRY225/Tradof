@@ -19,65 +19,57 @@ const teamMembers = [
     role: "Full Stack Developer",
     image: "sabry.jpg",
     email: "ahmedsabrymahmoud225@email.com",
-    linkedin: "https://linkedin.com/",
-    bio: "Specialist in React and UI/UX design."
+    linkedin: "https://www.linkedin.com/in/ahmed-sabry-46364b364?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
   },
       {
     name: "Mohamed Abdalrazek",
     role: "Full Stack Developer",
     image: "mohmed abdalrazek.jpg",
-    email: "mohmedabdalrazek@email.com",
-    linkedin: "https://linkedin.com/",
-    bio: "Develops and maintains mobile applications."
+    email: "abdalrazekmohmed6@gmail.com",
+    linkedin: "https://www.linkedin.com/in/mohamed-abdalrazek-6515a0232?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
   },
   {
     name: "Ahmed Nady",
     role: "Full Stack Developer",
     image: "nady.png",
-    email: "ahmed.nady@email.com",
-    linkedin: "https://linkedin.com/",
-    bio: "Expert in Node.js and database management."
+    email: "dev.ahmed.nady@gmail.com",
+    linkedin: "https://www.linkedin.com/in/mohamed-hagag-ba9697223",
   },
   {
     name: "Ahmed Kamal",
     role: "Full Stack Developer",
     image: "kamal.jpg",
-    email: "kamal@email.com",
-    linkedin: "https://linkedin.com/",
-    bio: "Handles both frontend and backend integration."
+    email: "ahmedkamalyoussef4@gmail.com",
+    linkedin: "https://www.linkedin.com/in/ahmed-kamal-b51621277/",
   },
   {
     name: "Ahmed Nassar",
     role: "Backend Developer",
     image: "nasser.jpg",
-    email: "ahmed.nasser@email.com",
-    linkedin: "https://linkedin.com/",
-    bio: "Coordinates the team and manages project timelines."
+    email: "an229314@gmail.com",
+    linkedin: "https://www.linkedin.com/in/ahmed-nasser-128a1b309",
   },
   {
     name: "Yasser Mohamed",
     role: "Backend Developer",
     image: "Yasser Mohamed.jpg",
-    email: "yasser.mohamed@email.com",
-    linkedin: "https://linkedin.com/",
-    bio: "Ensures smooth deployment and CI/CD pipelines."
+    email: "yasser92220@gmail.com",
+    linkedin: "https://www.linkedin.com/in/yasser-mohamed-928a761b2",
   },
 
   {
     name: "Youssef Ghareb",
     role: "Mobile Developer (Flutter)",
     image: "Youssef Ghareb.png",
-    email: "youssef.ghareb@email.com",
-    linkedin: "https://linkedin.com/",
-    bio: "Responsible for testing and quality assurance."
+    email: "yuossefghareb27@gmail.com",
+    linkedin: "https://www.linkedin.com/in/youssef-ghareb-81303b226/",
   },
   {
     name: "Mohamed Hagag",
     role: "Mobile Developer (Flutter)",
     image: "hgaga.png",
-    email: "mohamed.hagag@email.com",
-    linkedin: "https://linkedin.com/",
-    bio: "Designs user interfaces and improves user experience."
+    email: "mh169824@gmail.com",
+    linkedin: "https://www.linkedin.com/in/mohamed-hagag-ba9697223",
   }
 ];
 

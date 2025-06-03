@@ -31,6 +31,7 @@ const CompanyList = [
     link: "/user/project/upcoming",
   },
   { name: "Finances", link: "/user/finances" },
+  { name: "Invoices", link: "/user/invoices" },
   { name: "Settings", link: "/user/settings" },
 ];
 
@@ -48,6 +49,7 @@ const FreelancerList = [
     link: "/user/offers",
   },
   { name: "Finances", link: "/user/finances" },
+  { name: "Invoices", link: "/user/invoices" },
   { name: "Settings", link: "/user/settings" },
 ];
 
