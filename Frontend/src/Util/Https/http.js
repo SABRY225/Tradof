@@ -915,3 +915,30 @@ export const getTopRatedUsers = async () => {
     return [];
   }
 };
+
+export const getMessages = async (userId, token) => {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_BACKEND_NODE_URL}/technicalSupport/${userId}`, {
+      headers: {
+        Authorization: token,
+      },
+    });
+    return response.data.messages;
+  } catch (error) {
+    throw new Error("Error fetching messages: " + error.message);
+  }
+};
+
+export const sendMessage = async (userId, token, formData) => {
+  try {
+    const response = await axios.post(`${import.meta.env.VITE_BACKEND_NODE_URL}/technicalSupport`, formData, {
+      headers: {
+        Authorization: token,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data.message;
+  } catch (error) {
+    throw new Error("Error sending message: " + error.message);
+  }
+};
