@@ -15,6 +15,8 @@ import {
 } from "@/Util/Https/companyHttp";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-toastify";
+import { useRevalidator } from "react-router-dom";
+import { FadeLoader } from "react-spinners";
 
 export default function OperationalInfo({
   preferredLanguages,
@@ -24,6 +26,7 @@ export default function OperationalInfo({
   const { user } = useAuth() || {};
   const userId = user?.userId;
   const token = user?.token;
+  const revalidator = useRevalidator();
 
   const [handleLanguage, setHandleLanguage] = useState([]);
   const [preferredLang, setPreferredLang] = useState(null);
@@ -59,6 +62,7 @@ export default function OperationalInfo({
         progress: undefined,
       });
       queryClient.invalidateQueries({ queryKey: ["CompanyAdmin"] });
+      revalidator.revalidate();
     },
     onError: (error) => {
       toast.error(error.message, {
@@ -73,7 +77,7 @@ export default function OperationalInfo({
     },
   });
 
-  const { mutate: deletePreferLang, isLoading } = useMutation({
+  const { mutate: deletePreferLang, isPending: isDeletingLang } = useMutation({
     mutationKey: ["deletePreferredLanguage"],
     mutationFn: deletePreferredLanguage,
     onSuccess: () => {
@@ -87,6 +91,7 @@ export default function OperationalInfo({
         progress: undefined,
       });
       queryClient.invalidateQueries({ queryKey: ["CompanyAdmin"] });
+      revalidator.revalidate();
     },
     onError: (error) => {
       toast.error(error.message, {
@@ -115,6 +120,7 @@ export default function OperationalInfo({
         progress: undefined,
       });
       queryClient.invalidateQueries({ queryKey: ["CompanyAdmin"] });
+      revalidator.revalidate();
     },
     onError: (error) => {
       toast.error(error.message, {
@@ -143,6 +149,7 @@ export default function OperationalInfo({
         progress: undefined,
       });
       queryClient.invalidateQueries({ queryKey: ["CompanyAdmin"] });
+      revalidator.revalidate();
     },
     onError: (error) => {
       toast.error(error.message, {
@@ -210,33 +217,49 @@ export default function OperationalInfo({
   const handleDeleteSpecialization = ({ id }) => {
     deleteSpec({ data: [id], id: userId, token });
   };
-
+  console.log(isPending, isDeletingLang);
   return (
     <>
       <h1 className="text-[20px] font-roboto-condensed font-medium italic border-b-2 border-main-color w-fit mt-5 pl-5 ml-5">
         Operational Info
       </h1>
       <div className="space-y-[20px] bg-card-color rounded-[8px] px-[50px] py-[30px]">
-        <div className="flex flex-col gap-5 items-center justify-between md:flex-row">
-          <div className="max-w-[300px] md:w-full">
-            {handleLanguage && (
-              <Combobox
-                List={handleLanguage}
-                initial="language"
-                value={preferredLang}
-                onChange={(val) => {
-                  setPreferredLang(val);
-                }}
+        {!isShared && (
+          <div className="flex flex-col gap-5 items-center justify-between md:flex-row">
+            <div className="max-w-[300px] md:w-full">
+              {handleLanguage && (
+                <Combobox
+                  List={handleLanguage}
+                  initial="language"
+                  value={preferredLang}
+                  onChange={(val) => {
+                    setPreferredLang(val);
+                  }}
+                />
+              )}
+            </div>
+            <div className="flex gap-5 items-center">
+              {(isPending || isDeletingLang) && (
+                <FadeLoader
+                  color="#000"
+                  cssOverride={{ width: "0px", height: "0px" }}
+                  height={3}
+                  width={3}
+                  loading
+                  margin={-11}
+                  radius={15}
+                  speedMultiplier={1}
+                />
+              )}
+              <ButtonFelid
+                text="Add new language"
+                type="button"
+                classes="font-semibold text-[13px] px-[18px] py-[5px] bg-second-color rounded-full"
+                onClick={handleAddPreferredLanguage}
               />
-            )}
+            </div>
           </div>
-          <ButtonFelid
-            text="Add new language"
-            type="button"
-            classes="font-semibold text-[13px] px-[18px] py-[5px] bg-second-color rounded-full"
-            onClick={handleAddPreferredLanguage}
-          />
-        </div>
+        )}
         <table className="font-poppins min-w-full bg-white rounded-md overflow-auto">
           <thead className="bg-card-color">
             <tr className="text-main-color font-bold text-left">
@@ -262,41 +285,59 @@ export default function OperationalInfo({
                 <td className="p-3 text-gray-500 w-[50%]">
                   {language.languageCode}-{language.countryCode}
                 </td>
-                <td className="p-3 px-5">
-                  <button
-                    type="button"
-                    className="text-red-500 font-semibold"
-                    onClick={() =>
-                      handleDeletePreferredLanguage({ id: language.id })
-                    }
-                  >
-                    Delete
-                  </button>
-                </td>
+                {!isShared && (
+                  <td className="p-3 px-5">
+                    <button
+                      type="button"
+                      className="text-red-500 font-semibold"
+                      onClick={() =>
+                        handleDeletePreferredLanguage({ id: language.id })
+                      }
+                    >
+                      Delete
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
         </table>
-        <div className="flex flex-col md:flex-row gap-5 justify-between">
-          <div className="max-w-[300px] md:w-full">
-            {specializations && (
-              <Combobox
-                List={specializations}
-                initial="Select Specialization"
-                value={specialization}
-                onChange={(val) => {
-                  setSpecialization(val);
-                }}
+        {!isShared && (
+          <div className="flex flex-col md:flex-row gap-5 justify-between">
+            <div className="max-w-[300px] md:w-full">
+              {specializations && (
+                <Combobox
+                  List={specializations}
+                  initial="Select Specialization"
+                  value={specialization}
+                  onChange={(val) => {
+                    setSpecialization(val);
+                  }}
+                />
+              )}
+            </div>
+            <div className="flex gap-5 items-center">
+              {(isPendingAddSpec || isPendingDeleteSpec) && (
+                <FadeLoader
+                  color="#000"
+                  cssOverride={{ width: "0px", height: "0px" }}
+                  height={3}
+                  width={3}
+                  loading
+                  margin={-11}
+                  radius={15}
+                  speedMultiplier={1}
+                />
+              )}
+              <ButtonFelid
+                text="Add Industry Served"
+                type="button"
+                classes="font-semibold text-[13px] px-[18px] py-[5px] bg-second-color rounded-full"
+                onClick={handleAddSpecialization}
               />
-            )}
+            </div>
           </div>
-          <ButtonFelid
-            text="Add Industry Served"
-            type="button"
-            classes="font-semibold text-[13px] px-[18px] py-[5px] bg-second-color rounded-full"
-            onClick={handleAddSpecialization}
-          />
-        </div>
+        )}
         <table className="font-poppins min-w-full bg-white rounded-md overflow-auto">
           <thead className="bg-card-color">
             <tr className="text-main-color font-bold text-left">
@@ -314,17 +355,19 @@ export default function OperationalInfo({
                 }`}
               >
                 <td className="p-3 px-5 w-full">{industry.name}</td>
-                <td className="p-3 px-5">
-                  <button
-                    type="button"
-                    className="text-red-500 font-semibold"
-                    onClick={() =>
-                      handleDeleteSpecialization({ id: industry.id })
-                    }
-                  >
-                    Delete
-                  </button>
-                </td>
+                {!isShared && (
+                  <td className="p-3 px-5">
+                    <button
+                      type="button"
+                      className="text-red-500 font-semibold"
+                      onClick={() =>
+                        handleDeleteSpecialization({ id: industry.id })
+                      }
+                    >
+                      Delete
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

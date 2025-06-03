@@ -4,6 +4,7 @@ import {
   fatchCurrentOffers,
   Acceptproposal,
   Denyproposal,
+  deleteProject,
 } from "@/Util/Https/companyHttp";
 import { useNavigate, useParams } from "react-router-dom";
 import convertDateToCustomFormat from "@/Util/convertDate";
@@ -17,6 +18,8 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { Modal } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 const commonClasses =
   "font-epilogue outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]";
@@ -120,6 +123,33 @@ const OffersPage = () => {
     },
   });
 
+  const deleteProjectMutation = useMutation({
+    mutationFn: () => deleteProject({ id: projectId, token }),
+    onSuccess: () => {
+      toast.success("Project deleted successfully", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+      navigate("/user/dashboard");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to delete project", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+    },
+  });
+
   const offers = data?.pages.flatMap((page) => page.items) || [];
 
   useEffect(() => {
@@ -164,6 +194,21 @@ const OffersPage = () => {
     denyMutation.mutate({ proposalId });
   };
 
+  const handleDeleteProject = () => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this project?",
+      icon: <ExclamationCircleOutlined />,
+      content:
+        "This action cannot be undone. All project data will be permanently deleted.",
+      okText: "Yes, Delete",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk() {
+        deleteProjectMutation.mutate();
+      },
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="text-center py-4">
@@ -188,6 +233,16 @@ const OffersPage = () => {
         <div className="flex flex-col lg:flex-row gap-[20px]">
           {/* Filter Sidebar */}
           <aside className="w-full lg:w-[350px] p-4 lg:p-6 h-fit lg:sticky lg:top-20 border-r-0 lg:border-r-2 border-main-color border-dashed">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-lg font-semibold">Project Options</h2>
+              <ButtonFelidRej
+                text="Delete Project"
+                type="button"
+                onClick={handleDeleteProject}
+                disabled={deleteProjectMutation.isLoading}
+                classes="text-[12px] font-medium px-[15px] py-[5px]"
+              />
+            </div>
             <div className="mb-6 relative">
               <label
                 htmlFor="offer-search"

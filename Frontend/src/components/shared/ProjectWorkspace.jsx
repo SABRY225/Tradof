@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import { FadeLoader } from "react-spinners";
 import { toast } from "react-toastify";
 
-export default function Workspace({ files, projectId }) {
+export default function Workspace({ files, projectId, isCanceled }) {
   const {
     user: { token, role },
   } = useAuth();
@@ -80,10 +80,12 @@ export default function Workspace({ files, projectId }) {
   const fileInputRef = useRef(null);
 
   const handleClick = () => {
+    if (isCanceled) return;
     fileInputRef.current?.click();
   };
 
   const handleFileUpload = (e) => {
+    if (isCanceled) return;
     const files = Array.from(e.target.files);
     console.log("Selected files:", files);
 
@@ -112,6 +114,7 @@ export default function Workspace({ files, projectId }) {
   };
 
   const handleDeleteFile = ({ id }) => {
+    if (isCanceled) return;
     setFileId(id);
     deleteFile({ token, fileId: id });
   };
@@ -138,16 +141,18 @@ export default function Workspace({ files, projectId }) {
                   speedMultiplier={1}
                 />
               )}
-              <button
-                onClick={handleClick}
-                className={`bg-second-color text-white px-2 py-1 rounded-md flex items-center gap-2 font-medium ${
-                  isPending ? "opacity-[0.8] cursor-not-allowed" : ""
-                }`}
-                disabled={isPending}
-              >
-                <img src={folder_add} alt="" />
-                Add files
-              </button>
+              {!isCanceled && (
+                <button
+                  onClick={handleClick}
+                  className={`bg-second-color text-white px-2 py-1 rounded-md flex items-center gap-2 font-medium ${
+                    isPending ? "opacity-[0.8] cursor-not-allowed" : ""
+                  }`}
+                  disabled={isPending}
+                >
+                  <img src={folder_add} alt="" />
+                  Add files
+                </button>
+              )}
 
               <input
                 type="file"
@@ -214,7 +219,7 @@ export default function Workspace({ files, projectId }) {
                               </Link>
                             </button>
 
-                            {role === "Freelancer" && (
+                            {role === "Freelancer" && !isCanceled && (
                               <button
                                 className={`text-red-600 font-medium text-[10px] hover:underline ${
                                   fileId === file.id && isDeleted
