@@ -22,7 +22,7 @@ export default function FormAddOffer() {
     user: { token },
   } = useAuth();
   const { projectId } = useParams();
-
+  const [sendRequest, setSendRequest] = useState(0);
   const isFormDisabled =
     proposalData?.proposalStatus === OfferStatus.Accepted ||
     proposalData?.proposalStatus === OfferStatus.Declined ||
@@ -148,8 +148,8 @@ export default function FormAddOffer() {
         submitData.append("proposalAttachments", file);
       });
     }
-
-    HandleOffer({ data: submitData, token });
+    console.log(sendRequest);
+    HandleOffer({ data: submitData, token, sendRequest });
   };
 
   const handleBudgetChange = (type, field, value) => {
@@ -157,6 +157,7 @@ export default function FormAddOffer() {
       0,
       Number(value) + (type === "increase" ? 1 : -1)
     );
+    setSendRequest(true);
     setValue(field, newValue);
   };
 
@@ -168,6 +169,12 @@ export default function FormAddOffer() {
       return newFiles;
     });
     clearErrors("attachments");
+  };
+
+  // Add new function to handle direct input changes
+  const handleDirectInputChange = (field, value) => {
+    setSendRequest(true);
+    setValue(field, value);
   };
 
   const handleOpenFile = (file) => {
@@ -196,7 +203,12 @@ export default function FormAddOffer() {
               <div className="relative w-full">
                 <input
                   type="number"
-                  {...register("offerPrice", { required: "Required", min: 0 })}
+                  {...register("offerPrice", {
+                    required: "Required",
+                    min: 0,
+                    onChange: (e) =>
+                      handleDirectInputChange("offerPrice", e.target.value),
+                  })}
                   className={`w-full pr-10 ${commonClasses} ${
                     errors.offerPrice ? "bg-[#ffe7e7] border-[#FA9EA1]" : ""
                   } ${isFormDisabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
@@ -248,7 +260,12 @@ export default function FormAddOffer() {
               <div className="relative w-full">
                 <input
                   type="number"
-                  {...register("Days", { required: "Required", min: 1 })}
+                  {...register("Days", {
+                    required: "Required",
+                    min: 1,
+                    onChange: (e) =>
+                      handleDirectInputChange("Days", e.target.value),
+                  })}
                   className={`w-full pr-10 ${commonClasses} ${
                     errors.Days ? "bg-[#ffe7e7] border-[#FA9EA1]" : ""
                   } ${isFormDisabled ? "bg-gray-100 cursor-not-allowed" : ""}`}

@@ -296,18 +296,38 @@ export const AddOffer = async ({ data, token }) => {
   }
 };
 
-export const EditOffer = async ({ data, token }) => {
+export const EditOffer = async ({ data, token, sendRequest }) => {
   try {
-    console.log(data);
-    const response = await axios.put(
-      `${import.meta.env.VITE_BACKEND_URL}/proposal`,
-      data,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    console.log(sendRequest);
+    let newData = sendRequest
+      ? {
+          newDuration: data.get("Days"),
+          newPrice: data.get("offerPrice"),
+          proposalId: data.get("projectId"),
+        }
+      : data;
+    let response;
+    if (!sendRequest) {
+      response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/proposal`,
+        newData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } else {
+      response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/proposal/send-edit-request`,
+        newData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    }
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -345,7 +365,14 @@ export const fatchProjects = async ({ token }) => {
   }
 };
 
-export const fatchOffers = async ({ userId, token, page, pageSize, status, search }) => {
+export const fatchOffers = async ({
+  userId,
+  token,
+  page,
+  pageSize,
+  status,
+  search,
+}) => {
   console.log(page, pageSize, status, search);
   try {
     const response = await axios.get(
