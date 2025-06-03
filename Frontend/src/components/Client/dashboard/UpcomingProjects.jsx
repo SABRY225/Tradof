@@ -16,7 +16,8 @@ export default function UpcomingProject() {
   const navigate = useNavigate();
   const { data, isError, isLoading, error } = useQuery({
     queryKey: ["upcomingProject"],
-    queryFn: () => getUpcomingdProjects({ id: userId, token }),
+    queryFn: () =>
+      getUpcomingdProjects({ id: userId, token, page: 1, pageSize: 7 }),
   });
   const { mutate: handelDeleteProject, isPending } = useMutation({
     mutationFn: deleteProject,

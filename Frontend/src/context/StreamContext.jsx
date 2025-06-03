@@ -8,7 +8,7 @@ export function StreamProvider({ children }) {
   const [isVideoOn, setIsVideoOn] = useState(false);
   const [isMicOn, setIsMicOn] = useState(false);
 
-  const setStreams = ({camera, mic, videoState, micState}) => {
+  const setStreams = ({ camera, mic, videoState, micState }) => {
     if (camera) setCameraStream(camera);
     if (mic) setMicStream(mic);
     if (videoState) setIsVideoOn(videoState);
@@ -28,19 +28,17 @@ export function StreamProvider({ children }) {
     setIsMicOn(false);
   };
 
+  const value = {
+    cameraStream,
+    micStream,
+    isVideoOn,
+    isMicOn,
+    setStreams,
+    clearStreams,
+  };
+
   return (
-    <StreamContext.Provider
-      value={{
-        cameraStream,
-        micStream,
-        isVideoOn,
-        isMicOn,
-        setStreams,
-        clearStreams,
-      }}
-    >
-      {children}
-    </StreamContext.Provider>
+    <StreamContext.Provider value={value}>{children}</StreamContext.Provider>
   );
 }
 

@@ -117,24 +117,41 @@ export default function CreateProject() {
         type: "manual",
         message: "Source language is required",
       });
+      return null;
+
     }
     if (!data.languagePair.to) {
       setError("languagePair.to", {
         type: "manual",
         message: "Target language is required",
       });
+      return null;
     }
     if (data.attachments.length === 0) {
       setError("attachments", {
         type: "manual",
         message: "At least one attachment file is required",
       });
+      return null;
+    }
+    console.log(+data.budget.min , +data.budget.max);
+    if (+data.budget.min > +data.budget.max) {
+      setError("budget.min", {
+        type: "manual",
+        message: "Minimum budget must be less than or equal maximum budget",
+      });
+      setError("budget.max", {
+        type: "manual",
+        message: "Maximum budget must be greater than or equal minimum budget",
+      });
+      return null;
     }
     if (data.specializationId === null) {
       setError("specializationId", {
         type: "manual",
         message: "specialization is required",
       });
+      return null;
     }
     const submitData = new FormData();
 

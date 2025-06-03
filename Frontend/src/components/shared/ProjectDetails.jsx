@@ -46,6 +46,7 @@ export default function ProjectDetails({
   projectFiles,
   translatedFiles,
   viewOnly,
+  isCanceled
 }) {
   const {
     user: { token, role },
@@ -129,6 +130,7 @@ export default function ProjectDetails({
   };
 
   const handleDeleteFile = (fileId) => {
+    if (isCanceled) return;
     setFileId(fileId);
     deleteFile({ token, fileId });
   };
@@ -143,6 +145,7 @@ export default function ProjectDetails({
   };
 
   const handleFileChange = (e) => {
+    if (isCanceled) return;
     const files = Array.from(e.target.files);
     console.log("Selected files:", files);
 
@@ -170,7 +173,7 @@ export default function ProjectDetails({
     e.target.value = null;
   };
 
-  console.log(project);
+  // console.log(project);
   return (
     <div>
       <h1 className="italic border-b-2 border-main-color w-fit ml-2 pl-2">
@@ -232,7 +235,7 @@ export default function ProjectDetails({
                   <DialogHeader>
                     <DialogTitle>Project Files</DialogTitle>
                     <DialogDescription className="text-black">
-                      {role === "CompanyAdmin" && !viewOnly && (
+                      {role === "CompanyAdmin" && !viewOnly && !isCanceled && (
                         <div className="w-full flex flex-row-reverse my-2 gap-4 items-center ">
                           <button
                             onClick={handleDeleteSelected}
@@ -282,7 +285,7 @@ export default function ProjectDetails({
                                 className="flex flex-col items-center"
                               >
                                 <div className="border-2 rounded-md w-fit p-2">
-                                  {role === "CompanyAdmin" && !viewOnly && (
+                                  {role === "CompanyAdmin" && !viewOnly && !isCanceled && (
                                     <div className="relative z-[1]">
                                       <input
                                         type="checkbox"
@@ -352,7 +355,7 @@ export default function ProjectDetails({
                   <DialogHeader>
                     <DialogTitle>Project Files</DialogTitle>
                     <DialogDescription className="text-black">
-                      {role === "CompanyAdmin" && !viewOnly && (
+                      {role === "CompanyAdmin" && !viewOnly && !isCanceled && (
                         <div className="w-full flex flex-row-reverse my-2 gap-4 items-center ">
                           <button
                             onClick={handleDeleteSelected}

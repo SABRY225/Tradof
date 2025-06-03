@@ -28,7 +28,7 @@ export const refreshToken = async ({ oldToken }) => {
 export const getAllSubscriptions = async () => {
   try {
     const response = await axios.get(
-      `https://tradofserver.azurewebsites.net/api/package`
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/package`
     );
 
     return response.data.data;
@@ -839,6 +839,63 @@ export const createProjectRating = async ({ token, data }) => {
       const err = new Error("An error occurred while creating project rating");
       err.code = error.response.status;
       err.message = error.response.data?.message || "Failed to create rating";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Generate translation exam questions
+export const generateTranslationExam = async ({
+  token,
+  initial,
+  target,
+  email,
+}) => {
+  try {
+    const response = await axios.post(
+      `${
+        import.meta.env.VITE_BACKEND_NODE_URL
+      }/translation-exam/generate/${email}`,
+      {
+        initial_language: initial,
+        target_language: target,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(response.data);
+    return response.data.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error(
+        "An error occurred while generating exam questions"
+      );
+      err.code = error.response.status;
+      err.message = error.response.data?.message || "Failed to generate exam";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Get user translation exam
+export const getUserTranslationExam = async ({ email }) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/translation-exam/user/${email}`
+    );
+    // console.log(response.data);
+    return response.data.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching user exam");
+      err.code = error.response.status;
+      err.message = error.response.data?.message || "Failed to fetch exam";
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");

@@ -296,6 +296,31 @@ export const AddOffer = async ({ data, token }) => {
   }
 };
 
+export const EditOffer = async ({ data, token }) => {
+  try {
+    console.log(data);
+    const response = await axios.put(
+      `${import.meta.env.VITE_BACKEND_URL}/proposal`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error("Server Error:", error);
+      const err = new Error("An error occurred while editing offer");
+      err.code = error.response.status;
+      err.message = error.response.data.message;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
 export const fatchProjects = async ({ token }) => {
   try {
     const response = await axios.get(
@@ -320,12 +345,13 @@ export const fatchProjects = async ({ token }) => {
   }
 };
 
-export const fatchOffers = async ({ userId, token }) => {
+export const fatchOffers = async ({ userId, token, page, pageSize, status, search }) => {
+  console.log(page, pageSize, status, search);
   try {
     const response = await axios.get(
       `${
         import.meta.env.VITE_BACKEND_URL
-      }/proposal/freelancer-proposals?freelancerId=${userId}&pageIndex=1&pageSize=4`,
+      }/proposal/freelancer-proposals?freelancerId=${userId}&pageIndex=${page}&pageSize=${pageSize}&status=${status}&search=${search}`,
       {
         headers: {
           Authorization: `Bearer ${token}`, // Attach token here
@@ -418,7 +444,7 @@ export const getUnassignedProjects = async ({ signal, token, filter }) => {
         },
       }
     );
-    console.log("response", response);
+    // console.log("response", response);
     return response.data.data;
   } catch (error) {
     if (error.response) {
@@ -525,6 +551,60 @@ export const askForReview = async ({
       err.code = error.response.status;
       err.message = error.response.data;
       err.errors = error.errors;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const acceptProjectCancellation = async ({ projectId, token }) => {
+  try {
+    const response = await axios.post(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/project/accept-cancellation/${projectId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error(
+        "An error occurred while accepting project cancellation"
+      );
+      err.code = error.response.status;
+      err.message = error.response.data.message;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const rejectProjectCancellation = async ({ projectId, token }) => {
+  try {
+    const response = await axios.post(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/project/reject-cancellation/${projectId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error(
+        "An error occurred while rejecting project cancellation"
+      );
+      err.code = error.response.status;
+      err.message = error.response.data.message;
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");

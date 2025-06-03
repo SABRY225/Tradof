@@ -85,6 +85,7 @@ export default function AvailableProjects() {
     cacheTime: 10 * 60 * 1000,
   });
 
+  // console.log(data);
   const allProjects = data?.pages.flatMap((page) => page.items) || [];
 
   const filteredProjects = useMemo(() => {
@@ -294,6 +295,7 @@ export default function AvailableProjects() {
               {filteredProjects.map((project) => (
                 <Projects key={project.id} project={project} />
               ))}
+              {filteredProjects.length === 0 && <div className="text-[20px] font-bold text-gray-500 text-center mt-[50px]">Not found projects</div>}
             </div>
             {isFetchingNextPage && (
               <div className="text-center py-4">

@@ -60,6 +60,9 @@ export default function StartProject() {
               case +ProjectStatus.Finished:
                 style = "text-[#A26A00] bg-[#FFEAC3]";
                 break;
+              case +ProjectStatus.Cancelled:
+                style = "text-[#000] bg-[#ddd]";
+                break;
             }
             return (
               <li

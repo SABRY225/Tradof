@@ -1,13 +1,14 @@
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Minus, Plus } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ButtonFelid from "@/UI/ButtonFelid";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-toastify";
 import { FadeLoader } from "react-spinners";
-import { AddOffer } from "@/Util/Https/freelancerHttp";
-import { useParams, useNavigate } from "react-router-dom";
+import { AddOffer, EditOffer } from "@/Util/Https/freelancerHttp";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { OfferStatus } from "@/Util/status";
 
 const commonClasses =
   "font-epilogue outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]";
@@ -15,26 +16,37 @@ const commonClasses =
 export default function FormAddOffer() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const location = useLocation();
+  const proposalData = location.state?.proposal;
   const {
     user: { token },
   } = useAuth();
   const { projectId } = useParams();
 
-  const { mutate: sendOffer, isPending } = useMutation({
+  const isFormDisabled =
+    proposalData?.proposalStatus === OfferStatus.Accepted ||
+    proposalData?.proposalStatus === OfferStatus.Declined ||
+    proposalData?.proposalStatus === OfferStatus.Canceled;
+
+  console.log(proposalData);
+  const { mutate: HandleOffer, isPending } = useMutation({
     mutationKey: ["AddOffer"],
-    mutationFn: AddOffer,
+    mutationFn: proposalData ? EditOffer : AddOffer,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["offers"] });
-      toast.success("Create Offer Successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
-      navigate("/user/offers");
+      toast.success(
+        proposalData ? "Edit Offer Successfully" : "Create Offer Successfully",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        }
+      );
+      if (!proposalData) navigate("/user/offers");
     },
     onError: (error) => {
       toast.error(error.message, {
@@ -60,12 +72,46 @@ export default function FormAddOffer() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      details: "",
-      offerPrice: "",
-      Days: "",
+      details: proposalData?.description || "",
+      offerPrice: proposalData?.budget || "",
+      Days: proposalData?.deadline || "",
       attachments: [],
     },
   });
+
+  // Set initial values when proposalData is available
+  useEffect(() => {
+    if (proposalData) {
+      setValue("details", proposalData.description);
+      setValue("offerPrice", proposalData.budget);
+      setValue("Days", proposalData.deadline);
+
+      // Handle attachments if they exist
+      if (proposalData.attachments?.length > 0) {
+        // Convert attachment URLs to File objects
+        Promise.all(
+          proposalData.attachments.map(async (attachment) => {
+            try {
+              const response = await fetch(attachment.attachmentUrl);
+              const blob = await response.blob();
+              return new File(
+                [blob],
+                attachment.attachmentUrl.split("/").pop(),
+                { type: blob.type }
+              );
+            } catch (error) {
+              console.error("Error loading attachment:", error);
+              return null;
+            }
+          })
+        ).then((fileObjects) => {
+          const validFiles = fileObjects.filter((file) => file !== null);
+          setFiles(validFiles);
+          setValue("attachments", validFiles);
+        });
+      }
+    }
+  }, [proposalData, setValue]);
 
   const onSubmit = (data) => {
     if (!data.details) {
@@ -93,13 +139,17 @@ export default function FormAddOffer() {
     submitData.append("Days", data.Days);
     submitData.append("offerPrice", data.offerPrice);
 
+    if (proposalData) {
+      submitData.append("id", proposalData.id);
+    }
+
     if (data.attachments?.length) {
       data.attachments.forEach((file) => {
         submitData.append("proposalAttachments", file);
       });
     }
 
-    sendOffer({ data: submitData, token });
+    HandleOffer({ data: submitData, token });
   };
 
   const handleBudgetChange = (type, field, value) => {
@@ -121,14 +171,18 @@ export default function FormAddOffer() {
   };
 
   const handleOpenFile = (file) => {
-    const fileURL = URL.createObjectURL(file);
-    window.open(fileURL, "_blank");
+    if (file instanceof File) {
+      const fileURL = URL.createObjectURL(file);
+      window.open(fileURL, "_blank");
+    } else if (file.attachmentUrl) {
+      window.open(file.attachmentUrl, "_blank");
+    }
   };
 
   return (
     <div className="container max-w-screen-xl mx-auto w-full">
       <h1 className="italic border-b-2 border-main-color w-fit ml-2 pl-2">
-        Add an Offer now
+        {proposalData ? "Edit Offer" : "Add an Offer now"}
       </h1>
       <form
         className="space-y-[20px] bg-card-color rounded-[8px] px-[50px] py-[30px]"
@@ -145,35 +199,40 @@ export default function FormAddOffer() {
                   {...register("offerPrice", { required: "Required", min: 0 })}
                   className={`w-full pr-10 ${commonClasses} ${
                     errors.offerPrice ? "bg-[#ffe7e7] border-[#FA9EA1]" : ""
-                  }`}
+                  } ${isFormDisabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
                   placeholder="25 ($)"
+                  disabled={isFormDisabled}
                 />
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleBudgetChange(
-                      "decrease",
-                      "offerPrice",
-                      watch("offerPrice")
-                    )
-                  }
-                  className="absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-500 text-main-color"
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleBudgetChange(
-                      "increase",
-                      "offerPrice",
-                      watch("offerPrice")
-                    )
-                  }
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-main-color"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
+                {!isFormDisabled && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleBudgetChange(
+                          "decrease",
+                          "offerPrice",
+                          watch("offerPrice")
+                        )
+                      }
+                      className="absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-500 text-main-color"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleBudgetChange(
+                          "increase",
+                          "offerPrice",
+                          watch("offerPrice")
+                        )
+                      }
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-main-color"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </>
+                )}
               </div>
               {errors.offerPrice && (
                 <p className="text-red-500 text-sm">
@@ -192,27 +251,32 @@ export default function FormAddOffer() {
                   {...register("Days", { required: "Required", min: 1 })}
                   className={`w-full pr-10 ${commonClasses} ${
                     errors.Days ? "bg-[#ffe7e7] border-[#FA9EA1]" : ""
-                  }`}
+                  } ${isFormDisabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
                   placeholder="Days"
+                  disabled={isFormDisabled}
                 />
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleBudgetChange("decrease", "Days", watch("Days"))
-                  }
-                  className="absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-500 text-main-color"
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleBudgetChange("increase", "Days", watch("Days"))
-                  }
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-main-color"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
+                {!isFormDisabled && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleBudgetChange("decrease", "Days", watch("Days"))
+                      }
+                      className="absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-500 text-main-color"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleBudgetChange("increase", "Days", watch("Days"))
+                      }
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-main-color"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -223,13 +287,15 @@ export default function FormAddOffer() {
           <label className="font-medium font-epilogue">Offer details</label>
           <textarea
             {...register("details", { required: "Details are required" })}
-            className={`max-w-full min-h-[200px] max-h-[300px] ${commonClasses}`}
+            className={`max-w-full min-h-[200px] max-h-[300px] ${commonClasses} ${
+              isFormDisabled ? "bg-gray-100 cursor-not-allowed" : ""
+            }`}
             placeholder="Write details of your offer"
+            disabled={isFormDisabled}
           />
         </div>
 
         {/* Attachments */}
-
         <div className="flex flex-col font-epilogue text-[14px] text-left mb-[20px] max-w-[500px]">
           <input
             type="file"
@@ -237,13 +303,18 @@ export default function FormAddOffer() {
             className="hidden"
             id="file-upload"
             onChange={handleFileChange}
+            disabled={isFormDisabled}
           />
           <label
             htmlFor="file-upload"
-            className="font-medium font-epilogue flex items-center w-full cursor-pointer mb-2"
+            className={`font-medium font-epilogue flex items-center w-full cursor-pointer mb-2 ${
+              isFormDisabled ? "cursor-not-allowed opacity-50" : ""
+            }`}
           >
             Attachments Files
-            <Plus className="w-10 h-10 ml-auto bg-[#9BA6FA] p-2 rounded-full" />
+            {!isFormDisabled && (
+              <Plus className="w-10 h-10 ml-auto bg-[#9BA6FA] p-2 rounded-full" />
+            )}
           </label>
           <div className="max-h-[300px] overflow-auto">
             {files.map((file, index) => (
@@ -256,22 +327,24 @@ export default function FormAddOffer() {
                   onClick={() => handleOpenFile(file)}
                   className="text-sm text-blue-500 underline truncate max-w-[80%] text-left"
                 >
-                  {file.name}
+                  {file.name || file.attachmentUrl?.split("/").pop()}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFiles(files.filter((_, i) => i !== index));
-                    setValue(
-                      "attachments",
-                      files.filter((_, i) => i !== index)
-                    );
-                    clearErrors("attachments");
-                  }}
-                  className="text-red-500 text-sm"
-                >
-                  ✖
-                </button>
+                {!isFormDisabled && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFiles(files.filter((_, i) => i !== index));
+                      setValue(
+                        "attachments",
+                        files.filter((_, i) => i !== index)
+                      );
+                      clearErrors("attachments");
+                    }}
+                    className="text-red-500 text-sm"
+                  >
+                    ✖
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -294,12 +367,13 @@ export default function FormAddOffer() {
               speedMultiplier={1}
             />
           )}
-          <ButtonFelid
-            type="submit"
-            classes="bg-second-color py-[10px] px-[50px] font-roboto-condensed text-[16px] text-medium m-auto"
-            text="Add Offer"
-            // onClick={onSubmit}
-          />
+          {!isFormDisabled && (
+            <ButtonFelid
+              type="submit"
+              classes="bg-second-color py-[10px] px-[50px] font-roboto-condensed text-[16px] text-medium m-auto"
+              text={proposalData ? "Edit Offer" : "Add Offer"}
+            />
+          )}
         </div>
       </form>
     </div>

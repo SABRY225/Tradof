@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { blueOffers, openPage, rabash } from "@/assets/paths";
 import PageTitle from "@/UI/PageTitle";
 import { deleteProject, getUpcomingdProjects } from "@/Util/Https/companyHttp";
@@ -11,7 +11,7 @@ import {
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const ITEMS_PER_PAGE = 20;
+const ITEMS_PER_PAGE = 7;
 
 function UpcomingProjects() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -59,14 +59,13 @@ function UpcomingProjects() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["upcoming-projects", userId, searchQuery],
+    queryKey: ["upcoming-projects", userId],
     queryFn: ({ pageParam = 1, signal }) =>
       getUpcomingdProjects({
         id: userId,
         token,
         page: pageParam,
         pageSize: ITEMS_PER_PAGE,
-        search: searchQuery || undefined,
       }),
     getNextPageParam: (lastPage, pages) => {
       const totalPages = Math.ceil(lastPage.count / ITEMS_PER_PAGE);
@@ -95,9 +94,17 @@ function UpcomingProjects() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+  const filteredProjects = useMemo(() => {
+    if (!searchQuery.trim()) return projects;
+
+    const query = searchQuery.toLowerCase();
+    return projects.filter((project) => {
+      return project.name?.toLowerCase().includes(query);
+    });
+  }, [projects, searchQuery]);
 
   return (
-    <div className="bg-background-color">
+    <div className="bg-background-color min-h-screen">
       <PageTitle
         title="Upcoming Projects"
         subtitle="Projects that haven't been assigned to freelancers"
@@ -124,7 +131,14 @@ function UpcomingProjects() {
         </div>
 
         <div className="grid grid-cols-1 gap-4">
-          {projects.map((project) => (
+          {filteredProjects.length === 0 && (
+            <div className="text-center py-4 text-[20px] font-semibold text-gray-500">
+              {searchQuery
+                ? "No projects found matching your search"
+                : "No projects found"}
+            </div>
+          )}
+          {filteredProjects.map((project) => (
             <div
               key={project?.id}
               className="bg-card-color py-[15px] px-[30px] rounded-lg shadow"
