@@ -75,6 +75,7 @@ export default function Chatting({
   companyId,
   freelancerEmail,
   companyEmail,
+  isCanceled,
 }) {
   const socket = useSocket();
 
@@ -159,7 +160,7 @@ export default function Chatting({
 
   const sendMessage = (event) => {
     event.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim() || isCanceled) return;
     const messageData = {
       projectId,
       senderId,
@@ -176,6 +177,7 @@ export default function Chatting({
 
   const handleAddEvent = (newEvent) => {
     const token = Cookies.get("token");
+    if (isCanceled) return;
     if (!token) {
       toast.error("No authentication token found!");
       return;
@@ -253,39 +255,41 @@ export default function Chatting({
             })}
           </div>
           {/* Chat Input */}
-          <form
-            onSubmit={sendMessage}
-            className="p-3 flex items-center space-x-2 border-t-[1px] border-main-color"
-          >
-            <Menubar className="w-fit h-fit p-[0px]">
-              <MenubarMenu>
-                <MenubarTrigger className="bg-main-color p-1 rounded outline-none">
-                  <img src={whitePlus} alt="plus icon" width="12px" />
-                </MenubarTrigger>
-                <MenubarContent>
-                  <MenubarItem onClick={() => setOpen(!open)}>
-                    Create meeting{" "}
-                    <MenubarShortcut>
-                      <img src={meeting} alt="meeting icon" className="w-4" />
-                    </MenubarShortcut>
-                  </MenubarItem>
-                  <MenubarSeparator />
-                </MenubarContent>
-              </MenubarMenu>
-            </Menubar>
+          {!isCanceled && (
+            <form
+              onSubmit={sendMessage}
+              className="p-3 flex items-center space-x-2 border-t-[1px] border-main-color"
+            >
+              <Menubar className="w-fit h-fit p-[0px]">
+                <MenubarMenu>
+                  <MenubarTrigger className="bg-main-color p-1 rounded outline-none">
+                    <img src={whitePlus} alt="plus icon" width="12px" />
+                  </MenubarTrigger>
+                  <MenubarContent>
+                    <MenubarItem onClick={() => setOpen(!open)}>
+                      Create meeting{" "}
+                      <MenubarShortcut>
+                        <img src={meeting} alt="meeting icon" className="w-4" />
+                      </MenubarShortcut>
+                    </MenubarItem>
+                    <MenubarSeparator />
+                  </MenubarContent>
+                </MenubarMenu>
+              </Menubar>
 
-            <input
-              type="text"
-              name="message"
-              value={message}
-              placeholder="Message..."
-              onChange={(e) => setMessage(e.target.value)}
-              className="flex-1 px-4 py-2 rounded-full border outline-none text-sm"
-            />
-            <button type="submit" className="text-indigo-500 text-xl">
-              <img src={send} alt="send icon" />
-            </button>
-          </form>
+              <input
+                type="text"
+                name="message"
+                value={message}
+                placeholder="Message..."
+                onChange={(e) => setMessage(e.target.value)}
+                className="flex-1 px-4 py-2 rounded-full border outline-none text-sm"
+              />
+              <button type="submit" className="text-indigo-500 text-xl">
+                <img src={send} alt="send icon" />
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </>

@@ -66,6 +66,8 @@ import Room from "./pages/Meeting/Room";
 import { SocketProvider } from "./context/SocketProvider";
 import AllFreelancers from "./pages/Admin/AllFreelancers";
 import AllCompanies from "./pages/Admin/AllCompanies";
+import FreeExam, { loaderExam } from "./pages/Exams/FreeExam";
+import ExamPage from "./pages/Exams/ExamPage";
 import TermsOfService from "./pages/TermsOfService";
 import AdminReports from "./pages/Admin/AdminReports";
 import Invoices from "./pages/shared/Invoices";
@@ -152,6 +154,8 @@ const router = createBrowserRouter([
           },
           { path: "start", element: <StartedProjects /> },
           { path: "upcoming", element: <UpcomingProjects /> },
+          // work in progress
+          // { path: ":projectId", element: <ProjectPage /> },
           { path: ":projectId", element: <ProjectPage /> },
           {
             path: "pay/:projectId",
@@ -203,6 +207,20 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "/exam/:initial/:target/:email",
+    children: [
+      {
+        index: true,
+        element: <ExamPage />,
+      },
+      {
+        path: "free",
+        element: <FreeExam />,
+        loader: loaderExam,
+      },
+    ],
+  },
+  {
     path: "test",
 
     element: <TeamPage />,
@@ -210,7 +228,6 @@ const router = createBrowserRouter([
   {
     path: "test2",
     element: <WithdrawProfits />,
-
   },
   {
     path: "*",

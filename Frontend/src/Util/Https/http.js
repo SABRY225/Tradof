@@ -28,7 +28,7 @@ export const refreshToken = async ({ oldToken }) => {
 export const getAllSubscriptions = async () => {
   try {
     const response = await axios.get(
-      `https://tradofapi-production.up.railway.app/api/package`
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/package`
     );
 
     return response.data.data;
@@ -845,33 +845,63 @@ export const createProjectRating = async ({ token, data }) => {
   }
 };
 
-
-export const getMessages = async (userId, token) => {
+// Generate translation exam questions
+export const generateTranslationExam = async ({
+  token,
+  initial,
+  target,
+  email,
+}) => {
   try {
-    const response = await axios.get(`${import.meta.env.VITE_BACKEND_NODE_URL}/technicalSupport/${userId}`, {
-      headers: {
-        Authorization: token,
+    const response = await axios.post(
+      `${
+        import.meta.env.VITE_BACKEND_NODE_URL
+      }/translation-exam/generate/${email}`,
+      {
+        initial_language: initial,
+        target_language: target,
       },
-    });
-    return response.data.messages;
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(response.data);
+    return response.data.data;
   } catch (error) {
-    throw new Error("Error fetching messages: " + error.message);
+    if (error.response) {
+      const err = new Error(
+        "An error occurred while generating exam questions"
+      );
+      err.code = error.response.status;
+      err.message = error.response.data?.message || "Failed to generate exam";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
   }
 };
 
-export const sendMessage = async (userId, token, formData) => {
+// Get user translation exam
+export const getUserTranslationExam = async ({ email }) => {
   try {
-    const response = await axios.post(`${import.meta.env.VITE_BACKEND_NODE_URL}/technicalSupport`, formData, {
-      headers: {
-        Authorization: token,
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data.message;
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/translation-exam/user/${email}`
+    );
+    // console.log(response.data);
+    return response.data.data;
   } catch (error) {
-    throw new Error("Error sending message: " + error.message);
+    if (error.response) {
+      const err = new Error("An error occurred while fetching user exam");
+      err.code = error.response.status;
+      err.message = error.response.data?.message || "Failed to fetch exam";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
 
 export const getTopRatedUsers = async () => {
   try {

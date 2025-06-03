@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { blueOffers, openPage, rabash } from "@/assets/paths";
 import PageTitle from "@/UI/PageTitle";
 import { deleteProject, getUpcomingdProjects } from "@/Util/Https/companyHttp";
@@ -10,6 +10,8 @@ import {
 } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+
+const ITEMS_PER_PAGE = 7;
 
 function UpcomingProjects() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -29,26 +31,56 @@ function UpcomingProjects() {
     },
   });
 
-  // Load all projects once
-  const { data, isLoading } = useQuery({
-    queryKey: ["all-upcoming-projects", userId],
-    queryFn: () =>
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["upcoming-projects", userId],
+    queryFn: ({ pageParam = 1, signal }) =>
       getUpcomingdProjects({
         id: userId,
         token,
-        page: 1,
-        pageSize: 1000, // assuming you won't have more than 1000
+        page: pageParam,
+        pageSize: ITEMS_PER_PAGE,
       }),
     staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
   });
 
-  // Filter projects based on search query (client-side)
-  const projects = data?.items?.filter((project) =>
-    project?.name?.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  const projects = data?.pages.flatMap((page) => page.items) || [];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+          document.documentElement.offsetHeight - 100 &&
+        hasNextPage &&
+        !isFetchingNextPage
+      ) {
+        fetchNextPage();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  const filteredProjects = useMemo(() => {
+    if (!searchQuery.trim()) return projects;
+
+    const query = searchQuery.toLowerCase();
+    return projects.filter((project) => {
+      return project.name?.toLowerCase().includes(query);
+    });
+  }, [projects, searchQuery]);
 
   return (
-    <div className="bg-background-color">
+    <div className="bg-background-color min-h-screen">
       <PageTitle
         title="Upcoming Projects"
         subtitle="Projects that haven't been assigned to freelancers"
@@ -69,8 +101,15 @@ function UpcomingProjects() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 mb-14">
-          {projects.map((project) => (
+        <div className="grid grid-cols-1 gap-4">
+          {filteredProjects.length === 0 && (
+            <div className="text-center py-4 text-[20px] font-semibold text-gray-500">
+              {searchQuery
+                ? "No projects found matching your search"
+                : "No projects found"}
+            </div>
+          )}
+          {filteredProjects.map((project) => (
             <div
               key={project?.id}
               className="bg-card-color py-[15px] px-[30px] rounded-lg shadow"

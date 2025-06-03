@@ -4,6 +4,7 @@ export const ProjectStatus = {
   InProgress: 2,
   OnReviewing: 3,
   Finished: 4,
+  Cancelled: 5,
 };
 
 export const OfferStatus = {

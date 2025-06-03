@@ -130,7 +130,6 @@ export const deleteSpecialization = async ({ signal, data, id, token }) => {
 };
 
 export const editProfile = async ({ signal, data, token }) => {
-
   try {
     const imageURL = await uploadImage({ imageURL: data.profileImageUrl });
     const response = await axios.put(
@@ -154,7 +153,7 @@ export const editProfile = async ({ signal, data, token }) => {
       err.code = error.response.status;
       err.message = Object.entries(error.response.data.errors)
         .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
-        .join(" ");;
+        .join(" ");
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");
@@ -336,12 +335,12 @@ export const getStartedProjects = async ({ id, token }) => {
   }
 };
 
-export const getUpcomingdProjects = async ({ id, token }) => {
+export const getUpcomingdProjects = async ({ id, token, page = '', pageSize = '' }) => {
   try {
     const response = await axios.get(
       `${
         import.meta.env.VITE_BACKEND_URL
-      }/project/unassigned-projects?companyId=${id}`,
+      }/project/unassigned-projects?companyId=${id}&pageIndex=${page}&pageSize=${pageSize}`,
       {
         headers: {
           Authorization: `Bearer ${token}`, // Attach token here
@@ -366,7 +365,6 @@ export const getUpcomingdProjects = async ({ id, token }) => {
 export const deleteProject = async ({ id, token }) => {
   try {
     // console.log(id);
-
     const response = await axios.delete(
       `${import.meta.env.VITE_BACKEND_URL}/project/${id}`,
       {
@@ -654,6 +652,33 @@ export const finishProject = async ({ signal, id, token }) => {
       err.code = error.response.status;
       err.data.errors = error.response.data;
       err.message = error.response.message;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const requestProjectCancellation = async ({ projectId, token }) => {
+  try {
+    const response = await axios.post(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/project/request-cancellation/${projectId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error(
+        "An error occurred while requesting project cancellation"
+      );
+      err.code = error.response.status;
+      err.message = error.response.data.message;
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");

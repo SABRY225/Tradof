@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
 import PageTitle from "@/UI/PageTitle";
 import { useAuth } from "@/context/AuthContext";
@@ -14,21 +14,19 @@ import {
   image,
   docs,
   xlsx,
+  openPage,
 } from "@/assets/paths";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { OfferStatus } from "@/Util/status";
+import { useNavigate } from "react-router-dom";
+import { PlusCircle } from "lucide-react";
 
 const ITEMS_PER_PAGE = 20;
-
-const statusColors = {
-  Active: "#3DCF3D",
-  Complete: "#FF9500",
-  Review: "#6C63FF",
-};
 
 function Offers() {
   const [filter, setFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
   const {
     user: { userId, token },
   } = useAuth();
@@ -42,15 +40,14 @@ function Offers() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["offers", userId, filter, searchQuery],
+    queryKey: ["offers", userId, filter],
     queryFn: ({ pageParam = 1, signal }) =>
       fatchOffers({
         userId,
         token,
         page: pageParam,
         pageSize: ITEMS_PER_PAGE,
-        // status: filter === "All" ? undefined : filter,
-        // search: searchQuery || undefined,
+        status: filter === "All" ? "" : OfferStatus[filter],
       }),
     getNextPageParam: (lastPage, pages) => {
       const totalPages = Math.ceil(lastPage.count / ITEMS_PER_PAGE);
@@ -61,7 +58,26 @@ function Offers() {
     cacheTime: 10 * 60 * 1000,
   });
 
-  const offers = data?.pages.flatMap((page) => page.items) || [];
+  const allOffers = data?.pages.flatMap((page) => page.items) || [];
+
+  // Filter offers based on search query
+  const filteredOffers = useMemo(() => {
+    if (!searchQuery.trim()) return allOffers;
+
+    const query = searchQuery.toLowerCase();
+    return allOffers.filter((offer) => {
+      return (
+        offer.projecttitle?.toLowerCase().includes(query) ||
+        offer.proposalDescription?.toLowerCase().includes(query) ||
+        `${offer.companyFirstName} ${offer.companyLastName}`
+          .toLowerCase()
+          .includes(query) ||
+        offer.companyEmail?.toLowerCase().includes(query) ||
+        offer.offerPrice?.toString().includes(query) ||
+        offer.days?.toString().includes(query)
+      );
+    });
+  }, [allOffers, searchQuery]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -79,29 +95,31 @@ function Offers() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const allOffers = data?.pages.flatMap((page) => page.items) || [];
-
-// فلترة حسب الفلتر المحدد
-const filteredOffers = allOffers.filter((offer) => {
-  const statusMap = {
-    Accepted: 1,
-    Declined: 2,
-    Canceled: 3,
-    Pending: 0,
+  const handleOpenOffer = (proposal) => {
+    // console.log(proposal);
+    navigate(`../project/add-offer/${proposal.projectId}`, {
+      state: {
+        proposal: {
+          id: proposal.id,
+          projecttitle: proposal.projecttitle,
+          description: proposal.proposalDescription,
+          budget: proposal.offerPrice,
+          deadline: proposal.days,
+          attachments: proposal.proposalAttachments,
+          companyInfo: {
+            id: proposal.companyId,
+            name: `${proposal.companyFirstName} ${proposal.companyLastName}`,
+            email: proposal.companyEmail,
+            image: proposal.companyImage,
+          },
+          proposalStatus: proposal.proposalStatus,
+        },
+      },
+    });
   };
 
-  if (filter === "All") return true;
-  return offer.proposalStatus === statusMap[filter];
-});
-
-// بحث حسب العنوان أو الوصف مثلاً
-const searchedOffers = filteredOffers.filter((offer) =>
-  offer.projecttitle.toLowerCase().includes(searchQuery.toLowerCase())
-);
-
-
   return (
-    <div className="bg-background-color">
+    <div className="bg-background-color min-h-screen">
       <PageTitle title="Your Offers" subtitle="Follow your offers" />
       <div className="container max-w-screen-xl mx-auto w-full py-[30px] px-4">
         {/* Top Filter Section */}
@@ -115,15 +133,17 @@ const searchedOffers = filteredOffers.filter((offer) =>
                 onChange={(e) => setFilter(e.target.value)}
                 className="flex gap-4"
               >
-                {["All", "Pending", "Accepted", "Declined","Canceled"].map((state) => (
-                  <FormControlLabel
-                    key={state}
-                    value={state}
-                    control={<Radio />}
-                    label={state}
-                    className="text-[14px]"
-                  />
-                ))}
+                {["All", "Pending", "Accepted", "Declined", "Canceled"].map(
+                  (state, index) => (
+                    <FormControlLabel
+                      key={state}
+                      value={state}
+                      control={<Radio />}
+                      label={state}
+                      className="text-[14px]"
+                    />
+                  )
+                )}
               </RadioGroup>
             </div>
             <div className="relative w-full md:w-[300px]">
@@ -143,145 +163,173 @@ const searchedOffers = filteredOffers.filter((offer) =>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 mb-10">
-          {searchedOffers.map((offer) => {
-            let style = "";
-            switch (+offer?.proposalStatus) {
-              case +OfferStatus.Accepted:
-                style = "text-[#00A200] bg-[#C3FFC3]";
-                break;
-              case +OfferStatus.Declined:
-                style = "text-[#545454] bg-[#fff]";
-                break;
-              case +OfferStatus.Canceled:
-                style = "text-[#A20000] bg-[#FFC3C3]";
-                break;
-              case +OfferStatus.Pending:
-                style = "text-[#ffa200] bg-[#fff9c3]";
-                break;
-            }
+        <div className="grid grid-cols-1 gap-4">
+          {isLoading ? (
+            <div className="text-center py-4">Loading offers...</div>
+          ) : filteredOffers.length === 0 ? (
+            <div className="text-center py-4 text-[20px] font-semibold text-gray-500">
+              {searchQuery
+                ? "No offers found matching your search"
+                : "No offers found"}
+            </div>
+          ) : (
+            filteredOffers.map((offer) => {
+              let style = "";
+              switch (+offer?.proposalStatus) {
+                case +OfferStatus.Accepted:
+                  style = "text-[#00A200] bg-[#C3FFC3]";
+                  break;
+                case +OfferStatus.Declined:
+                  style = "text-[#545454] bg-[#fff]";
+                  break;
+                case +OfferStatus.Canceled:
+                  style = "text-[#A20000] bg-[#FFC3C3]";
+                  break;
+                case +OfferStatus.Pending:
+                  style = "text-[#ffa200] bg-[#fff9c3]";
+                  break;
+              }
 
-            return (
-              <div
-                key={offer?.id}
-                className="bg-card-color py-[15px] px-[30px] rounded-lg shadow"
-              >
-                <div>
-                  <div className="flex justify-between">
-                    <div className="font-bold flex items-center">
-                      <img
-                        src={offer?.companyImage}
-                        alt="company"
-                        className="w-12 h-12 rounded-full object-cover"
-                      />
-                      <div className="text-[16px] font-bold ml-2">
-                        <div>
-                          {offer?.companyFirstName} {offer?.companyLastName}
-                        </div>
-                        <div className="text-[13px] font-light">
-                          {offer?.companyEmail}
+              return (
+                <div
+                  key={offer?.id}
+                  className="bg-card-color py-[15px] px-[30px] rounded-lg shadow"
+                >
+                  <div>
+                    <div className="flex justify-between">
+                      <div className="font-bold flex items-center">
+                        <img
+                          src={offer?.companyImage}
+                          alt="company"
+                          className="w-12 h-12 rounded-full object-cover"
+                        />
+                        <div className="text-[16px] font-bold ml-2">
+                          <div>
+                            {offer?.companyFirstName} {offer?.companyLastName}
+                          </div>
+                          <div className="text-[13px] font-light">
+                            {offer?.companyEmail}
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="mt-2">
-                      <span className={`px-3 py-1 rounded-md text-sm ${style}`}>
-                        {offer?.proposalStatus === 1
-                          ? "Accepted"
-                          : offer?.proposalStatus === 2
-                          ? "Declined"
-                          : offer?.proposalStatus === 3
-                          ? "Canceled"
-                          : "Pending"}
-                      </span>
+                      <div className="flex items-center gap-4">
+                        <div className="mt-2">
+                          <span
+                            className={`px-3 py-1 rounded-md text-sm ${style}`}
+                          >
+                            {offer?.proposalStatus === 1
+                              ? "Accepted"
+                              : offer?.proposalStatus === 2
+                              ? "Declined"
+                              : offer?.proposalStatus === 3
+                              ? "Canceled"
+                              : "Pending"}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => handleOpenOffer(offer)}
+                          className="flex items-center gap-2 text-main-color hover:text-main-color/80 transition-colors"
+                          title="Add Offer"
+                        >
+                          <img
+                            src={openPage}
+                            alt="view offers"
+                            width={20}
+                            className="cursor-pointer"
+                          />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                  <div className="text-[22px] font-bold mt-2">
-                    {offer?.projecttitle}
-                  </div>
-                  <div className="flex flex-wrap gap-4 mt-2">
-                    <div className="flex items-center gap-2">
-                      <img src={timer} alt="time" width={15} />
-                      <p className="text-gray-500 text-[12px]">
-                        {new Date(offer.timePosted).toDateString()}
-                      </p>
+                    <div className="text-[22px] font-bold mt-2">
+                      {offer?.projecttitle}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <img src={grayBudget} alt="budget" width={15} />
-                      <p className="text-gray-500 text-[12px]">
-                        Price ${offer.offerPrice}
-                      </p>
+                    <div className="flex flex-wrap gap-4 mt-2">
+                      <div className="flex items-center gap-2">
+                        <img src={timer} alt="time" width={15} />
+                        <p className="text-gray-500 text-[12px]">
+                          {new Date(offer.timePosted).toDateString()}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <img src={grayBudget} alt="budget" width={15} />
+                        <p className="text-gray-500 text-[12px]">
+                          Price ${offer.offerPrice}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <img src={calendar} alt="calendar" width={15} />
+                        <p className="text-gray-500 text-[12px]">
+                          Delivery time {offer.days} days
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <img src={calendar} alt="calendar" width={15} />
-                      <p className="text-gray-500 text-[12px]">
-                        Delivery time {offer.days} days
-                      </p>
+                    <div className="border border-main-color my-3"></div>
+                    <div className="text-[15px]">
+                      <div className="font-semibold mb-2">Offer details</div>
+                      <div className="font-light">
+                        {offer?.proposalDescription}
+                      </div>
                     </div>
-                  </div>
-                  <div className="border border-main-color my-3"></div>
-                  <div className="text-[15px]">
-                    <div className="font-semibold mb-2">Offer details</div>
-                    <div className="font-light">
-                      {offer?.proposalDescription}
-                    </div>
-                  </div>
-                  <div className="w-fit text-[15px] mt-2">
-                    <div className="font-semibold mb-2">Attachment files</div>
-                    <div className="flex items-center gap-2">
-                      {offer?.proposalAttachments.length > 0 ? (
-                        offer?.proposalAttachments.map((attachment) => {
-                          const fileExtension = attachment?.attachmentUrl
-                            .split(".")
-                            .pop()
-                            .toLowerCase();
-                          let fileIcon = file;
+                    <div className="w-fit text-[15px] mt-2">
+                      <div className="font-semibold mb-2">Attachment files</div>
+                      <div className="flex items-center gap-2">
+                        {offer?.proposalAttachments.length > 0 ? (
+                          offer?.proposalAttachments.map((attachment) => {
+                            const fileExtension = attachment?.attachmentUrl
+                              .split(".")
+                              .pop()
+                              .toLowerCase();
+                            let fileIcon = file;
 
-                          if (fileExtension === "pdf") {
-                            fileIcon = PDF;
-                          } else if (
-                            ["jpg", "jpeg", "png", "gif"].includes(
-                              fileExtension
-                            )
-                          ) {
-                            fileIcon = image;
-                          } else if (["doc", "docx"].includes(fileExtension)) {
-                            fileIcon = docs;
-                          } else if (["xls", "xlsx"].includes(fileExtension)) {
-                            fileIcon = xlsx;
-                          }
+                            if (fileExtension === "pdf") {
+                              fileIcon = PDF;
+                            } else if (
+                              ["jpg", "jpeg", "png", "gif"].includes(
+                                fileExtension
+                              )
+                            ) {
+                              fileIcon = image;
+                            } else if (
+                              ["doc", "docx"].includes(fileExtension)
+                            ) {
+                              fileIcon = docs;
+                            } else if (
+                              ["xls", "xlsx"].includes(fileExtension)
+                            ) {
+                              fileIcon = xlsx;
+                            }
 
-                          return (
-                            <div
-                              key={attachment?.id}
-                              className="relative cursor-pointer"
-                              onClick={() =>
-                                window.open(attachment?.attachmentUrl, "_blank")
-                              }
-                            >
-                              <img src={fileIcon} alt="file" />
-                              <img
-                                src={download}
-                                alt="download"
-                                width={15}
-                                className="absolute bottom-0 right-[-5px]"
-                              />
-                            </div>
-                          );
-                        })
-                      ) : (
-                        <div className="text-gray-500">No attachments</div>
-                      )}
+                            return (
+                              <div
+                                key={attachment?.id}
+                                className="relative cursor-pointer"
+                                onClick={() =>
+                                  window.open(
+                                    attachment?.attachmentUrl,
+                                    "_blank"
+                                  )
+                                }
+                              >
+                                <img src={fileIcon} alt="file" />
+                                <img
+                                  src={download}
+                                  alt="download"
+                                  width={15}
+                                  className="absolute bottom-0 right-[-5px]"
+                                />
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <div className="text-gray-500">No attachments</div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-            {!isLoading && searchedOffers.length === 0 && (
-            <div className="text-center text-gray-500 py-8 text-lg mb-44">
-              No projects Not found
-            </div>
+              );
+            })
           )}
         </div>
         {isFetchingNextPage && (

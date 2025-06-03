@@ -5,9 +5,14 @@ import { ProjectStatus } from "@/Util/status";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useRevalidator } from "react-router-dom";
-import { finishProject } from "@/Util/Https/companyHttp";
+import {
+  finishProject,
+  requestProjectCancellation,
+} from "@/Util/Https/companyHttp";
+import { Modal } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 
-export default function ProjectCard({ projectDetails }) {
+export default function ProjectCard({ projectDetails, isCanceled }) {
   const { revalidate } = useRevalidator();
 
   const {
@@ -71,6 +76,33 @@ export default function ProjectCard({ projectDetails }) {
     },
   });
 
+  const { mutate: requestCancellation, isPending: isCancelling } = useMutation({
+    mutationFn: requestProjectCancellation,
+    onSuccess: () => {
+      toast.success("Cancellation request sent successfully", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+      revalidate();
+    },
+    onError: (error) => {
+      toast.error(error?.message || "Error sending cancellation request", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+    },
+  });
+
   const isoString = projectDetails?.publicationDate;
   const date = new Date(isoString);
   const formattedDate = date.toLocaleString("en-US", {
@@ -87,6 +119,7 @@ export default function ProjectCard({ projectDetails }) {
     day: Math.floor(totalDays) % 7,
   };
   const handleClick = () => {
+    if (isCanceled) return;
     if (role === "Freelancer") {
       requestReview({
         projectId: projectDetails?.id,
@@ -101,7 +134,7 @@ export default function ProjectCard({ projectDetails }) {
     }
   };
   let style = "";
-  console.log(projectDetails);
+  // console.log(projectDetails);
   switch (projectDetails?.state) {
     case "Active":
       style = "text-[#00A200]";
@@ -119,6 +152,25 @@ export default function ProjectCard({ projectDetails }) {
       style = "text-[#A26A00]";
       break;
   }
+
+  const handleCancellationRequest = () => {
+    Modal.confirm({
+      title: "Request Project Cancellation",
+      icon: <ExclamationCircleOutlined />,
+      content:
+        "Are you sure you want to request cancellation for this project? This action will notify the freelancer.",
+      okText: "Yes, Request Cancellation",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk() {
+        requestCancellation({
+          projectId: projectDetails?.id,
+          token,
+        });
+      },
+    });
+  };
+
   return (
     <div className=" flex-1 h-[100%]">
       <h1 className="italic border-b-2 border-main-color w-fit ml-2 pl-2">
@@ -185,26 +237,44 @@ export default function ProjectCard({ projectDetails }) {
               <h2 className="font-roboto-condensed">Finish</h2>
             </div>
           </div>
-          <ButtonFelid
-            text={
-              projectDetails?.state === "Active"
-                ? "Request a review"
-                : "Accept a project"
-            }
-            classes={`${
-              projectDetails?.state === "Active" && role === "CompanyAdmin"
-                ? "bg-gray-400 cursor-not-allowed"
-                : projectDetails?.state === "OnReviewing" &&
-                  role === "Freelancer"
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-second-color"
-            }  px-2 py-1 font-regular m-auto`}
-            onClick={handleClick}
-            disable={
-              (projectDetails?.state === "Active" && role === "CompanyAdmin") ||
-              (projectDetails?.state === "OnReviewing" && role === "Freelancer")
-            }
-          />
+          <div className="flex flex-col gap-2 items-center">
+            {!isCanceled && (
+              <ButtonFelid
+                text={
+                  projectDetails?.state === "Active"
+                    ? "Request a review"
+                    : "Accept a project"
+                }
+                classes={`${
+                  projectDetails?.state === "Active" && role === "CompanyAdmin"
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : projectDetails?.state === "OnReviewing" &&
+                      role === "Freelancer"
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-second-color"
+                }  px-2 py-1 font-regular`}
+                onClick={handleClick}
+                disable={
+                  (projectDetails?.state === "Active" &&
+                    role === "CompanyAdmin") ||
+                  (projectDetails?.state === "OnReviewing" &&
+                    role === "Freelancer")
+                }
+              />
+            )}
+            {role === "CompanyAdmin" && projectDetails?.state === "Active" && (
+              <ButtonFelid
+                text={
+                  projectDetails?.cancellationRequested
+                    ? "Request Cancellation Sent"
+                    : "Request Cancellation"
+                }
+                classes="bg-red-500 hover:bg-red-600 px-2 py-1 font-regular"
+                onClick={handleCancellationRequest}
+                disable={isCancelling || projectDetails?.cancellationRequested}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>
