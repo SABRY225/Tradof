@@ -71,6 +71,7 @@ import ExamPage from "./pages/Exams/ExamPage";
 import TermsOfService from "./pages/TermsOfService";
 import AdminReports from "./pages/Admin/AdminReports";
 import Invoices from "./pages/shared/Invoices";
+import EmployeeLayout from "./layouts/employeeLayout";
 // import Privacy from "./pages/PrivacyPolicy";
 
 // create routes
@@ -154,8 +155,6 @@ const router = createBrowserRouter([
           },
           { path: "start", element: <StartedProjects /> },
           { path: "upcoming", element: <UpcomingProjects /> },
-          // work in progress
-          // { path: ":projectId", element: <ProjectPage /> },
           { path: ":projectId", element: <ProjectPage /> },
           {
             path: "pay/:projectId",
@@ -221,9 +220,9 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "test",
+    path: "/employee",
 
-    element: <TeamPage />,
+    element: <EmployeeLayout />,
   },
   {
     path: "test2",

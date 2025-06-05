@@ -11,7 +11,7 @@ export default function Charts({ classes }) {
     queryKey: ["freeChart"],
     queryFn: ({ signal }) => getStatistics({ signal, id: userId, token }),
   });
-  // console.log(data);
+  console.log(data);
   const activeChart = data
     ? [{ completed: data.active, inCompleted: data.inProgress + data.accepted }]
     : null;

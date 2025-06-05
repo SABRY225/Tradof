@@ -12,7 +12,7 @@ const EmployeeTable = ({ employees }) => {
             <th className="p-2 text-left">Employee name</th>
             <th className="p-2 text-left">Job Title</th>
             <th className="p-2 text-left">Email</th>
-            <th className="p-2 text-left">Password</th>
+            {/* <th className="p-2 text-left">Password</th> */}
             <th className="p-2 text-left">Phone number</th>
             <th className="p-2 text-left">Country</th>
             <th className="p-2 text-left">Permission</th>
@@ -27,7 +27,7 @@ const EmployeeTable = ({ employees }) => {
               <td className="px-3 py-2 border-r-2">{employee.fullName}</td>
               <td className="px-3 py-2 border-r-2">{employee.jobTitle}</td>
               <td className="px-3 py-2 border-r-2">{employee.email}</td>
-              <td className="px-3 py-2 border-r-2">{employee.password}</td>
+              {/* <td className="px-3 py-2 border-r-2">{employee.password}</td> */}
               <td className="px-3 py-2 border-r-2">{employee.phoneNumber}</td>
               <td className="px-3 py-2 border-r-2">{employee.country}</td>
               <td className="px-3 py-2">{employee.groupName}</td>

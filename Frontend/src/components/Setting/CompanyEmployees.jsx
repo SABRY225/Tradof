@@ -18,8 +18,8 @@ const commonClasses =
 
 const permissions = [
   { id: "Adminstrator", name: "Admin starter" },
-  { id: "SeniorProject", name: "Senior Project" },
-  { id: "SeniorProjectManager", name: "Senior Project Manager" },
+  // { id: "SeniorProject", name: "Senior Project" },
+  // { id: "SeniorProjectManager", name: "Senior Project Manager" },
   { id: "FinanceManager", name: "Finance Manager" },
   { id: "ProjectManager", name: "Project Manager" },
 ];

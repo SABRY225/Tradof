@@ -112,7 +112,8 @@ export default function UserNavbar() {
           <Link to="/user/calender">
             <img src={calender} alt="calender icon" />
           </Link>
-          <Link to="/user/dashboard#notification">
+       <>
+                    <Link to="/user/dashboard#notification">
             <div ref={dropdownRefNotification} className="pt-[9px]">
               <button
                 type="button"
@@ -170,34 +171,48 @@ export default function UserNavbar() {
             <span className="sr-only">Open main menu</span>
             <img src={droplist} alt="drop list icon" />
           </button>
+          </>
+
         </div>
         <div
           className={`items-center justify-between ${
             isNavOpen ? "flex" : "hidden"
           } w-full md:flex md:w-auto md:order-1`}
         >
-          <ul className="flex flex-col p-4 md:p-0 md:space-x-8 md:flex-row md:mt-0">
-            {(role === "CompanyAdmin" ? CompanyList : FreelancerList).map(
-              (item, index) => (
-                <motion.li
-                  key={index}
-                  whileHover={{ scale: 1.1, fontWeight: 500 }}
-                  transition={{ stiffness: 300, type: "keyframes" }}
-                  className="py-2 px-3 md:p-0"
-                >
-                  <Link
-                    to={item.link}
-                    className={`text-white font-roboto-condensed block ${
-                      activePath === item.link ? "text-[18px] font-medium" : ""
-                    }`}
-                    aria-current={activePath === item.link ? "page" : undefined}
-                  >
-                    {item.name}
-                  </Link>
-                </motion.li>
-              )
-            )}
-          </ul>
+<ul className="flex flex-col p-4 md:p-0 md:space-x-8 md:flex-row md:mt-0">
+  {(() => {
+    let listToRender;
+
+    switch (role) {
+      case "CompanyAdmin":
+        listToRender = CompanyList;
+        break;
+      case "Freelancer":
+        listToRender = FreelancerList;
+        break;
+    }
+
+    return listToRender.map((item, index) => (
+      <motion.li
+        key={index}
+        whileHover={{ scale: 1.1, fontWeight: 500 }}
+        transition={{ stiffness: 300, type: "keyframes" }}
+        className="py-2 px-3 md:p-0"
+      >
+        <Link
+          to={item.link}
+          className={`text-white font-roboto-condensed block ${
+            activePath === item.link ? "text-[18px] font-medium" : ""
+          }`}
+          aria-current={activePath === item.link ? "page" : undefined}
+        >
+          {item.name}
+        </Link>
+      </motion.li>
+    ));
+  })()}
+</ul>
+
         </div>
       </motion.div>
     </nav>

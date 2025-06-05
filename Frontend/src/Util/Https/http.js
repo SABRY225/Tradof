@@ -942,3 +942,19 @@ export const sendMessage = async (userId, token, formData) => {
     throw new Error("Error sending message: " + error.message);
   }
 };
+
+
+export const getInvoices = async (token) => {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_BACKEND_NODE_URL}/financial/invoices`,{
+      headers: {
+        Authorization: token,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch invoices:', error);
+    throw error;
+  }
+};

@@ -52,7 +52,7 @@ const getIcon = (type) => {
 };
 export default function Notification({ classes }) {
   const {
-    user: { userId, role },
+    user: { userId, role,subRole,companyId },
   } = useAuth();
   const socket = useSocket();
 
@@ -111,8 +111,9 @@ export default function Notification({ classes }) {
     // socket.emit("getNotifications", { projectId: "7", userId });
     if (role == "admin")
       socket.emit("getNotifications", { userId: "admin" });
-    else
-      socket.emit("getNotifications", { userId });
+    else{
+        socket.emit("getNotifications", { userId });
+    }
     // console.log(projectId, senderId);
     const handleNotificationList = (data) => {
       console.log(data);

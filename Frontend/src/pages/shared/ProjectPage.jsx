@@ -16,6 +16,7 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import ProjectPayment from "@/components/shared/ProjectPayment";
 
 export default function ProjectPage() {
   const {
@@ -155,10 +156,12 @@ export default function ProjectPage() {
           <div className="col-start-1 col-end-12 lg:col-start-1 lg:col-end-4 row-start-1 row-end-6">
             <div className="flex flex-col md:flex-row lg:flex-col justify-between gap-5 h-[100%]">
               <ProjectOwnerCard ownerCard={ownerCard} />
+              <ProjectPayment budget={project?.price} deliveryTime={project?.days} freelancerId={project?.freelancerId} statusProject={project?.status}/>
               <ProjectCard
                 projectDetails={projectDetails}
                 isCanceled={project.cancellationAccepted}
               />
+              
             </div>
           </div>
           <div className="col-start-1 col-end-12 lg:col-start-4 lg:col-end-9 row-start-6 lg:row-start-1 row-end-6">

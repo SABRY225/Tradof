@@ -309,6 +309,40 @@ export const changesPassword = async ({ signal, data, id, token }) => {
 };
 
 //  A.SABRY
+export const getStatusPayProject = async (token,projectId) => {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_BACKEND_NODE_URL}/financial/payment-status/${projectId}`,{
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch invoices:', error);
+    throw error;
+  }
+};
+export const PayProjectPayment = async (token,projectId, freelancerId, budget, deliveryTime) => {
+  try {
+    console.log("token :",token);
+    console.log("projectId :",projectId);
+    console.log("freelancerId :",freelancerId);
+    console.log("budget :",budget);
+    console.log("deliveryTime :",deliveryTime);
+    
+    const response = await axios.post(`${import.meta.env.VITE_BACKEND_NODE_URL}/payment/pay-project`,{projectId, freelancerId, budget, deliveryTime},{
+      headers: {
+        "Authorization": token,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch invoices:', error);
+    throw error;
+  }
+};
 export const getStartedProjects = async ({ id, token }) => {
   try {
     const response = await axios.get(

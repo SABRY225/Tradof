@@ -26,13 +26,13 @@ export default function Login() {
         secure: true,
         sameSite: "Strict",
       });
-
       login({
         userId: data.userId,
         role: data.role,
         token: data.token,
         refreshToken: data.refreshToken,
       });
+
 
       try {
         if (data.role == "CompanyAdmin") {
@@ -41,7 +41,6 @@ export default function Login() {
             token: data.token,
           });
         }
-        // بعد التأكد من الاشتراك، نوجّه
         if (data.role === "admin") {
           navigate("/admin/dashboard");
         } else {
