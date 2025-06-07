@@ -2,7 +2,6 @@ import { Button, Modal, DatePicker, Select, message } from "antd";
 import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { message } from "antd";
 import {
   addLanguagePair,
   deleteLanguagePairs,

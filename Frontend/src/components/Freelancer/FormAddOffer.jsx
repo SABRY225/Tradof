@@ -9,7 +9,6 @@ import { FadeLoader } from "react-spinners";
 import { AddOffer } from "@/Util/Https/freelancerHttp";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { OfferStatus } from "@/Util/status";
-import { message } from "antd";
 
 
 const commonClasses =

@@ -41,7 +41,7 @@ export default function Subscription() {
           <p className="flex gap-32 font-bold font-roboto-condensed">
             Your plan:{" "}
             <span className="italic font-roboto-condensed">
-              {subscriptionData.sub.packageId.name}
+              {subscriptionData?.sub.packageId.name}
             </span>
           </p>
           <p className="flex gap-16 font-bold font-roboto-condensed">

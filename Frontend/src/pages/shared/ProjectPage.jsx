@@ -22,7 +22,6 @@ import { useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { message } from "antd";
 import { ProjectStatus } from "@/Util/status";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ProjectPayment from "@/components/shared/ProjectPayment";
 
 export default function ProjectPage() {
