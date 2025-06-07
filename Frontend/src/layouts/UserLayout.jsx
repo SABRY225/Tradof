@@ -39,7 +39,8 @@ export default function UserLayout() {
   if (isShare) {
     return <Profile />;
   }
-
+  console.log(user);
+  
   // Authenticated normal layout
   return (
     <>

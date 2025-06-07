@@ -63,7 +63,7 @@ export default function AllCompanies() {
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-3">
                         <img
-                          src={photo}
+                          src={company.profileImageUrl}
                           alt="person photo"
                           className="w-10 h-10 object-cover rounded-full"
                         />

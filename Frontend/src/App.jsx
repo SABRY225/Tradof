@@ -69,7 +69,10 @@ import AllCompanies from "./pages/Admin/AllCompanies";
 import FreeExam, { loaderExam, ErrorBoundary } from "./pages/Exams/FreeExam";
 import ExamPage from "./pages/Exams/ExamPage";
 import TermsOfService from "./pages/TermsOfService";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
+import AdminReports from "./pages/Admin/AdminReports";
+import Invoices from "./pages/shared/Invoices";
+import EmployeeLayout from "./layouts/employeeLayout";
+// import Privacy from "./pages/PrivacyPolicy";
 
 // create routes
 const router = createBrowserRouter([
@@ -82,7 +85,7 @@ const router = createBrowserRouter([
     ],
   },
   { path: "service", element: <TermsOfService /> },
-  { path: "privacy-policy", element: <PrivacyPolicy /> },
+  // { path: "privacy", element: <Privacy /> },
   { path: "success-payment", element: <SuccessPayment /> },
   { path: "select-plan/:token", element: <PlanPage /> },
   {
@@ -152,8 +155,6 @@ const router = createBrowserRouter([
           },
           { path: "start", element: <StartedProjects /> },
           { path: "upcoming", element: <UpcomingProjects /> },
-          // work in progress
-          // { path: ":projectId", element: <ProjectPage /> },
           { path: ":projectId", element: <ProjectPage /> },
           {
             path: "pay/:projectId",
@@ -174,6 +175,7 @@ const router = createBrowserRouter([
       },
       { path: "settings", element: <Setting />, loader: settingsLoader },
       { path: "dashboard", element: <Dashboard /> },
+      { path: "invoices", element: <Invoices /> },
       {
         path: "calender",
         element: <Calender />,
@@ -198,7 +200,6 @@ const router = createBrowserRouter([
       { path: "technical-support", element: <AdminTechnicalSupport /> },
       { path: "feedback", element: <AdminFeedback /> },
       { path: "withdrawal", element: <ProfitWithdrawalRequests /> },
-      // work in progress
       { path: "finances", element: <AdminFinances /> },
       { path: "freelancers", element: <AllFreelancers /> },
       { path: "companies", element: <AllCompanies /> },
@@ -217,9 +218,9 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "test",
+    path: "/employee",
 
-    element: <TeamPage />,
+    element: <EmployeeLayout />,
   },
   {
     path: "test2",

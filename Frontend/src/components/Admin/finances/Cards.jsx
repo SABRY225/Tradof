@@ -16,7 +16,7 @@ export default function Cards() {
   const totalMoneyByFreelancers = data?.totalMoneyByFreelancers;
   const totalMoneyByFreelancersReceive = data?.totalMoneyByFreelancersReceive;
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10 xl:gap-16">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10 xl:gap-16">
       <div className="bg-card-color p-5 rounded-lg">
         <div className="flex justify-between items-center">
           <h1 className="font-medium">Total subscription money</h1>
@@ -39,6 +39,13 @@ export default function Cards() {
           <img src={cardRemove} alt="icon" className="w-6 h-6" />
         </div>
         <p className="text-lg mt-2">${totalPendingMoney}</p>
+      </div>
+            <div className="bg-card-color p-5 rounded-lg">
+        <div className="flex justify-between items-center">
+          <h1 className="font-medium">Total Money Freelancers Receive</h1>
+          <img src={cardRemove} alt="icon" className="w-6 h-6" />
+        </div>
+        <p className="text-lg mt-2">${totalMoneyByFreelancersReceive}</p>
       </div>
     </div>
   );

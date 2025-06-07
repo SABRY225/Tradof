@@ -984,3 +984,60 @@ export const generateMultipleTranslationExams = async ({
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
+
+export const getTopRatedUsers = async () => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/project/top-rated-users`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch top-rated users");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching top-rated users:", error);
+    return [];
+  }
+};
+
+export const getMessages = async (userId, token) => {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_BACKEND_NODE_URL}/technicalSupport/${userId}`, {
+      headers: {
+        Authorization: token,
+      },
+    });
+    return response.data.messages;
+  } catch (error) {
+    throw new Error("Error fetching messages: " + error.message);
+  }
+};
+
+export const sendMessage = async (userId, token, formData) => {
+  try {
+    const response = await axios.post(`${import.meta.env.VITE_BACKEND_NODE_URL}/technicalSupport`, formData, {
+      headers: {
+        Authorization: token,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data.message;
+  } catch (error) {
+    throw new Error("Error sending message: " + error.message);
+  }
+};
+
+
+export const getInvoices = async (token) => {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_BACKEND_NODE_URL}/financial/invoices`,{
+      headers: {
+        Authorization: token,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch invoices:', error);
+    throw error;
+  }
+};

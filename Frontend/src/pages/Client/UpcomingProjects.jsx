@@ -7,6 +7,7 @@ import {
   useQuery,
   useMutation,
   useQueryClient,
+  useInfiniteQuery
 } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { message } from "antd";
@@ -31,26 +32,34 @@ function UpcomingProjects() {
     },
   });
 
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["upcoming-projects", userId],
-    queryFn: ({ pageParam = 1, signal }) =>
-      getUpcomingdProjects({
-        id: userId,
-        token,
-        page: pageParam,
-        pageSize: ITEMS_PER_PAGE,
-      }),
-    staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
-  });
+ const {
+  data,
+  isLoading,
+  isError,
+  error,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+} = useInfiniteQuery({
+  queryKey: ["upcoming-projects", userId],
+  queryFn: ({ pageParam = 1 }) =>
+    getUpcomingdProjects({
+      id: userId,
+      token,
+      page: pageParam,
+      pageSize: ITEMS_PER_PAGE,
+    }),
+  getNextPageParam: (lastPage, allPages) => {
+    // Assuming `lastPage` contains pagination metadata like current page and total pages
+    if (lastPage.currentPage < lastPage.totalPages) {
+      return lastPage.currentPage + 1;
+    } else {
+      return undefined;
+    }
+  },
+  staleTime: 5 * 60 * 1000,
+  cacheTime: 10 * 60 * 1000,
+});
 
   const projects = data?.pages.flatMap((page) => page.items) || [];
 
