@@ -69,7 +69,7 @@ import AllCompanies from "./pages/Admin/AllCompanies";
 import FreeExam, { loaderExam, ErrorBoundary } from "./pages/Exams/FreeExam";
 import ExamPage from "./pages/Exams/ExamPage";
 import TermsOfService from "./pages/TermsOfService";
-import AdminReports from "./pages/Admin/AdminReports";
+// import AdminReports from "./pages/Admin/AdminReports";
 import Invoices from "./pages/shared/Invoices";
 import EmployeeLayout from "./layouts/employeeLayout";
 // import Privacy from "./pages/PrivacyPolicy";

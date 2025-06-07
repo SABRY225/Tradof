@@ -5,8 +5,10 @@ import { getStatusPayProject, PayProjectPayment } from "@/Util/Https/companyHttp
 import { useParams } from "react-router-dom";
 
 export default function ProjectPayment({freelancerId,budget,deliveryTime,statusProject}) {
+  console.log(statusProject);
+  
   const {
-    user: { token },
+    user: { token,role },
   } = useAuth();
 
   const [status, setStatus] = useState(null);
@@ -84,7 +86,7 @@ export default function ProjectPayment({freelancerId,budget,deliveryTime,statusP
 </div>
 
         )}
-  {status !== "paid"&&statusProject==="OnReviewing" && <ButtonFelid
+  {status !== "paid"&&statusProject?.statusName==="OnReviewing" && role=="CompanyAdmin"&& <ButtonFelid
           text={payLoading ? "Processing..." : "Pay money"}
           classes="bg-second-color px-10 py-2 font-medium m-auto"
           disabled={payLoading || status === "paid"}

@@ -187,7 +187,7 @@ export default function ProjectCard({
                 <td className="font-light">{`${duration.week} Weeks, ${duration.day} days`}</td>
               </tr>
             </table>
-            {role === "Freelancer" && (
+            {role === "Freelancer"&& projectDetails?.state==="Active" && (
               <Button
                 className="text-center my-1 w-full"
                 onClick={() => setShowEditModal(true)}

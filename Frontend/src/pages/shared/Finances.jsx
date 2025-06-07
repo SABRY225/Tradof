@@ -26,35 +26,35 @@ export default function Finances() {
     user: { userId, token, role },
   } = useAuth();
 
-const [transactions, setTransactions] = useState([]);
-const [loading, setLoading] = useState(true);
-const Navigate=useNavigate();
-useEffect(() => {
-  const fetchStatistics = async () => {
-    try {
-      setLoading(true);
-      let data;
-      let data2;
-      if (role === "Freelancer") {
-        data = await GetFreelancerStatistics({ freelancerId: userId, token });
-        data2 = await GetFreelancerProjectsFinancials({ token });
-        console.log("true");
-        
-      } else {
-        data = await GetCompanyStatistics({ companyId: userId, token });
-        data2 = await GetCompanyProjectsFinancials({ token });
-      }
-      setStatistics(data.data);
-      setTransactions(data2.data);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const Navigate = useNavigate();
+  useEffect(() => {
+    const fetchStatistics = async () => {
+      try {
+        setLoading(true);
+        let data;
+        let data2;
+        if (role === "Freelancer") {
+          data = await GetFreelancerStatistics({ freelancerId: userId, token });
+          data2 = await GetFreelancerProjectsFinancials({ token });
+          console.log("true");
 
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-  fetchStatistics();
-}, []);
+        } else {
+          data = await GetCompanyStatistics({ companyId: userId, token });
+          data2 = await GetCompanyProjectsFinancials({ token });
+        }
+        setStatistics(data.data);
+        setTransactions(data2.data);
+
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStatistics();
+  }, []);
 
 
   const handleTabChange = (event, newValue) => {
@@ -67,26 +67,26 @@ useEffect(() => {
     setSearchQuery(event.target.value);
   };
 
-const filteredTransactions = transactions
-  .filter((t) => {
-    if (activeTab === 1) return t.paymentStatus === "paid";
-    if (activeTab === 2) return t.paymentStatus === "pending";
-    return true;
-  })
-  .filter((t) => {
-    const searchLower = searchQuery.toLowerCase();
-    return (
-      t?.user?.firstName?.toLowerCase().includes(searchLower) ||
-      t?.user?.lastName?.toLowerCase().includes(searchLower) ||
-      t?.prjectData?.name?.toLowerCase().includes(searchLower)
-    );
-  });
+  const filteredTransactions = transactions
+    .filter((t) => {
+      if (activeTab === 1) return t.paymentStatus === "paid";
+      if (activeTab === 2) return t.paymentStatus === "pending";
+      return true;
+    })
+    .filter((t) => {
+      const searchLower = searchQuery.toLowerCase();
+      return (
+        t?.user?.firstName?.toLowerCase().includes(searchLower) ||
+        t?.user?.lastName?.toLowerCase().includes(searchLower) ||
+        t?.prjectData?.name?.toLowerCase().includes(searchLower)
+      );
+    });
 
 
-if (loading) return <p>
-  <Loading />
-</p>;
-console.log(statistics);
+  if (loading) return <p>
+    <Loading />
+  </p>;
+  console.log(filteredTransactions);
 
   return (
     <div className="bg-background-color">
@@ -94,7 +94,7 @@ console.log(statistics);
       <div className="container max-w-screen-xl mx-auto p-4 w-full mt-[30px]">
         <div className="space-y-[20px] rounded-[8px]">
           {/* Withdraw Button */}
-          {role == "Freelancer" && statistics?.availableBalance>100 && (
+          {role == "Freelancer" && statistics?.availableBalance > 100 && (
             <Box sx={{ mb: 4, display: "flex", justifyContent: "flex-start" }}>
               <Button
                 variant="contained"
@@ -108,7 +108,7 @@ console.log(statistics);
                   py: 0.75,
                   fontSize: "0.875rem",
                 }}
-                onClick={()=>Navigate(`/user/withdraw-profits/${statistics?.availableBalance}`)}
+                onClick={() => Navigate(`/user/withdraw-profits/${statistics?.availableBalance}`)}
               >
                 Withdraw Profits
               </Button>
@@ -131,7 +131,7 @@ console.log(statistics);
                 Total balance
               </Typography>
               <Typography variant="h3" sx={{ fontWeight: 700 }}>
-                 {statistics?.totalBalance} EGP
+                {statistics?.totalBalance} EGP
               </Typography>
             </Box>
 
@@ -172,7 +172,7 @@ console.log(statistics);
                   Pending Amounts
                 </Typography>
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                   {statistics?.pendingBalance} EGP
+                  {statistics?.pendingBalance} EGP
                 </Typography>
               </Grid>
             </Grid>
@@ -219,16 +219,16 @@ console.log(statistics);
                     activeTab === 1
                       ? "#4caf50"
                       : activeTab === 2
-                      ? "#ff6b6b"
-                      : "#6c63ff",
+                        ? "#ff6b6b"
+                        : "#6c63ff",
                 },
                 "& .MuiTabs-indicator": {
                   backgroundColor:
                     activeTab === 1
                       ? "#4caf50"
                       : activeTab === 2
-                      ? "#ff6b6b"
-                      : "#6c63ff",
+                        ? "#ff6b6b"
+                        : "#6c63ff",
                 },
               }}
               className="sm:ml-0 ml-4"
@@ -269,7 +269,7 @@ console.log(statistics);
                       fontWeight: 500,
                     }}
                   >
-                    {transaction.paymentStatus === "paid"?"PAID":"Pending"}
+                    {transaction.paymentStatus === "paid" ? "PAID" : "Pending"}
                   </Box>
 
                   <Box sx={{ display: "flex", alignItems: "center", mb: 1.5 }}>
@@ -348,8 +348,9 @@ console.log(statistics);
                       Offer price
                     </Typography>
                     <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                      {transaction.prjectData.depoistPrice.toFixed(1)} EGP
+                      {`${transaction.prjectData.depoistPrice} EGP`}
                     </Typography>
+
                   </Box>
                 </Paper>
               </Grid>
