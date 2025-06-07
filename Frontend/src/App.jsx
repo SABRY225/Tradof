@@ -237,7 +237,7 @@ function App() {
     <StreamProvider>
       <SocketProvider>
         <MantineProvider withGlobalStyles withNormalizeCSS>
-          <ToastContainer stacked position="top-center" autoClose={3000} />
+          {/* <ToastContainer stacked position="top-center" autoClose={3000} /> */}
           <AuthProvider>
             <QueryClientProvider client={queryClient}>
               <RouterProvider router={router} />

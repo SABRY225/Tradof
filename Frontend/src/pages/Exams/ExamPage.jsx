@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BookOutlined,
   BulbOutlined,
@@ -18,18 +18,28 @@ import {
   Card,
   Checkbox,
   Collapse,
+  message,
   Progress,
   Typography,
 } from "antd";
-import { useNavigate, useNavigation, useParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useNavigation,
+  useParams,
+} from "react-router-dom";
 import Loading from "../Loading";
+import { useAuth } from "@/context/AuthContext";
 
 const { Panel } = Collapse;
 const { Title, Text } = Typography;
 
 export default function ExamPage() {
+  const { user } = useAuth();
   const { examId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [deviceChecks, setDeviceChecks] = useState({
     internet: false,
     browser: false,
@@ -37,7 +47,19 @@ export default function ExamPage() {
   });
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading";
-  
+
+  useEffect(() => {
+    if (!user.token) {
+      console.log(user);
+      navigate("/auth", {
+        state: {
+          from: `/exam/${examId}`,
+          message: "Please log in to continue",
+        },
+      });
+    }
+  }, [user, examId, navigate]);
+
   if (isLoading) return <Loading />;
 
   const allChecksComplete = Object.values(deviceChecks).every((check) => check);
@@ -47,6 +69,16 @@ export default function ExamPage() {
       ...prev,
       [key]: !prev[key],
     }));
+  };
+
+  const handleContactSupport = () => {
+    const email = "tradofhelp@gmail.com";
+    const subject = "Exam Support Request";
+    const body = `Hello Support Team,\n\nI need assistance with my exam (Exam ID: ${examId}).\n\nIssue Description:\n\n`;
+    const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(body)}`;
+    window.open(mailtoLink);
   };
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -73,8 +105,6 @@ export default function ExamPage() {
 
       <main className="container mx-auto px-6 py-8 flex-grow">
         <div className="max-w-4xl mx-auto">
-          
-
           <Card className="mb-8 shadow-md">
             <div className="flex items-center justify-between mb-6">
               <Title level={4} className="m-0">
@@ -319,13 +349,11 @@ export default function ExamPage() {
               </Text>
             </div>
             <div className="flex space-x-4">
-              <Button type="link" className="text-gray-300 hover:text-white">
-                Privacy Policy
-              </Button>
-              <Button type="link" className="text-gray-300 hover:text-white">
-                Terms of Service
-              </Button>
-              <Button type="link" className="text-gray-300 hover:text-white">
+              <Button
+                type="link"
+                className="text-gray-300 hover:text-white"
+                onClick={handleContactSupport}
+              >
                 Contact Support
               </Button>
             </div>

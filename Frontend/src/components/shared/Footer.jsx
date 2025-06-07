@@ -6,7 +6,7 @@ function Footer({ color, borderColor, borderSize }) {
   const navigate = useNavigate();
   return (
     <div
-      className="font-roboto-condensed bg-background-color relative flex flex-col md:flex-row items-center justify-around text-center py-5"
+      className="border-t-2 border-main-color font-roboto-condensed bg-background-color relative flex flex-col md:flex-row items-center justify-around text-center py-5"
       style={{ backgroundColor: color }}
     >
       {/* Add the before pseudo-element

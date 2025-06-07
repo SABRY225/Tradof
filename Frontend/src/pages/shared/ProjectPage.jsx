@@ -139,7 +139,7 @@ export default function ProjectPage() {
     return null;
   }
 
-  console.log(project);
+  console.log(editRequest);
 
   const ownerCard = {
     name: projectCard?.ownerName,
@@ -216,7 +216,7 @@ export default function ProjectPage() {
               closable
             />
           )}
-        {editRequest && role === "CompanyAdmin" && (
+        {editRequest && editRequest.status === 0 && role === "CompanyAdmin" && (
           <Alert
             className="my-5"
             message="Edit Proposal Request"
@@ -256,18 +256,23 @@ export default function ProjectPage() {
             closable
           />
         )}
+        
 
         <div className="grid grid-cols-[repeat(11,1fr)] gap-x-[20px]">
           <div className="col-start-1 col-end-12 lg:col-start-1 lg:col-end-4 row-start-1 row-end-6">
             <div className="flex flex-col md:flex-row lg:flex-col justify-between gap-5 h-[100%]">
               <ProjectOwnerCard ownerCard={ownerCard} />
-              <ProjectPayment budget={project?.price} deliveryTime={project?.days} freelancerId={project?.freelancerId} statusProject={project?.status}/>
+              <ProjectPayment
+                budget={project?.price}
+                deliveryTime={project?.days}
+                freelancerId={project?.freelancerId}
+                statusProject={project?.status}
+              />
               <ProjectCard
                 projectDetails={projectDetails}
                 isCanceled={project.cancellationAccepted}
                 proposalId={project?.proposalId}
               />
-              
             </div>
           </div>
           <div className="col-start-1 col-end-12 lg:col-start-4 lg:col-end-9 row-start-6 lg:row-start-1 row-end-6">

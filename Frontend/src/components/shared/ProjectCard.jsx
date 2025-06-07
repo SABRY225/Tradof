@@ -13,6 +13,7 @@ import { Button, Modal } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { EditOffer } from "@/Util/Https/freelancerHttp";
+import { FadeLoader } from "react-spinners";
 
 export default function ProjectCard({
   projectDetails,
@@ -20,44 +21,82 @@ export default function ProjectCard({
   proposalId,
 }) {
   const { revalidate } = useRevalidator();
+  const [messageApi, contextHolder] = message.useMessage();
 
   const {
     user: { userId, token, role },
   } = useAuth();
+
   const {
     mutate: requestReview,
     data,
-    isPending,
+    isPending: isReviewing,
   } = useMutation({
     mutationFn: askForReview,
+    onMutate: () => {
+      messageApi.loading({
+        content: "Sending review request...",
+        key: "review",
+      });
+    },
     onSuccess: (data) => {
-      message.success("Send review request successfully");
+      messageApi.success({
+        content: "Review request sent successfully",
+        key: "review",
+        duration: 2.5,
+      });
       revalidate();
     },
     onError: (error) => {
-      message.error(error?.message || "Error sending request");
+      messageApi.error({
+        content: error?.message || "Error sending request",
+        key: "review",
+      });
     },
   });
 
   const { mutate: Finished, isPending: isFinishing } = useMutation({
     mutationFn: finishProject,
+    onMutate: () => {
+      messageApi.loading({ content: "Finishing project...", key: "finish" });
+    },
     onSuccess: (data) => {
-      message.success("Project finished successfully");
+      messageApi.success({
+        content: "Project finished successfully",
+        key: "finish",
+        duration: 2.5,
+      });
       revalidate();
     },
     onError: (error) => {
-      message.error(error?.message || "Error sending request");
+      messageApi.error({
+        content: error?.message || "Error sending request",
+        key: "finish",
+      });
     },
   });
 
   const { mutate: requestCancellation, isPending: isCancelling } = useMutation({
     mutationFn: requestProjectCancellation,
+    onMutate: () => {
+      messageApi.loading({
+        content: "Sending cancellation request...",
+        key: "cancel",
+      });
+    },
     onSuccess: () => {
-      message.success("Cancellation request sent successfully");
+      messageApi.success({
+        content: "Cancellation request sent successfully",
+        key: "cancel",
+        duration: 2.5,
+      });
       revalidate();
     },
     onError: (error) => {
-      message.error(error?.message || "Error sending cancellation request");
+      messageApi.error({
+        content: error?.message || "Error sending cancellation request",
+        key: "cancel",
+      });
     },
   });
 
@@ -70,12 +109,19 @@ export default function ProjectCard({
 
   const { mutate: handleEditOffer, isPending: isEditing } = useMutation({
     mutationFn: EditOffer,
+    onMutate: () => {
+      messageApi.loading({ content: "Sending edit request...", key: "edit" });
+    },
     onSuccess: () => {
-      message.success("Edit request sent successfully");
+      messageApi.success({
+        content: "Edit request sent successfully",
+        key: "edit",
+        duration: 2.5,
+      });
       setShowEditModal(false);
     },
     onError: (error) => {
-      message.error(error.message);
+      messageApi.error({ content: error.message, key: "edit" });
     },
   });
 
@@ -161,6 +207,7 @@ export default function ProjectCard({
   // console.log(projectDetails);;
   return (
     <>
+      {contextHolder}
       <div className=" flex-1 h-[100%]">
         <h1 className="italic border-b-2 border-main-color w-fit ml-2 pl-2">
           Project card
@@ -187,7 +234,7 @@ export default function ProjectCard({
                 <td className="font-light">{`${duration.week} Weeks, ${duration.day} days`}</td>
               </tr>
             </table>
-            {role === "Freelancer"&& projectDetails?.state==="Active" && (
+            {role === "Freelancer" && projectDetails?.state === "Active" && (
               <Button
                 className="text-center my-1 w-full"
                 onClick={() => setShowEditModal(true)}
@@ -238,29 +285,31 @@ export default function ProjectCard({
             </div>
             <div className="flex flex-col gap-2 items-center">
               {!isCanceled && (
-                <ButtonFelid
-                  text={
-                    projectDetails?.state === "Active"
-                      ? "Request a review"
-                      : "Accept a project"
-                  }
-                  classes={`${
-                    projectDetails?.state === "Active" &&
-                    role === "CompanyAdmin"
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : projectDetails?.state === "OnReviewing" &&
-                        role === "Freelancer"
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-second-color"
-                  }  px-2 py-1 font-regular`}
-                  onClick={handleClick}
-                  disable={
-                    (projectDetails?.state === "Active" &&
-                      role === "CompanyAdmin") ||
-                    (projectDetails?.state === "OnReviewing" &&
-                      role === "Freelancer")
-                  }
-                />
+                <div className="flex items-center gap-3">
+                  <ButtonFelid
+                    text={
+                      projectDetails?.state === "Active"
+                        ? "Request a review"
+                        : "Accept a project"
+                    }
+                    classes={`${
+                      projectDetails?.state === "Active" &&
+                      role === "CompanyAdmin"
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : projectDetails?.state === "OnReviewing" &&
+                          role === "Freelancer"
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-second-color"
+                    }  px-2 py-1 font-regular`}
+                    onClick={handleClick}
+                    disabled={
+                      (projectDetails?.state === "Active" &&
+                        role === "CompanyAdmin") ||
+                      (projectDetails?.state === "OnReviewing" &&
+                        role === "Freelancer")
+                    }
+                  />
+                </div>
               )}
               {role === "CompanyAdmin" &&
                 projectDetails?.state === "Active" && (

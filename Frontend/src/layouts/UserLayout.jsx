@@ -47,7 +47,7 @@ export default function UserLayout() {
       {user && (
         <>
           <UserNavbar />
-          <div className="pb-1">
+          <div>
             <Outlet />
           </div>
           <FloatingChat user={user} />

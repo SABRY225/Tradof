@@ -1,9 +1,8 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import Cookies from "js-cookie";
 import { useMutation } from "@tanstack/react-query";
 import { message } from "antd";
-
 
 import { loginUser, signByGoogle } from "@/Util/Https/http";
 import { useAuth } from "@/Context/AuthContext";
@@ -19,6 +18,8 @@ export default function Login() {
   const { user, login } = useAuth();
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { from, message: loginAlert } = location.state || {};
   const { mutate, data, isPending } = useMutation({
     mutationFn: loginUser,
     onSuccess: async (data) => {
@@ -34,7 +35,6 @@ export default function Login() {
         refreshToken: data.refreshToken,
       });
 
-
       try {
         if (data.role == "CompanyAdmin") {
           await GetCurrentSubscription({
@@ -42,8 +42,11 @@ export default function Login() {
             token: data.token,
           });
         }
+
         if (data.role === "admin") {
           navigate("/admin/dashboard");
+        } else if (from) {
+          navigate(from);
         } else {
           navigate("/user/dashboard");
         }
@@ -53,7 +56,6 @@ export default function Login() {
       }
     },
     onError: (error) => {
-      // console.log(error.response);
       if (error?.message == "Error checking subscription.") {
         navigate(`/select-plan/${data.token}`);
       } else {
@@ -69,6 +71,10 @@ export default function Login() {
   } = useMutation({
     mutationFn: signByGoogle,
     onSuccess: (data) => {
+      if (from) {
+        console.log(from);
+        navigate(from);
+      }
       console.log("Google login data:", data);
     },
     onError: (error) => {
@@ -91,17 +97,19 @@ export default function Login() {
   });
 
   useEffect(() => {
-    console.log(user);
-    if (user) {
+    if (from) {
+      message.info(loginAlert);
+    }
+    if (user.token) {
       if (user.role === "admin") navigate("/admin/dashboard");
+      else if (from) navigate(from);
       else navigate("/user/dashboard");
     }
-  }, []);
+  }, [user, from, loginAlert, navigate]);
 
   const formData = watch();
 
   const onSubmit = () => {
-    // console.log(formData);
     mutate({ data: formData });
   };
 
