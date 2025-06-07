@@ -25,7 +25,7 @@ import {
   getAllEvents,
 } from "@/Util/Https/http";
 import { Link, useLoaderData } from "react-router-dom";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import Loading from "../Loading";
@@ -58,27 +58,11 @@ const customComponents = {
           await deleteEvent({ token, eventId: calendarEvent.id });
           // Refetch all events
           await queryClient.invalidateQueries(["events"]);
-          toast.success("Event deleted successfully", {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: false,
-            progress: undefined,
-          });
+          message.success("Event deleted successfully");
           // Reload the page after successful deletion
           window.location.reload();
         } catch (error) {
-          toast.error(error.message || "Failed to delete event", {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: false,
-            progress: undefined,
-          });
+          message.error(error.message || "Failed to delete event");
         } finally {
           setIsDeleting(false);
         }
@@ -246,30 +230,13 @@ export default function Calender() {
       }
       setEvents((prevEvents) => [...prevEvents, event]);
       setOpen(false);
-      toast.success(
-        `Create ${event.isMeeting ? "meeting" : "event"} Success!`,
-        {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        }
+      message.success(
+        `Create ${event.isMeeting ? "meeting" : "event"} Success!`
       );
     },
     onError: (error) => {
       console.error("Error creating event:", error);
-      toast.error(error.message || "Create event failed!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error.message || "Create event failed!");
     },
   });
   const { data, isError, isLoading } = useQuery({
@@ -281,15 +248,7 @@ export default function Calender() {
   console.log(data);
   const calender = useLoaderData();
   if (calender?.error) {
-    toast.error(calendar?.message || "create calender failed!", {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: false,
-      progress: undefined,
-    });
+    message.error(calendar?.message || "create calender failed!");
   }
   const AddEventMonth = useCallback(() => {
     setTimeout(() => {
@@ -402,7 +361,7 @@ export default function Calender() {
   const handleAddEvent = (newEvent) => {
     const token = Cookies.get("token");
     if (!token) {
-      toast.error("No authentication token found!");
+      message.error("No authentication token found!");
       return;
     }
 

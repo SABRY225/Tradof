@@ -5,7 +5,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import InputAdornment from "@mui/material/InputAdornment";
 import { searchAskQuestion, sendAskQuestion } from "@/Util/Https/http";
 import Cookies from "js-cookie";
-import { toast } from "react-toastify";
+import { message } from "antd";
 
 function AskQuestion() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -43,26 +43,10 @@ function AskQuestion() {
     try {
       const res = await sendAskQuestion({ token, question });
       console.log(res);
-      toast.success(res?.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success(res?.message);
       setQuestion("");
     } catch (error) {
-      toast.error(error?.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error?.message);
     }
   };
 

@@ -13,21 +13,21 @@ export default function Charts({ classes }) {
   });
   // console.log(data);
   const activeChart = data
-    ? [{ completed: data.active, inCompleted: data.inProgress + data.accepted }]
+    ? [{ completed: data.active, inCompleted: data.completed + data.cancelled }]
     : null;
   const inProgressChart = data
     ? [
         {
-          completed: data.inProgress,
-          inCompleted: data.active + data.accepted,
+          completed: data.completed,
+          inCompleted: data.active + data.cancelled,
         },
       ]
-    :null;
+    : null;
   const acceptedChart = data
     ? [
         {
-          completed: data.accepted,
-          inCompleted: data.active + data.inProgress,
+          completed: data.cancelled,
+          inCompleted: data.active + data.completed,
         },
       ]
     : null;

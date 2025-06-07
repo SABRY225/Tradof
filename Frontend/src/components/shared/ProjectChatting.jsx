@@ -1,6 +1,6 @@
 import { file, meeting, send, whitePlus } from "@/assets/paths";
 import { useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
+import { message as alertMessage } from "antd";
 
 import {
   Menubar,
@@ -90,28 +90,12 @@ export default function Chatting({
   } = useMutation({
     mutationFn: createEvent,
     onSuccess: ({ data }) => {
-      toast.success("Event created successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      alertMessage.success("Event created successfully");
       setOpen(false);
     },
     onError: (error) => {
       console.error("Error creating event:", error);
-      toast.error(error.message || "create event failed!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      alertMessage.error(error.message || "create event failed!");
     },
   });
   useEffect(() => {
@@ -136,15 +120,7 @@ export default function Chatting({
     };
 
     const handleError = (error) => {
-      toast.error(error?.message || "Some thing wrong happen!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      alertMessage.error(error?.message || "Some thing wrong happen!");
       console.error("Socket Error:", error);
     };
     socket.on("messagesList", handleMessagesList);
@@ -179,7 +155,7 @@ export default function Chatting({
     const token = Cookies.get("token");
     if (isCanceled) return;
     if (!token) {
-      toast.error("No authentication token found!");
+      alertMessage.error("No authentication token found!");
       return;
     }
 

@@ -6,7 +6,8 @@ import ButtonFelid from "../UI/ButtonFelid";
 import { useMutation } from "@tanstack/react-query";
 import { restPassword } from "@/Util/Https/http";
 import Loading from "./Loading";
-import { toast } from "react-toastify";
+import { message } from "antd";
+
 
 export default function ForgetPassword() {
   const navigate = useNavigate();
@@ -27,15 +28,7 @@ export default function ForgetPassword() {
       navigate(`../send-otp/${watch("email")}`);
     },
     onError: (error) => {
-      toast.error(error?.message || "rest password failed!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error?.message || "rest password failed!");
     },
   });
 

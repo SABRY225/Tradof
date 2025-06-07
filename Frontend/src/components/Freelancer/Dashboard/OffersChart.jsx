@@ -16,7 +16,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { getOffersChart } from "@/Util/Https/freelancerHttp";
 import { FadeLoader } from "react-spinners";
-import { toast } from "react-toastify";
+import { message } from "antd";
 
 const transform = ({ key, statusCounts }, year = 2022) => ({
   date: `${year}-${String(key).padStart(2, "0")}`,
@@ -49,15 +49,7 @@ const OffersChart = ({ classes }) => {
   });
 
   if (isError) {
-    toast.error(error.message || "Something wrong happen", {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: false,
-      progress: undefined,
-    });
+    message.error(error.message || "Something wrong happen");
   }
   const handleData = data ? data.map((item) => transform(item, +year)) : [];
   console.log(handleData, year);

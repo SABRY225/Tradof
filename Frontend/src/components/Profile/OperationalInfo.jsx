@@ -14,7 +14,7 @@ import {
   deleteSpecialization,
 } from "@/Util/Https/companyHttp";
 import { useAuth } from "@/context/AuthContext";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import { useRevalidator } from "react-router-dom";
 import { FadeLoader } from "react-spinners";
 
@@ -52,28 +52,12 @@ export default function OperationalInfo({
     mutationKey: ["addPreferredLanguage"],
     mutationFn: addPreferredLanguage,
     onSuccess: () => {
-      toast.success("adding preferred language successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("adding preferred language successfully");
       queryClient.invalidateQueries({ queryKey: ["CompanyAdmin"] });
       revalidator.revalidate();
     },
     onError: (error) => {
-      toast.error(error.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error.message);
     },
   });
 
@@ -81,28 +65,12 @@ export default function OperationalInfo({
     mutationKey: ["deletePreferredLanguage"],
     mutationFn: deletePreferredLanguage,
     onSuccess: () => {
-      toast.success("delete preferred language successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("delete preferred language successfully");
       queryClient.invalidateQueries({ queryKey: ["CompanyAdmin"] });
       revalidator.revalidate();
     },
     onError: (error) => {
-      toast.error(error.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error.message);
     },
   });
 
@@ -110,28 +78,12 @@ export default function OperationalInfo({
     mutationKey: ["addSpecialization"],
     mutationFn: addSpecialization,
     onSuccess: () => {
-      toast.success("Add Specialization Successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("Add Specialization Successfully");
       queryClient.invalidateQueries({ queryKey: ["CompanyAdmin"] });
       revalidator.revalidate();
     },
     onError: (error) => {
-      toast.error(error.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error.message);
     },
   });
 
@@ -139,28 +91,12 @@ export default function OperationalInfo({
     mutationKey: ["deleteSpecialization"],
     mutationFn: deleteSpecialization,
     onSuccess: () => {
-      toast.success("Delete Specialization Successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("Delete Specialization Successfully");
       queryClient.invalidateQueries({ queryKey: ["CompanyAdmin"] });
       revalidator.revalidate();
     },
     onError: (error) => {
-      toast.error(error.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error.message);
     },
   });
 
@@ -177,15 +113,7 @@ export default function OperationalInfo({
   const handleAddPreferredLanguage = () => {
     if (!preferredLang) return;
     if (preferredLanguages.find((lang) => lang.id === preferredLang)) {
-      toast.success("preferred language is already exist", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.info("preferred language is already exist");
       return;
     }
     addPreferLang({ data: [preferredLang], id: userId, token });
@@ -199,15 +127,7 @@ export default function OperationalInfo({
   const handleAddSpecialization = () => {
     if (!specialization) return;
     if (industriesServed.find((temp) => temp.id === specialization)) {
-      toast.success("Industries Served language is already exist", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.info("Industries Served language is already exist");
       return;
     }
     addSpec({ data: [specialization], id: userId, token });

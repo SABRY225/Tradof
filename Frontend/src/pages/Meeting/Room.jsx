@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useStream } from "@/context/StreamContext";
 import peer from "@/Util/peer";
 
-import { toast } from "react-toastify";
+import { message } from "antd";
 import Cookies from "js-cookie";
 import { useSocket } from "@/context/SocketProvider";
 import VideoShow from "./VideoShow";
@@ -111,15 +111,7 @@ export default function Room() {
   }, [roomId, socket, cameraStream, micStream]);
 
   const handleSocketError = useCallback((error) => {
-    toast.error(error?.message || "An error occurred in the meeting", {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: false,
-      progress: undefined,
-    });
+    message.error(error?.message || "An error occurred in the meeting");
     console.error("Socket Error:", error);
   }, []);
 
@@ -653,10 +645,7 @@ export default function Room() {
         }
       } catch (error) {
         console.error("Error creating new video track:", error);
-        toast.error("Failed to access camera. Please check your permissions.", {
-          position: "top-right",
-          autoClose: 3000,
-        });
+        message.error("Failed to access camera. Please check your permissions.");
       }
     } else {
       console.warn("No video track available and camera is already on");

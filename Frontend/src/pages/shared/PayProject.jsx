@@ -10,7 +10,7 @@ import { useLoaderData } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { stare, emptyStare } from "@/assets/paths.js";
 import { FadeLoader } from "react-spinners";
-import { toast } from "react-toastify";
+import { message } from "antd";
 
 export default function PayProject() {
   const { project, userData } = useLoaderData();
@@ -48,28 +48,12 @@ export default function PayProject() {
             role === "Freelancer" ? project?.freelancerId : project?.companyId,
         },
       });
-      toast.success("Rating and review submitted successfully!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("Rating and review submitted successfully!");
       // setReview("");
       // setRating(0);
     } catch (error) {
       console.error("Failed to submit rating:", error);
-      toast.error(error?.message || "Failed to submit rating", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error?.message || "Failed to submit rating");
     } finally {
       setIsSubmitting(false);
     }

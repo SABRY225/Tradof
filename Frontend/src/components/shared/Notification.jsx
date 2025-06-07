@@ -9,7 +9,7 @@ import {
   chat,
 } from "../../assets/paths";
 import { useAuth } from "@/context/AuthContext";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import {
   Dialog,
   DialogContent,
@@ -123,15 +123,7 @@ export default function Notification({ classes }) {
     // };
 
     const handleError = (error) => {
-      toast.error(error?.message || "Some thing wrong happen!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error?.message || "Some thing wrong happen!");
       console.error("Socket Error:", error);
     };
     socket.on("notificationsList", handleNotificationList);

@@ -9,7 +9,7 @@ import PageTitle from "../../UI/PageTitle";
 import { getAllLanguages, getAllSpecializations } from "@/Util/Https/http";
 import { createProject } from "@/Util/Https/companyHttp";
 import { useAuth } from "@/context/AuthContext";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import { FadeLoader } from "react-spinners";
 
 const commonClasses =
@@ -45,26 +45,10 @@ export default function CreateProject() {
     mutationFn: createProject,
     onError: (error) => {
       console.log(error);
-      toast.error(error.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error.message);
     },
     onSuccess: () => {
-      toast.success("Create Project Successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("Create Project Successfully");
     },
   });
 

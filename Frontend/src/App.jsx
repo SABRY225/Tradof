@@ -66,7 +66,7 @@ import Room from "./pages/Meeting/Room";
 import { SocketProvider } from "./context/SocketProvider";
 import AllFreelancers from "./pages/Admin/AllFreelancers";
 import AllCompanies from "./pages/Admin/AllCompanies";
-import FreeExam, { loaderExam } from "./pages/Exams/FreeExam";
+import FreeExam, { loaderExam, ErrorBoundary } from "./pages/Exams/FreeExam";
 import ExamPage from "./pages/Exams/ExamPage";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -205,17 +205,15 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/exam/:initial/:target/:email",
+    path: "/exam",
     children: [
       {
-        index: true,
-        element: <ExamPage />,
-      },
-      {
-        path: "free",
+        path: "free/:examId",
         element: <FreeExam />,
         loader: loaderExam,
+        errorElement: <ErrorBoundary />,
       },
+      { path: ":examId", element: <ExamPage /> },
     ],
   },
   {

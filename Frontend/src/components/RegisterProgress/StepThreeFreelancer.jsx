@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Controller } from "react-hook-form";
 
+import { MinusCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import camera from "../../assets/icons/camera.svg";
 import person from "../../assets/icons/person.svg";
 import InputFelid from "../../UI/InputFelid";
@@ -11,7 +12,8 @@ import {
   getAllLanguages,
   getAllSpecializations,
 } from "../../Util/Https/http";
-import { toast } from "react-toastify";
+
+import { DatePicker, Input, message, Select } from "antd";
 
 export default function StepThreeFreelancer({
   control,
@@ -27,6 +29,9 @@ export default function StepThreeFreelancer({
   const [toSelected, setToSelected] = useState("");
   const [specializations, setSpecializations] = useState(null);
   const [openModel, setOpenModel] = useState(0);
+  const [handleLanguage, setHandleLanguage] = useState([]);
+  const [examDate, setExamDate] = useState(null);
+
   const {
     data: countries,
     isError: isErrorCountries,
@@ -58,6 +63,16 @@ export default function StepThreeFreelancer({
     staleTime: 10000,
   });
 
+  useEffect(() => {
+    if (languages) {
+      let editing = languages.map((lang) => ({
+        value: lang.id,
+        label: `${lang.languageName}(${lang.countryName}) / ${lang.languageCode}(${lang.countryCode})`,
+      }));
+      setHandleLanguage(editing);
+    }
+  }, [languages]);
+
   const onDeleteLanguagePair = ({ ietf }) => {
     setCurrentLanguagePairs((pref) =>
       pref.filter(
@@ -66,29 +81,34 @@ export default function StepThreeFreelancer({
     );
   };
 
-  const onAddLanguagePair = (e) => {
-    e.preventDefault(); // Prevent form submission and page reload
-    if (fromSelected && toSelected) {
-      if (
-        currentLanguagePairs.find(
-          (p) => p.from.id === fromSelected && p.to.id === toSelected
-        )
-      ) {
-        alert("Language pair already selected");
-        return;
-      }
-      setCurrentLanguagePairs((prev) => [
-        ...prev,
-        {
-          from: languages.find((lang) => lang.id === fromSelected),
-          to: languages.find((lang) => lang.id === toSelected),
-        },
-      ]);
-      setFromSelected("");
-      setToSelected("");
-    } else {
-      console.log("Please select both From and To languages");
+  const handleAddLanguagePair = (event) => {
+    event.preventDefault();
+    if (!fromSelected || !toSelected) {
+      message.error("Please select both From and To languages");
+      return;
     }
+
+    // Check for duplicates
+    if (
+      currentLanguagePairs.find(
+        (p) => p.from.id === fromSelected && p.to.id === toSelected
+      )
+    ) {
+      message.error("This language pair already exists");
+      return;
+    }
+
+    const newPair = {
+      from: languages.find((lang) => lang.id === fromSelected),
+      to: languages.find((lang) => lang.id === toSelected),
+      examDate: examDate,
+    };
+
+    setCurrentLanguagePairs((prev) => [...prev, newPair]);
+    setFromSelected("");
+    setToSelected("");
+    setExamDate(null);
+    setOpenModel(0);
   };
 
   const onAddSpecialization = (e) => {
@@ -169,93 +189,93 @@ export default function StepThreeFreelancer({
         <div className="flex justify-between heading items-center">
           <h2 className="font-poppins text-[14px]">Language pair</h2>
           <button
-            className="bg-second-color text-[12px] text-white py-1 px-2 rounded font-roboto-condensed"
+            className="text-second-color py-1 px-2 rounded font-roboto-condensed"
             onClick={() => setOpenModel((prev) => (prev !== 1 ? 1 : 0))}
             type="button"
           >
-            {openModel !== 1 ? "New Language pair" : "Cancel"}
+            <PlusCircleOutlined />
           </button>
         </div>
         {openModel === 1 && (
-          <form
-            className="flex gap-5 mt-5"
-            onSubmit={(e) => e.preventDefault()}
-          >
-            <div className="relative w-[50%]">
-              <select
-                value={fromSelected}
-                onChange={(e) => setFromSelected(+e.target.value)}
-                className="outline-none border-[1px] border-[#D6D7D7] text-customGray focus:text-black rounded p-2 appearance-none border p-2 w-full block px-4 py-2 shadow-sm focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]"
+          <form className="w-full space-y-3" onSubmit={handleAddLanguagePair}>
+            <Select
+              showSearch
+              variant="underlined"
+              style={{ width: "100%" }}
+              placeholder="Search From language"
+              optionFilterProp="label"
+              value={fromSelected}
+              onChange={(val) => setFromSelected(val)}
+              filterSort={(optionA, optionB) => {
+                return (optionA?.label || "")
+                  .toLowerCase()
+                  .localeCompare((optionB?.label || "").toLowerCase());
+              }}
+              options={handleLanguage}
+            />
+            <Select
+              showSearch
+              variant="underlined"
+              style={{ width: "100%" }}
+              placeholder="Search to language"
+              optionFilterProp="label"
+              value={toSelected}
+              onChange={(val) => setToSelected(val)}
+              filterSort={(optionA, optionB) => {
+                return (optionA?.label || "")
+                  .toLowerCase()
+                  .localeCompare((optionB?.label || "").toLowerCase());
+              }}
+              options={handleLanguage}
+            />
+            <div className="flex gap-3">
+              <DatePicker
+                showTime
+                className="flex-1"
+                variant="underlined"
+                placeholder="Exam date"
+                value={examDate}
+                onChange={(value) => setExamDate(value)}
+              />
+              <button
+                type="button"
+                onClick={handleAddLanguagePair}
+                className="bg-second-color text-[13px] text-white py-1 px-2 rounded-lg font-medium transition-colors duration-200"
               >
-                <option value="">From</option>
-                {languages.map((option) => (
-                  <option
-                    key={option.id}
-                    value={option.id}
-                    className="text-black"
-                  >
-                    {`${option.languageName}(${option.countryName}) / ${option.languageCode}(${option.countryCode})`}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                <img src={container} alt="arrow" />
-              </div>
+                Add Pair
+              </button>
             </div>
-            <div className="relative w-[50%]">
-              <select
-                value={toSelected}
-                onChange={(e) => setToSelected(+e.target.value)}
-                className="outline-none border-[1px] border-[#D6D7D7] text-customGray focus:text-black rounded p-2  appearance-none border p-2 w-full block px-4 py-2 shadow-sm focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]"
-              >
-                <option value="">To</option>
-                {languages.map((option) => (
-                  <option
-                    key={option.id}
-                    value={option.id}
-                    className="text-black"
-                  >
-                    {`${option.languageName}(${option.countryName}) / ${option.languageCode}(${option.countryCode})`}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                <img src={container} alt="arrow" />
-              </div>
-            </div>
-            <button
-              type="submit"
-              className="text-[#f00]"
-              onClick={onAddLanguagePair}
-            >
-              Add
-            </button>
           </form>
         )}
         <table className="w-full mt-4">
-          <thead className="text-main-color font-poppins text-[14px]">
-            <tr>
-              <th className="border border-border-color p-2">Language pair</th>
-              <th className="border border-border-color p-2">IETF tag</th>
-              <th className="border border-border-color p-2"></th>
-            </tr>
-          </thead>
           <tbody className="text-[14px]">
             {currentLanguagePairs.map((lang, index) => {
-              const rowClass = index % 2 !== 0 ? "" : "bg-[#F5F5FF]"; // If index is odd, apply bg color
               return (
-                <tr key={index} className={rowClass}>
-                  <td className="border border-gray-200 p-2 text-[12px]">
-                    {`${lang.from.languageName}(${lang.from.countryName}) - ${lang.to.languageName}(${lang.from.countryName})`}
+                <tr key={index}>
+                  <td>
+                    <div className="border-b border-blue-400 bg-gray-50 text-[10px] p-1 w-full">
+                      {`${lang.from.languageName}(${lang.from.countryName}) - ${lang.to.languageName}(${lang.from.countryName})`}
+                    </div>
                   </td>
-                  <td className="border border-gray-200 p-2 text-[12px]">{`${lang.from.languageCode}(${lang.from.countryCode}) - ${lang.to.languageCode}(${lang.to.countryCode})`}</td>
-                  <td className="border border-gray-200 p-2 text-[12px]">
+                  <td>
+                    <div className="border-b border-blue-400 bg-gray-50 text-[10px] p-1 w-full">
+                      {`${lang.from.languageCode}(${lang.from.countryCode}) - ${lang.to.languageCode}(${lang.to.countryCode})`}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="border-b border-blue-400 bg-gray-50 text-[10px] p-1 w-full">
+                      {lang.examDate
+                        ? lang.examDate.format("YYYY-MM-DD HH:mm")
+                        : "No date set"}
+                    </div>
+                  </td>
+                  <td>
                     <button
                       type="button"
-                      className="text-[#f00]"
+                      className="text-[#f00] text-[12px]"
                       onClick={() => onDeleteLanguagePair({ ietf: lang })}
                     >
-                      Delete
+                      <MinusCircleOutlined />
                     </button>
                   </td>
                 </tr>
@@ -269,11 +289,11 @@ export default function StepThreeFreelancer({
         <div className="flex justify-between heading items-center">
           <h2 className="font-poppins text-[14px]">Specializations</h2>
           <button
-            className="bg-second-color text-[12px] text-white py-1 px-2 rounded font-roboto-condensed"
+            className="text-second-color py-1 px-2 rounded font-roboto-condensed"
             onClick={() => setOpenModel((prev) => (prev !== 2 ? 2 : 0))}
             type="button"
           >
-            {openModel !== 2 ? "New Specializations" : "Cancel"}
+            <PlusCircleOutlined />
           </button>
         </div>
         {openModel === 2 && (
@@ -302,36 +322,34 @@ export default function StepThreeFreelancer({
                 <img src={container} alt="arrow" />
               </div>
             </div>
-            <button className="text-[#f00]" onClick={onAddSpecialization}>
+            <button
+              className="bg-second-color text-[13px] text-white py-1 px-2 rounded-lg font-medium transition-colors duration-200"
+              onClick={onAddSpecialization}
+            >
               Add
             </button>
           </form>
         )}
         <table className="w-full mt-4">
-          <thead className="text-main-color font-poppins text-[14px]">
-            <tr>
-              <th className="border border-border-color p-2">
-                Specializations
-              </th>
-              <th className="border border-border-color p-2"></th>
-            </tr>
-          </thead>
           <tbody className="text-[14px]">
             {currentSpecializations.map((option, index) => {
-              const rowClass = index % 2 !== 0 ? "" : "bg-[#F5F5FF]"; // If index is odd, apply bg color
               return (
-                <tr key={option.id} className={rowClass}>
-                  <td className="border border-gray-200 p-2">{option.name}</td>
-                  <td className="border border-gray-200 p-2  max-w-[20px]">
+                <tr key={option.id}>
+                  <td>
+                    <div className="border-b border-blue-400 bg-gray-50 text-[10px] p-1 w-full">
+                      {option.name}
+                    </div>
+                  </td>
+                  <td>
                     <button
-                      className="text-[#f00]"
+                      className="text-[#f00] text-[12px] text-center w-full"
                       onClick={() =>
                         setCurrentSpecializations((prev) =>
                           prev.filter((lst) => lst.id !== option.id)
                         )
                       }
                     >
-                      Delete
+                      <MinusCircleOutlined />
                     </button>
                   </td>
                 </tr>

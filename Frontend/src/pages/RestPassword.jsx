@@ -5,7 +5,8 @@ import InputFelid from "../UI/InputFelid";
 import ButtonFelid from "../UI/ButtonFelid";
 import { useMutation } from "@tanstack/react-query";
 import { changePassword } from "@/Util/Https/http";
-import { toast } from "react-toastify";
+import { message } from "antd";
+
 import Loading from "./Loading";
 import { Password } from "@mui/icons-material";
 
@@ -15,27 +16,11 @@ export default function RestPassword() {
   const { mutate, isPending } = useMutation({
     mutationFn: changePassword,
     onSuccess: () => {
-      toast.success("change password successfully!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("change password successfully!");
       navigate("/auth");
     },
     onError: (error) => {
-      toast.error(error?.message || "change password failed!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error?.message || "change password failed!");
     },
   });
   const {

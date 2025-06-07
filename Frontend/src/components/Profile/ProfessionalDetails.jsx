@@ -8,7 +8,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FadeLoader } from "react-spinners";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import Combobox from "../ui/Combobox";
 import { closeWhite } from "../../assets/paths";
 import { getAllSpecializations, queryClient } from "@/Util/Https/http";
@@ -29,27 +29,11 @@ export default function ProfessionalDetails({ professionalDetails, isShared }) {
     mutationKey: ["addSpecialization"],
     mutationFn: addSpecialization,
     onSuccess: () => {
-      toast.success("Add Specialization Successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("Add Specialization Successfully");
       queryClient.invalidateQueries({ queryKey: ["freelancer"] });
     },
     onError: (error) => {
-      toast.error(error.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error.message);
     },
   });
 
@@ -57,53 +41,21 @@ export default function ProfessionalDetails({ professionalDetails, isShared }) {
     mutationKey: ["deleteSpecialization"],
     mutationFn: deleteSpecialization,
     onSuccess: () => {
-      toast.success("Delete Specialization Successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("Delete Specialization Successfully");
       queryClient.invalidateQueries({ queryKey: ["freelancer"] });
     },
     onError: (error) => {
-      toast.error(error.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error.message);
     },
   });
   const { mutate, data, isPending } = useMutation({
     mutationKey: ["AddCV"],
     mutationFn: addCV,
     onSuccess: () => {
-      toast.success("Add/Edit CV Successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("Add/Edit CV Successfully");
     },
     onError: (error) => {
-      toast.error(error.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error.message);
     },
   });
 
@@ -125,15 +77,7 @@ export default function ProfessionalDetails({ professionalDetails, isShared }) {
           (temp) => temp.id === specialization
         )
       ) {
-        toast.success("Specialization already exist", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        });
+        message.success("Specialization already exist");
         return;
       }
       addSpec({ data: [specialization], id: userId, token });

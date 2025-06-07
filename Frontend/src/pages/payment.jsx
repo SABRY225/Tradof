@@ -4,7 +4,8 @@ import CheckIcon from '@mui/icons-material/Check';
 import { useLocation, useNavigate } from 'react-router-dom';
 import logo from "../assets/icons/logo.svg"
 import axios from 'axios';
-import { toast } from 'react-toastify';
+
+import { message } from "antd";
 
 export default function SuccessPayment() {
     const location = useLocation();

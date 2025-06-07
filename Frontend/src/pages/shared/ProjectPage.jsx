@@ -8,14 +8,20 @@ import {
   acceptProjectCancellation,
   rejectProjectCancellation,
 } from "@/Util/Https/freelancerHttp";
+import {
+  getEditRequest,
+  acceptEditRequest,
+  denyEditRequest,
+} from "@/Util/Https/companyHttp";
 import Cookies from "js-cookie";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Alert, Button, Modal, Space } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { useEffect, useRef, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { message } from "antd";
+import { ProjectStatus } from "@/Util/status";
 
 export default function ProjectPage() {
   const {
@@ -25,17 +31,27 @@ export default function ProjectPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
+  const { data: editRequest } = useQuery({
+    queryKey: ["editRequest", project?.id],
+    queryFn: () => getEditRequest({ projectId: project?.id, token }),
+    enabled:
+      !!project?.id &&
+      !!token &&
+      role === "CompanyAdmin" &&
+      project?.status.statusValue === ProjectStatus.Active,
+  });
+
   const { mutate: handleAcceptCancellation, isPending: isAccepting } =
     useMutation({
       mutationFn: () =>
         acceptProjectCancellation({ projectId: project?.id, token }),
       onSuccess: () => {
-        toast.success("Project cancellation accepted successfully");
+        message.success("Project cancellation accepted successfully");
         queryClient.invalidateQueries({ queryKey: ["project", project?.id] });
         navigate("/user/dashboard");
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to accept cancellation");
+        message.error(error.message || "Failed to accept cancellation");
       },
     });
 
@@ -44,13 +60,36 @@ export default function ProjectPage() {
       mutationFn: () =>
         rejectProjectCancellation({ projectId: project?.id, token }),
       onSuccess: () => {
-        toast.success("Project cancellation rejected successfully");
+        message.success("Project cancellation rejected successfully");
         queryClient.invalidateQueries({ queryKey: ["project", project?.id] });
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to reject cancellation");
+        message.error(error.message || "Failed to reject cancellation");
       },
     });
+
+  const { mutate: handleAcceptEdit, isPending: isAcceptingEdit } = useMutation({
+    mutationFn: acceptEditRequest,
+    onSuccess: () => {
+      message.success("Edit request accepted successfully");
+      queryClient.invalidateQueries({ queryKey: ["editRequest", project?.id] });
+      queryClient.invalidateQueries({ queryKey: ["project", project?.id] });
+    },
+    onError: (error) => {
+      message.error(error.message || "Failed to accept edit request");
+    },
+  });
+
+  const { mutate: handleDenyEdit, isPending: isDenyingEdit } = useMutation({
+    mutationFn: denyEditRequest,
+    onSuccess: () => {
+      message.success("Edit request denied successfully");
+      queryClient.invalidateQueries({ queryKey: ["editRequest", project?.id] });
+    },
+    onError: (error) => {
+      message.error(error.message || "Failed to deny edit request");
+    },
+  });
 
   const showConfirmModal = (action) => {
     Modal.confirm({
@@ -65,6 +104,30 @@ export default function ProjectPage() {
           handleAcceptCancellation();
         } else {
           handleRejectCancellation();
+        }
+      },
+    });
+  };
+
+  const showEditRequestModal = (action) => {
+    Modal.confirm({
+      title: `Confirm ${action} Edit Request`,
+      icon: <ExclamationCircleOutlined />,
+      content: `Are you sure you want to ${action.toLowerCase()} the edit request?`,
+      okText: `Yes, ${action}`,
+      okType: action === "Accept" ? "primary" : "danger",
+      cancelText: "Cancel",
+      onOk() {
+        if (action === "Accept") {
+          handleAcceptEdit({
+            proposalEditRequestId: editRequest?.id,
+            token,
+          });
+        } else {
+          handleDenyEdit({
+            proposalEditRequestId: editRequest?.id,
+            token,
+          });
         }
       },
     });
@@ -91,13 +154,13 @@ export default function ProjectPage() {
     id: project?.id,
     state: projectCard?.projectState,
     publicationDate: projectCard?.projectStartDate,
-    budget: projectCard?.budget,
+    price: project?.price,
     duration: projectCard?.duration,
   };
   const freelancerFiles = project?.files.filter(
     (file) => file.isFreelancerUpload === true
   );
-  // console.log(project);
+  console.log(project);
   const companyFiles = project?.files.filter(
     (file) => file.isFreelancerUpload === false
   );
@@ -120,19 +183,61 @@ export default function ProjectPage() {
             showIcon
           />
         )}
-        {project?.cancellationRequested && !project?.cancellationAccepted && role === "Freelancer" && (
+        {project?.cancellationRequested &&
+          !project?.cancellationAccepted &&
+          role === "Freelancer" && (
+            <Alert
+              className="my-5"
+              message="Cancellation request"
+              description="Project Owner request to cancel this project, and you can Accept or Reject this request."
+              type="info"
+              action={
+                <Space direction="vertical">
+                  <Button
+                    size="small"
+                    type="primary"
+                    loading={isAccepting}
+                    onClick={() => showConfirmModal("Accept")}
+                  >
+                    Accept
+                  </Button>
+                  <Button
+                    size="small"
+                    danger
+                    ghost
+                    loading={isRejecting}
+                    onClick={() => showConfirmModal("Reject")}
+                  >
+                    Reject
+                  </Button>
+                </Space>
+              }
+              closable
+            />
+          )}
+        {editRequest && role === "CompanyAdmin" && (
           <Alert
             className="my-5"
-            message="Cancellation request"
-            description="Project Owner request to cancel this project, and you can Accept or Reject this request."
+            message="Edit Proposal Request"
+            description={`Freelancer has requested to change the project details:
+              ${
+                editRequest.newPrice
+                  ? `\nNew Price: $${editRequest.newPrice}`
+                  : ""
+              }
+              ${
+                editRequest.newDuration
+                  ? `\nNew Duration: ${editRequest.newDuration} days`
+                  : ""
+              }`}
             type="info"
             action={
               <Space direction="vertical">
                 <Button
                   size="small"
                   type="primary"
-                  loading={isAccepting}
-                  onClick={() => showConfirmModal("Accept")}
+                  loading={isAcceptingEdit}
+                  onClick={() => showEditRequestModal("Accept")}
                 >
                   Accept
                 </Button>
@@ -140,10 +245,10 @@ export default function ProjectPage() {
                   size="small"
                   danger
                   ghost
-                  loading={isRejecting}
-                  onClick={() => showConfirmModal("Reject")}
+                  loading={isDenyingEdit}
+                  onClick={() => showEditRequestModal("Deny")}
                 >
-                  Reject
+                  Deny
                 </Button>
               </Space>
             }
@@ -158,6 +263,7 @@ export default function ProjectPage() {
               <ProjectCard
                 projectDetails={projectDetails}
                 isCanceled={project.cancellationAccepted}
+                proposalId={project?.proposalId}
               />
             </div>
           </div>

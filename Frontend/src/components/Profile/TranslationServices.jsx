@@ -1,19 +1,26 @@
-import ButtonFelid from "@/UI/ButtonFelid";
-import { getAllLanguages, queryClient } from "@/Util/Https/http";
+import { Button, Modal, DatePicker, Select, message } from "antd";
+import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import Combobox from "../ui/Combobox";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import {
   addLanguagePair,
   deleteLanguagePairs,
 } from "@/Util/Https/freelancerHttp";
+import { generateTranslationExam } from "@/Util/Https/http";
 import { useAuth } from "@/context/AuthContext";
 import { FadeLoader } from "react-spinners";
+import dayjs from "dayjs";
+import { getAllLanguages, queryClient } from "@/Util/Https/http";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpellCheck } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 export default function TranslationServices({ languagesPairs, isShared }) {
+  const navigate = useNavigate();
   const [handleLanguage, setHandleLanguage] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [examDate, setExamDate] = useState(null);
   const { user } = useAuth();
   const {
     handleSubmit,
@@ -46,23 +53,17 @@ export default function TranslationServices({ languagesPairs, isShared }) {
 
   const { mutate, data, isPending } = useMutation({
     mutationKey: ["languagePair"],
-    mutationFn: addLanguagePair,
+    mutationFn: generateTranslationExam,
     onError: (error) => {
       console.log(error);
-      toast.error(error.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error.message);
     },
     onSuccess: () => {
+      message.success("Create exam successfully, check your email");
       clearErrors();
       setValue("languagePair", { from: "", to: "" });
-      queryClient.invalidateQueries({ queryKey: ["freelancer"] });
+      setIsModalOpen(false);
+      navigate(".", { replace: true });
     },
   });
 
@@ -71,35 +72,19 @@ export default function TranslationServices({ languagesPairs, isShared }) {
     mutationFn: deleteLanguagePairs,
     onError: (error) => {
       console.log(error);
-      toast.error(error.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error.message);
     },
     onSuccess: () => {
-      toast.success("Delete language pair successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
-      queryClient.invalidateQueries({ queryKey: ["freelancer"] });
+      message.success("Delete language pair successfully");
+      navigate(".", { replace: true });
     },
   });
 
   useEffect(() => {
     if (languages) {
       let editing = languages.map((lang) => ({
-        id: lang.id,
-        name: `${lang.languageName}(${lang.countryName}) / ${lang.languageCode}(${lang.countryCode})`,
+        value: lang.id,
+        label: `${lang.languageName}(${lang.countryName}) / ${lang.languageCode}(${lang.countryCode})`,
       }));
       setHandleLanguage(editing);
     }
@@ -107,102 +92,43 @@ export default function TranslationServices({ languagesPairs, isShared }) {
 
   const selectedFrom = watch("languagePair.from");
   const selectedTo = watch("languagePair.to");
-  // console.log(languages);
-  const handleAddLanguage = () => {
-    if (selectedFrom && selectedTo) {
-      console.log(selectedFrom, selectedTo);
-      mutate({
-        data: [{ languageFromId: selectedFrom, languageToId: selectedTo }],
-        token: user?.token,
-        id: user?.userId,
-      });
-    } else {
-      toast.error("Must be select both languages pair", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+
+
+  const handleDeleteLanguage = ({ pair }) => {
+    deleteLang({
+      pair,
+      token: user?.token,
+      id: user?.userId,
+      email: user?.email,
+    });
+  };
+
+  const handleGenerateExam = () => {
+    if (!selectedFrom || !selectedTo) {
+      message.error("Please select both languages");
+      return;
     }
+    if (!examDate) {
+      message.error("Please select an exam date");
+      return;
+    }
+
+    mutate({
+      token: user?.token,
+      freelancerId: user?.userId,
+      initial: languages.find((lang) => lang.id === selectedFrom),
+      target: languages.find((lang) => lang.id === selectedTo),
+      email: user?.email,
+      examDate: examDate.toISOString(),
+    });
   };
 
-  const handleDeleteLanguage = ({ id }) => {
-    deleteLang({ data: [id], token: user?.token, id: user?.userId });
-  };
-
-  // console.log(data);
   return (
     <>
       <h1 className="text-[20px] font-roboto-condensed font-medium italic border-b-2 border-main-color w-fit mt-5 pl-5 ml-5">
         Translation Services
       </h1>
-      <div className="space-y-[20px] bg-card-color rounded-[8px] px-[50px] py-[30px]">
-        {!isShared && (
-          <div className="controls flex flex-col md:flex-row gap-5 justify-end">
-            {/* Language Pair */}
-            <div className="grid md:grid-cols-2 gap-4 flex-1">
-              <div className="max-w-[300px] md:w-full">
-                {handleLanguage && (
-                  <Combobox
-                    List={handleLanguage}
-                    initial="From language"
-                    value={selectedFrom}
-                    onChange={(val) => {
-                      setValue("languagePair.from", val);
-                      clearErrors("languagePair.from");
-                    }}
-                  />
-                )}
-                {errors.languagePair?.from && (
-                  <p className="text-red-500 text-sm">
-                    {errors.languagePair.from.message}
-                  </p>
-                )}
-              </div>
-              <div className="max-w-[300px] md:w-full">
-                {handleLanguage && (
-                  <Combobox
-                    List={handleLanguage}
-                    initial="To language"
-                    value={selectedTo}
-                    onChange={(val) => {
-                      setValue("languagePair.to", val);
-                      clearErrors("languagePair.to");
-                    }}
-                  />
-                )}
-                {errors.languagePair?.to && (
-                  <p className="text-red-500 text-sm">
-                    {errors.languagePair.to.message}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              {isPending && (
-                <FadeLoader
-                  color="#000"
-                  cssOverride={{ width: "0px", height: "0px" }}
-                  height={3}
-                  width={3}
-                  loading
-                  margin={-11}
-                  radius={15}
-                  speedMultiplier={1}
-                />
-              )}
-              <ButtonFelid
-                text="Add new language pair"
-                type="button"
-                classes="font-semibold text-[13px] px-[18px] py-[5px] bg-second-color rounded-full"
-                onClick={handleAddLanguage}
-              />
-            </div>
-          </div>
-        )}
+      <div className="space-y-[!0px] bg-card-color rounded-[8px] px-[50px] py-[30px]">
         <div className="max-h-[500px] overflow-y-auto">
           <table className="font-poppins min-w-full bg-white rounded-md overflow-auto">
             <thead className="bg-card-color">
@@ -210,6 +136,18 @@ export default function TranslationServices({ languagesPairs, isShared }) {
                 <th className="p-3 px-5">Languages pair</th>
                 <th className="p-3 px-5" colSpan="2">
                   IETF Tag
+                </th>
+                <th>
+                  {!isShared && (
+                    <div className="flex justify-end">
+                      <Button
+                        type="default"
+                        onClick={() => setIsModalOpen(true)}
+                      >
+                        Add Language Pair
+                      </Button>
+                    </div>
+                  )}
                 </th>
               </tr>
             </thead>
@@ -222,22 +160,38 @@ export default function TranslationServices({ languagesPairs, isShared }) {
                   }`}
                 >
                   <td className="p-3 px-5 w-[50%]">
-                    {pair.from.lang}({pair.from.country}) - {pair.to.lang} (
-                    {pair.to.country})
+                    <div className="flex gap-2 items-center">
+                      <div className="relative group">
+                        <FontAwesomeIcon
+                          icon={faSpellCheck}
+                          color={pair.isExam ? "#f2a600" : "black"}
+                        />
+                        <div className="absolute hidden group-hover:block bg-gray-800 text-white text-[10px] rounded px-2 py-1 -top-8 left-[0%] transform  whitespace-nowrap z-10">
+                          {pair.isExam
+                            ? `Completed Exam - Score: ${
+                                pair?.examScore + "%" || "N/A"
+                              }`
+                            : "Not Completed Exam"}
+                        </div>
+                      </div>
+                      {pair.from.lang}({pair.from.country}) - {pair.to.lang} (
+                      {pair.to.country})
+                    </div>
                   </td>
                   <td className="p-3 text-gray-500 w-[50%]">
                     {pair.from.langCode}-{pair.from.countryCode} -{" "}
                     {pair.to.langCode}-{pair.to.countryCode}
                   </td>
                   {!isShared && (
-                    <td className="p-3 px-5">
-                      <button
-                        type="button"
-                        className="text-red-500 font-semibold"
-                        onClick={() => handleDeleteLanguage({ id: pair.id })}
+                    <td className="p-3 px-5 w-full">
+                      <Button
+                        type="text"
+                        danger
+                        onClick={() => handleDeleteLanguage({ pair })}
+                        className="hover:bg-red-50 text-center"
                       >
                         Delete
-                      </button>
+                      </Button>
                     </td>
                   )}
                 </tr>
@@ -246,6 +200,113 @@ export default function TranslationServices({ languagesPairs, isShared }) {
           </table>
         </div>
       </div>
+
+      <Modal
+        title="Add Language Pair"
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={null}
+      >
+        <div className="space-y-4">
+          <Select
+            showSearch
+            style={{ width: "100%" }}
+            placeholder="Search From language"
+            optionFilterProp="label"
+            value={selectedFrom}
+            onChange={(val) => {
+              setValue("languagePair.from", val);
+              clearErrors("languagePair.from");
+            }}
+            filterSort={(optionA, optionB) => {
+              var _a, _b;
+              return (
+                (_a =
+                  optionA === null || optionA === void 0
+                    ? void 0
+                    : optionA.label) !== null && _a !== void 0
+                  ? _a
+                  : ""
+              )
+                .toLowerCase()
+                .localeCompare(
+                  ((_b =
+                    optionB === null || optionB === void 0
+                      ? void 0
+                      : optionB.label) !== null && _b !== void 0
+                    ? _b
+                    : ""
+                  ).toLowerCase()
+                );
+            }}
+            options={handleLanguage}
+          />
+
+          <Select
+            showSearch
+            style={{ width: "100%" }}
+            placeholder="Search To language"
+            optionFilterProp="label"
+            value={selectedTo}
+            onChange={(val) => {
+              setValue("languagePair.to", val);
+              clearErrors("languagePair.to");
+            }}
+            filterSort={(optionA, optionB) => {
+              var _a, _b;
+              return (
+                (_a =
+                  optionA === null || optionA === void 0
+                    ? void 0
+                    : optionA.label) !== null && _a !== void 0
+                  ? _a
+                  : ""
+              )
+                .toLowerCase()
+                .localeCompare(
+                  ((_b =
+                    optionB === null || optionB === void 0
+                      ? void 0
+                      : optionB.label) !== null && _b !== void 0
+                    ? _b
+                    : ""
+                  ).toLowerCase()
+                );
+            }}
+            options={handleLanguage}
+          />
+
+          <div>
+            <DatePicker
+              showTime
+              style={{ width: "100%" }}
+              placeholder="Select exam date"
+              value={examDate}
+              onChange={(date) => {
+                if (date) {
+                  setExamDate(date);
+                } else {
+                  setExamDate(null);
+                }
+              }}
+              disabledDate={(current) => {
+                return current && current < dayjs().startOf("day");
+              }}
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button onClick={() => setIsModalOpen(false)}>Cancel</Button>
+            <Button
+              type="primary"
+              onClick={handleGenerateExam}
+              loading={isPending}
+              className="bg-second-color"
+            >
+              Generate Exam
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import { deleteProjectFile, uploadProjectFile } from "@/Util/Https/companyHttp";
 import { useAuth } from "@/context/AuthContext";
 import { FadeLoader } from "react-spinners";
@@ -65,27 +65,11 @@ export default function ProjectDetails({
     onSuccess: (data) => {
       console.log("success uploading file:", data.data);
       setFiles((prevFiles) => [...prevFiles, ...data.data]);
-      toast.success("File is added", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("File is added");
     },
     onError: (error) => {
       console.error("Error uploading file:", error);
-      toast.error(error?.message || "upload file is failed!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error?.message || "upload file is failed!");
     },
   });
 
@@ -97,27 +81,11 @@ export default function ProjectDetails({
         prevFiles.filter((file) => file.id !== variables.fileId)
       );
 
-      toast.success("File is deleted", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("File is deleted");
     },
     onError: (error) => {
       console.error("Error deleting file:", error);
-      toast.error(error?.message || "delete file is failed!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error?.message || "delete file is failed!");
     },
   });
 

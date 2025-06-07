@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { FadeLoader } from "react-spinners";
-import { toast } from "react-toastify";
+import { message } from "antd";
 
 export default function Workspace({ files, projectId, isCanceled }) {
   const {
@@ -24,27 +24,11 @@ export default function Workspace({ files, projectId, isCanceled }) {
     onSuccess: (data) => {
       console.log("Error uploading file:", data.data);
       setCurrentFiles((prevFiles) => [...prevFiles, ...data.data]);
-      toast.success("File is added", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("File is added");
     },
     onError: (error) => {
       console.error("Error uploading file:", error);
-      toast.error(error?.message || "upload file is failed!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error?.message || "upload file is failed!");
     },
   });
   const { mutate: deleteFile, isPending: isDeleted } = useMutation({
@@ -53,27 +37,11 @@ export default function Workspace({ files, projectId, isCanceled }) {
       console.log("success deleting file:", data);
       const updatedFiles = currentFiles.filter((file) => file.id !== fileId);
       setCurrentFiles(updatedFiles);
-      toast.success("File is deleted", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("File is deleted");
     },
     onError: (error) => {
       console.error("Error deleting file:", error);
-      toast.error(error?.message || "delete file is failed!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error?.message || "delete file is failed!");
     },
   });
 

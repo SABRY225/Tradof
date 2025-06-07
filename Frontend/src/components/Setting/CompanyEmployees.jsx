@@ -11,7 +11,7 @@ import Combobox from "../ui/Combobox";
 import { upperarrow } from "../../assets/paths";
 import { useAuth } from "@/context/AuthContext";
 import { addEmployeeToCompany } from "@/Util/Https/companyHttp";
-import { toast } from "react-toastify";
+import { message } from "antd";
 
 const commonClasses =
   "font-epilogue outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]";
@@ -33,26 +33,10 @@ export default function CompanyEmployees({ employees }) {
     mutationKey: ["addEmployee"],
     mutationFn: addEmployeeToCompany,
     onError: (error) => {
-      toast.error(error.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error.message);
     },
     onSuccess: () => {
-      toast.success("Add Employee Successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("Add Employee Successfully");
       queryClient.invalidateQueries({ queryKey: ["employees"] });
     },
   });

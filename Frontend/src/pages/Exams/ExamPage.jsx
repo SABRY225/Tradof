@@ -28,7 +28,7 @@ const { Panel } = Collapse;
 const { Title, Text } = Typography;
 
 export default function ExamPage() {
-  const { initial, target } = useParams();
+  const { examId } = useParams();
   const navigate = useNavigate();
   const [deviceChecks, setDeviceChecks] = useState({
     internet: false,
@@ -73,13 +73,7 @@ export default function ExamPage() {
 
       <main className="container mx-auto px-6 py-8 flex-grow">
         <div className="max-w-4xl mx-auto">
-          <Card className="mb-8 shadow-md">
-            <div className="flex items-center justify-between">
-              <Title level={4} className="p-0">
-                Translation {initial + " to " + target} Exam
-              </Title>
-            </div>
-          </Card>
+          
 
           <Card className="mb-8 shadow-md">
             <div className="flex items-center justify-between mb-6">
@@ -291,13 +285,6 @@ export default function ExamPage() {
               showIcon
               className="mb-6"
             />
-            <Alert
-              message="May take a lot of time to generate exam."
-              description="If take more then 15m, please send to us."
-              type="warning"
-              className="mb-6"
-              showIcon
-            />
 
             <div className="flex justify-between items-center">
               <Button
@@ -313,7 +300,7 @@ export default function ExamPage() {
                 size="large"
                 icon={<RightOutlined />}
                 disabled={!allChecksComplete}
-                onClick={() => navigate("free")}
+                onClick={() => navigate(`../free/${examId}`)}
                 className="!rounded-button whitespace-nowrap bg-blue-600 hover:bg-blue-700 h-14 px-8 text-lg font-medium"
               >
                 Start Exam

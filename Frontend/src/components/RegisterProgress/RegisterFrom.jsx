@@ -9,10 +9,14 @@ import StepThreeFreelancer from "./StepThreeFreelancer";
 import "../../styles/register.css";
 import StepThreeCompany from "./StepThreeCompany";
 import { useMutation } from "@tanstack/react-query";
-import { registerCompanies, registerFreelancers } from "../../Util/Https/http";
+import {
+  generateMultipleTranslationExams,
+  registerCompanies,
+  registerFreelancers,
+} from "../../Util/Https/http";
 import { Link, useNavigate } from "react-router-dom";
 import Loading from "../../pages/Loading";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import {
   StepOneValidator,
   StepThreeCompanyValidator,
@@ -49,11 +53,9 @@ export default function RegisterFrom() {
     errors: [],
   });
   const [currentPhoto, setCurrentPhoto] = useState("");
-  const [languagePair, setLanguagePair] = useState(defaultLanguagePairs);
+  const [languagePair, setLanguagePair] = useState([]);
   const [specializations, setSpecializations] = useState([]);
-  const [preferredLanguage, setPreferredLanguage] = useState([
-    { id: 2, name: "English", code: "en" },
-  ]);
+  const [preferredLanguage, setPreferredLanguage] = useState([]);
   const [industriesServed, setIndustriesServed] = useState([]);
   const navigate = useNavigate();
   const {
@@ -79,34 +81,40 @@ export default function RegisterFrom() {
   });
   const { mutate: registerFreelancer, isPending: Loading1 } = useMutation({
     mutationFn: registerFreelancers,
-    onSuccess: () => navigate("../confirm-email"),
+    onSuccess: async () => {
+      if (languagePair.length > 0) {
+        try {
+          const examResponse = await generateMultipleTranslationExams({
+            // token: registerResponse.data.token, // Use the token from registration response
+            languagePairs: languagePair,
+            email: stepTwoData.email.trim(),
+          });
+
+          if (examResponse) {
+            message.success("Registration successful and exams generated!");
+          }
+        } catch (examError) {
+          control.error(
+            "Registration successful but failed to generate exams. Please try generating exams later."
+          );
+          throw new Error(
+            "Registration successful but failed to generate exams. Please try generating exams later."
+          );
+        }
+      }
+      navigate("../confirm-email");
+    },
     onError: (error) => {
       if (error.errors) {
         Object.entries(error.errors).forEach(([field, messages]) => {
-          toast.error(messages[0], {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: false,
-            progress: undefined,
-          });
+          message.error(messages[0]);
           setError(field, {
             type: "server",
             message: messages[0], // Show the first error message for each field
           });
         });
       } else {
-        toast.error(error?.message, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        });
+        message.error(error?.message);
         setError(error.felid || "general", {
           type: "server",
           message: error.message || "Something went wrong. Please try again.",
@@ -120,30 +128,14 @@ export default function RegisterFrom() {
     onError: (error) => {
       if (error.errors) {
         Object.entries(error.errors).forEach(([field, messages]) => {
-          toast.error(messages[0], {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: false,
-            progress: undefined,
-          });
+          message.error(messages[0]);
           setError(field, {
             type: "server",
             message: messages[0], // Show the first error message for each field
           });
         });
       } else {
-        toast.error(error?.message, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        });
+        message.error(error?.message);
         setError(error.felid || "general", {
           type: "server",
           message: error.message || "Something went wrong. Please try again.",
@@ -178,7 +170,7 @@ export default function RegisterFrom() {
     setStep((prev) => prev + 1);
   };
 
-  const onSendData = (e) => {
+  const onSendData = async (e) => {
     e.preventDefault();
     if (stepOneData.accountType === "freelancer") {
       const hasError = StepThreeFreelancerValidator({
@@ -190,34 +182,48 @@ export default function RegisterFrom() {
         },
       });
       if (hasError !== "") {
-        toast.error(hasError, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        });
+        message.error(hasError);
         return;
       }
-      const freelancerData = {
-        email: stepTwoData.email.trim(),
-        password: stepTwoData.password.trim(),
-        firstName: stepTwoData.firstName.trim(),
-        lastName: stepTwoData.lastName.trim(),
-        countryId: +stepTwoData.country,
-        phoneNumber: stepTwoData.phoneNumber.trim(),
-        specializationIds: specializations.map(
-          (specialization) => specialization.id
-        ),
-        languagePairs: languagePair.map((lang) => ({
-          languageFromId: lang.from.id,
-          languageToId: lang.to.id,
-        })),
-        profileImageUrl: currentPhoto.trim(),
-      };
-      registerFreelancer({ data: freelancerData });
+
+      try {
+        const freelancerData = {
+          email: stepTwoData.email.trim(),
+          password: stepTwoData.password.trim(),
+          firstName: stepTwoData.firstName.trim(),
+          lastName: stepTwoData.lastName.trim(),
+          countryId: +stepTwoData.country,
+          phoneNumber: stepTwoData.phoneNumber.trim(),
+          specializationIds: specializations.map(
+            (specialization) => specialization.id
+          ),
+          languagePairs: languagePair.map((lang) => ({
+            languageFromId: lang.from.id,
+            languageToId: lang.to.id,
+          })),
+          profileImageUrl: currentPhoto.trim(),
+        };
+
+        registerFreelancer({ data: freelancerData });
+
+        // If registration is successful, generate exams for all language pairs
+      } catch (error) {
+        if (error.errors) {
+          Object.entries(error.errors).forEach(([field, messages]) => {
+            message.error(messages[0]);
+            setError(field, {
+              type: "server",
+              message: messages[0],
+            });
+          });
+        } else {
+          message.error(error?.message);
+          setError(error.felid || "general", {
+            type: "server",
+            message: error.message || "Something went wrong. Please try again.",
+          });
+        }
+      }
     } else {
       const hasError = StepThreeCompanyValidator({
         stepThreeData: {
@@ -231,15 +237,7 @@ export default function RegisterFrom() {
         },
       });
       if (hasError !== "") {
-        toast.error(hasError, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        });
+        message.error(hasError);
         return;
       }
       const companyData = {

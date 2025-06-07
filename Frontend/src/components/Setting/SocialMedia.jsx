@@ -6,7 +6,7 @@ import { facebook, linkedin, gmail } from "../../assets/paths.js";
 import { useMutation } from "@tanstack/react-query";
 import { editSocialMedia as CompanyMedia } from "@/Util/Https/companyHttp.js";
 import { useAuth } from "@/context/AuthContext.jsx";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import { FadeLoader } from "react-spinners";
 import { editSocialMedia as FreelancerMedia } from "@/Util/Https/freelancerHttp.js";
 
@@ -22,26 +22,10 @@ export default function SocialMedia({ socialMedia }) {
     onError: (error) => {
       const firstErrorMessage =
         Object.values(error.errors)?.[0]?.[0] || "An error occurred";
-      toast.error(firstErrorMessage, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(firstErrorMessage);
     },
     onSuccess: () => {
-      toast.success("Edit Social Media Successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("Edit Social Media Successfully");
     },
   });
   const {

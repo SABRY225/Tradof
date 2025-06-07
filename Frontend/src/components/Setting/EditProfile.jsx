@@ -8,7 +8,7 @@ import { getAllCountries, queryClient } from "@/Util/Https/http.js";
 import { editProfile as editCompany } from "@/Util/Https/companyHttp.js";
 import { settingsLoader } from "@/pages/shared/Setting.jsx";
 import { useAuth } from "@/context/AuthContext.jsx";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import { FadeLoader } from "react-spinners";
 import { editProfile as editFreelancer } from "@/Util/Https/freelancerHttp.js";
 
@@ -48,26 +48,10 @@ export default function EditProfile({ profileData }) {
     mutationKey: ["editProfile"],
     mutationFn: role === "CompanyAdmin" ? editCompany : editFreelancer,
     onError: (error) => {
-      toast.error(error.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error.message);
     },
     onSuccess: () => {
-      toast.success("Edit Profile Successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("Edit Profile Successfully");
     },
   });
 

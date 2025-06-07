@@ -335,7 +335,12 @@ export const getStartedProjects = async ({ id, token }) => {
   }
 };
 
-export const getUpcomingdProjects = async ({ id, token, page = '', pageSize = '' }) => {
+export const getUpcomingdProjects = async ({
+  id,
+  token,
+  page = "",
+  pageSize = "",
+}) => {
   try {
     const response = await axios.get(
       `${
@@ -400,7 +405,9 @@ export const GetCompanyProjectsFinancials = async ({ token }) => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      const err = new Error("An error occurred while Get Financial Projects Company");
+      const err = new Error(
+        "An error occurred while Get Financial Projects Company"
+      );
       err.code = error.response.status;
       err.message = error.response.data.message;
       throw err;
@@ -685,12 +692,14 @@ export const requestProjectCancellation = async ({ projectId, token }) => {
   }
 };
 
-export const getSubscriptionData = async ({id, token }) => {
+export const getSubscriptionData = async ({ id, token }) => {
   try {
     console.log(id);
-    
+
     const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_NODE_URL}/subscription/remaining-time/${id}`,
+      `${
+        import.meta.env.VITE_BACKEND_NODE_URL
+      }/subscription/remaining-time/${id}`,
       {
         headers: {
           Authorization: `${token}`,
@@ -700,9 +709,87 @@ export const getSubscriptionData = async ({id, token }) => {
     return response.data;
   } catch (error) {
     console.log(error);
-    
+
     if (error.response) {
-      const err = new Error("An error occurred while fetch remaining subscription by company");
+      const err = new Error(
+        "An error occurred while fetch remaining subscription by company"
+      );
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const getEditRequest = async ({ projectId, token }) => {
+  try {
+    const response = await axios.get(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/proposal/edit-request?projectId=${projectId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error("Server Error:", error);
+      const err = new Error("An error occurred while sending edit request");
+      err.code = error.response.status;
+      err.message = error.response.data.message;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const acceptEditRequest = async ({ proposalEditRequestId, token }) => {
+  try {
+    const response = await axios.put(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/proposal/accept-edit-request?proposalEditRequestId=${proposalEditRequestId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error("Server Error:", error);
+      const err = new Error("An error occurred while accepting edit request");
+      err.code = error.response.status;
+      err.message = error.response.data.message;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const denyEditRequest = async ({ proposalEditRequestId, token }) => {
+  try {
+    const response = await axios.delete(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/proposal/deny-edit-request?proposalEditRequestId=${proposalEditRequestId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error("Server Error:", error);
+      const err = new Error("An error occurred while denying edit request");
+      err.code = error.response.status;
+      err.message = error.response.data.message;
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");

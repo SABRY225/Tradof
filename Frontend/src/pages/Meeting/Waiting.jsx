@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { toast } from "react-toastify";
+import { message } from "antd";
 
 import {
   faMicrophone,
@@ -103,17 +103,8 @@ export default function Waiting() {
   );
 
   const handleSocketError = useCallback((error) => {
-    toast.error(
-      error?.message || "An error occurred while joining the meeting",
-      {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      }
+    message.error(
+      error?.message || "An error occurred while joining the meeting"
     );
     console.error("Socket Error:", error);
   }, []);

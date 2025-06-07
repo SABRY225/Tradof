@@ -3,7 +3,7 @@ import { getSettingNotification, settingNotification } from "@/Util/Https/http";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { FadeLoader } from "react-spinners";
-import { toast } from "react-toastify";
+import { message } from "antd";
 
 const notes = [
   {
@@ -41,26 +41,10 @@ export default function Notifications() {
   const mutation = useMutation({
     mutationFn: ({ data }) => settingNotification({ token, data }),
     onSuccess: () => {
-      toast.success("Set setting success", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("Set setting success");
     },
     onError: (error) => {
-      toast.error(error?.message || "set setting failed!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error?.message || "set setting failed!");
     },
   });
 

@@ -143,7 +143,7 @@ const Charts = ({ classes }) => {
   }, [filter]);
   return (
     <div
-      className={`bg-white p-[30px] rounded-lg shadow-lg min-h-[500px] ${classes}`}
+      className={`bg-white p-[30px] rounded-lg shadow-lg min-h-[500px] max-w-screen flex-grow overflow-x-auto custom-scrollbar ${classes}`}
     >
       <div className="flex justify-between">
         <h1 className="text-[#9291A5] text-[16px]">Number of projects</h1>
@@ -175,11 +175,8 @@ const Charts = ({ classes }) => {
           </button>
         </div>
       </div>
-      <div
-        ref={scrollRef}
-        className="max-w-[350px] md:max-w-full overflow-x-auto custom-scrollbar"
-      >
-        <ResponsiveContainer width="100%" minWidth="1000px" height={550}>
+      <div ref={scrollRef} className="min-w-[600px] md:max-w-full">
+        <ResponsiveContainer width="100%" height={550}>
           <AreaChart
             data={data}
             margin={{ top: 20, right: 30, left: 20, bottom: 10 }}

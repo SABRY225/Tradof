@@ -52,6 +52,8 @@ export default function Profile() {
     location: person?.companyAddress,
   };
 
+  // console.log(person?.freelancerLanguagePairs);
+
   const languagePairs = person?.freelancerLanguagePairs?.map((lang) => ({
     id: lang.id,
     from: {
@@ -68,6 +70,8 @@ export default function Profile() {
       country: lang.countryToName,
       countryCode: lang.countryToCode,
     },
+    isExam: lang.freeTaken,
+    examScore: lang.freeMark,
   }));
 
   const professionalDetails = {

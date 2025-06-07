@@ -14,7 +14,7 @@ import Loading from "./Loading";
 
 import { useState } from "react";
 import { restPassword, verifyEmail } from "@/Util/Https/http";
-import { toast } from "react-toastify";
+import { message } from "antd";
 
 const felidStyle =
   "border-[#CC99FF] focus:outline-none focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]";
@@ -31,56 +31,24 @@ export default function SendOTP() {
       navigate(`../reset-password/${email}/${resetToken}`);
     },
     onError: (error) => {
-      toast.error(error?.message || "rest password failed!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error?.message || "rest password failed!");
     },
   });
 
   const { mutate: resendOTP, isPending: sendOTPPending } = useMutation({
     mutationFn: restPassword,
     onSuccess: () => {
-      toast.success("OTP is sended", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("OTP is sended");
     },
     onError: (error) => {
-      toast.error(error?.message || "rest password failed!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error?.message || "rest password failed!");
     },
   });
 
   const onSubmit = (e) => {
     e.preventDefault();
     if (otp === "") {
-      toast.error("OTP is required", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error("OTP is required");
       return;
     }
     mutate({ data: { email, otp } });

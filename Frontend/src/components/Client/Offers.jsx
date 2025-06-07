@@ -17,7 +17,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import { Modal } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 
@@ -66,28 +66,12 @@ const OffersPage = () => {
         token,
       }),
     onSuccess: () => {
-      toast.success("Proposal accepted successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("Proposal accepted successfully");
       queryClient.invalidateQueries(["offers", projectId]);
       navigate(`/user/project/${projectId}`);
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to accept proposal", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error.message || "Failed to accept proposal");
     },
   });
 
@@ -99,54 +83,22 @@ const OffersPage = () => {
         token,
       }),
     onSuccess: () => {
-      toast.success("Proposal denied successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("Proposal denied successfully");
       queryClient.invalidateQueries(["offers", projectId]);
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to deny proposal", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error.message || "Failed to deny proposal");
     },
   });
 
   const deleteProjectMutation = useMutation({
     mutationFn: () => deleteProject({ id: projectId, token }),
     onSuccess: () => {
-      toast.success("Project deleted successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success("Project deleted successfully");
       navigate("/user/dashboard");
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to delete project", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error.message || "Failed to delete project");
     },
   });
 

@@ -9,7 +9,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
+import { message } from "antd";
 
 const ITEMS_PER_PAGE = 7;
 
@@ -24,10 +24,10 @@ function UpcomingProjects() {
     mutationFn: (id) => deleteProject({ id, token }),
     onSuccess: () => {
       queryClient.invalidateQueries(["all-upcoming-projects", userId]);
-      toast.success("Project Deleted Successfully");
+      message.success("Project Deleted Successfully");
     },
     onError: (error) => {
-      toast.error(error?.response?.data?.message || "Failed to delete project");
+      message.error(error?.response?.data?.message || "Failed to delete project");
     },
   });
 

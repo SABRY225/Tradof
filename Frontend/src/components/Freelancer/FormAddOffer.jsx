@@ -4,11 +4,13 @@ import { Minus, Plus } from "lucide-react";
 import { useState, useEffect } from "react";
 import ButtonFelid from "@/UI/ButtonFelid";
 import { useAuth } from "@/context/AuthContext";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import { FadeLoader } from "react-spinners";
-import { AddOffer, EditOffer } from "@/Util/Https/freelancerHttp";
+import { AddOffer } from "@/Util/Https/freelancerHttp";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { OfferStatus } from "@/Util/status";
+import { message } from "antd";
+
 
 const commonClasses =
   "font-epilogue outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]";
@@ -22,42 +24,21 @@ export default function FormAddOffer() {
     user: { token },
   } = useAuth();
   const { projectId } = useParams();
-  const [sendRequest, setSendRequest] = useState(0);
-  const isFormDisabled =
-    proposalData?.proposalStatus === OfferStatus.Accepted ||
-    proposalData?.proposalStatus === OfferStatus.Declined ||
-    proposalData?.proposalStatus === OfferStatus.Canceled;
+  const isFormDisabled = proposalData?.proposalStatus !== (null || undefined);
 
-  console.log(proposalData);
+  console.log(proposalData, isFormDisabled);
   const { mutate: HandleOffer, isPending } = useMutation({
     mutationKey: ["AddOffer"],
-    mutationFn: proposalData ? EditOffer : AddOffer,
+    mutationFn: proposalData ? null : AddOffer,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["offers"] });
-      toast.success(
-        proposalData ? "Edit Offer Successfully" : "Create Offer Successfully",
-        {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        }
+      message.success(
+        proposalData ? "Edit Offer Successfully" : "Create Offer Successfully"
       );
       if (!proposalData) navigate("/user/offers");
     },
     onError: (error) => {
-      toast.error(error.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error.message);
     },
   });
 
@@ -148,8 +129,7 @@ export default function FormAddOffer() {
         submitData.append("proposalAttachments", file);
       });
     }
-    console.log(sendRequest);
-    HandleOffer({ data: submitData, token, sendRequest });
+    HandleOffer({ data: submitData, token });
   };
 
   const handleBudgetChange = (type, field, value) => {
@@ -173,7 +153,6 @@ export default function FormAddOffer() {
 
   // Add new function to handle direct input changes
   const handleDirectInputChange = (field, value) => {
-    setSendRequest(true);
     setValue(field, value);
   };
 

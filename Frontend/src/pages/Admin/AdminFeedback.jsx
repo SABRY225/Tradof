@@ -7,7 +7,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { ApproveFeedback, DanyFeedback, fetchFeedback } from '@/Util/Https/adminHttp';
 import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import { message } from "antd";
 import Loading from '../Loading';
 import PageTitle from '@/UI/PageTitle';
 
@@ -47,14 +47,14 @@ function AdminFeedback() {
     // Call API to approve the feedback (placeholder)
     const data=await ApproveFeedback({token,id:selectedFeedback._id})
     getFeedback();
-    toast.success(data.message);
+    message.success(data.message);
     handleClose();
   };
 
   const handleDany = async() => {
     const data=await DanyFeedback({token,id:selectedFeedback._id})
     getFeedback();
-    toast.success(data.message);
+    message.success(data.message);
     handleClose();
   };
   console.log(feedbacks);

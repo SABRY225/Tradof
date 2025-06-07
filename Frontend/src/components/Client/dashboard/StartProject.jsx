@@ -5,7 +5,7 @@ import { ProjectStatus } from "../../../Util/status";
 import { getStartedProjects } from "@/Util/Https/companyHttp";
 import { useAuth } from "@/context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { message } from "antd";
 
 export default function StartProject() {
   const {
@@ -20,15 +20,7 @@ export default function StartProject() {
   const { items } = data || { items: [] };
   if (isError) {
     console.error("Error fetching data:", error);
-    toast.error("Error fetching data", {
-      position: "top-right",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
+    message.error("Error fetching data");
   }
 
   return (

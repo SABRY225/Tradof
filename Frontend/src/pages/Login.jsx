@@ -2,7 +2,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import Cookies from "js-cookie";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify"; // Import toast
+import { message } from "antd";
+
 
 import { loginUser, signByGoogle } from "@/Util/Https/http";
 import { useAuth } from "@/Context/AuthContext";
@@ -54,21 +55,12 @@ export default function Login() {
     },
     onError: (error) => {
       // console.log(error.response);
-      if(error?.message=="Error checking subscription."){
+      if (error?.message == "Error checking subscription.") {
         navigate(`/select-plan/${data.token}`);
-      }else{
-      toast.error(error?.message || "Login failed!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
-      setError(error.message);
+      } else {
+        message.error(error?.message || "Login failed!");
+        setError(error.message);
       }
-
     },
   });
   const {
@@ -81,15 +73,7 @@ export default function Login() {
       console.log("Google login data:", data);
     },
     onError: (error) => {
-      toast.error(error?.message || "Google login failed!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error?.message || "Google login failed!");
       setError(error.message);
     },
   });

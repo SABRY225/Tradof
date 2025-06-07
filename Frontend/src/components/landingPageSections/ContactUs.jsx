@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form";
 import emailjs from "emailjs-com";
-import { toast } from "react-toastify";
-
+import { message } from "antd";
 import InputFelid from "../../UI/InputFelid";
 import ButtonFelid from "../../UI/ButtonFelid";
 import GooglePlay from "../../assets/icons/googlePlay.svg";
@@ -28,27 +27,11 @@ export default function ContactUs({ ...prams }) {
   const sendMessage = () => {
     const { email, message } = formData;
     if (email.trim() === "") {
-      toast.error("Please enter a valid email", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error("Please enter a valid email");
       return;
     }
     if (message.trim() === "") {
-      toast.error("Please enter a valid message", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error("Please enter a valid message");
       return;
     }
     const serviceID = import.meta.env.VITE_SEND_MESSAGE_SERVICE_KEY;
@@ -57,27 +40,11 @@ export default function ContactUs({ ...prams }) {
     emailjs
       .send(serviceID, templateID, { email, message }, userID)
       .then(() => {
-        toast.success("Message sent successfully! ✅", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        });
+        message.success("Message sent successfully!");
         reset(); // Clear fields after submission
       })
       .catch((error) => {
-        toast.error("Failed to send message ❌", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        });
+        message.error("Failed to send message");
         console.error(error);
       });
   };

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { uploadImage } from "./http";
-import { toast } from "react-toastify";
+import { message } from "antd";
+
 
 export const getFreelancer = async ({ signal, id, token }) => {
   try {
@@ -51,9 +52,16 @@ export const addLanguagePair = async ({ signal, data, id, token }) => {
   }
 };
 
-export const deleteLanguagePairs = async ({ signal, data, id, token }) => {
-  console.log(data, id, token);
+export const deleteLanguagePairs = async ({
+  signal,
+  pair,
+  id,
+  token,
+  email,
+}) => {
   try {
+    const data = [pair.id];
+    console.log(data, id, token);
     const response = await axios.delete(
       `${import.meta.env.VITE_BACKEND_URL}/freelancers/${id}/language-pairs`,
       {
@@ -64,7 +72,29 @@ export const deleteLanguagePairs = async ({ signal, data, id, token }) => {
         data,
       }
     );
-    return response.data;
+
+    // Make an additional API call to get updated freelancer data
+    const updatedFreelancerData = await axios.delete(
+      `${
+        import.meta.env.VITE_BACKEND_NODE_URL
+      }/translation-exam/language-pair/${email}`,
+      {
+        signal,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data: {
+          token,
+          initial_language: pair.from.id,
+          target_language: pair.to.id,
+        },
+      }
+    );
+
+    return {
+      deleteResponse: response.data,
+      updatedData: updatedFreelancerData.data,
+    };
   } catch (error) {
     if (error.response) {
       console.log(error);
@@ -272,7 +302,6 @@ export const getStatistics = async ({ signal, id, token }) => {
   }
 };
 
-
 export const AddOffer = async ({ data, token }) => {
   try {
     const response = await axios.post(
@@ -297,38 +326,17 @@ export const AddOffer = async ({ data, token }) => {
   }
 };
 
-export const EditOffer = async ({ data, token, sendRequest }) => {
+export const EditOffer = async ({ data, token }) => {
   try {
-    console.log(sendRequest);
-    let newData = sendRequest
-      ? {
-          newDuration: data.get("Days"),
-          newPrice: data.get("offerPrice"),
-          proposalId: data.get("projectId"),
-        }
-      : data;
-    let response;
-    if (!sendRequest) {
-      response = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/proposal`,
-        newData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-    } else {
-      response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/proposal/send-edit-request`,
-        newData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-    }
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/proposal/send-edit-request`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -424,29 +432,35 @@ export const GetFreelancerStatistics = async ({ freelancerId, token }) => {
   }
 };
 
-export const sendWithdrawRequest = async ({formData,token}) => {
+export const sendWithdrawRequest = async ({ formData, token }) => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_NODE_URL}/financial/request-withdrawProfits`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': `${token}`,
-      },
-      body: JSON.stringify(formData),
-    });
-   console.log(response);
-   
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_BACKEND_NODE_URL
+      }/financial/request-withdrawProfits`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${token}`,
+        },
+        body: JSON.stringify(formData),
+      }
+    );
+    console.log(response);
+
     if (response.ok) {
       const data = await response.json();
-      toast.success("Withdrawal successful!");
-    
+      message.success("Withdrawal successful!");
     } else {
       throw new Error("There was an error processing your withdrawal.");
     }
   } catch (error) {
     console.log(error);
-    
-    toast.error("An error occurred. Please check your connection and try again.");
+
+    message.error(
+      "An error occurred. Please check your connection and try again."
+    );
     console.error("Error:", error);
   }
 };
@@ -672,14 +686,16 @@ export const GetFreelancerProjectsFinancials = async ({ token }) => {
       `${import.meta.env.VITE_BACKEND_NODE_URL}/financial/projects-freelancer`,
       {
         headers: {
-          Authorization: `${token}`, 
+          Authorization: `${token}`,
         },
       }
     );
     return response.data;
   } catch (error) {
     if (error.response) {
-      const err = new Error("An error occurred while Get Financial Projects Freelancer");
+      const err = new Error(
+        "An error occurred while Get Financial Projects Freelancer"
+      );
       err.code = error.response.status;
       err.message = error.response.data.message;
       throw err;

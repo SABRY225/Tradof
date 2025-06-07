@@ -848,9 +848,11 @@ export const createProjectRating = async ({ token, data }) => {
 // Generate translation exam questions
 export const generateTranslationExam = async ({
   token,
+  freelancerId,
   initial,
   target,
   email,
+  examDate,
 }) => {
   try {
     const response = await axios.post(
@@ -860,6 +862,9 @@ export const generateTranslationExam = async ({
       {
         initial_language: initial,
         target_language: target,
+        examDate,
+        token,
+        freelancerId,
       },
       {
         headers: {
@@ -884,18 +889,96 @@ export const generateTranslationExam = async ({
 };
 
 // Get user translation exam
-export const getUserTranslationExam = async ({ email }) => {
+export const getUserTranslationExam = async ({ examId }) => {
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_NODE_URL}/translation-exam/user/${email}`
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/translation-exam/${examId}`
     );
-    // console.log(response.data);
+    console.log(response.data);
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
+
+    if (error.response) {
+      const err = new Error("An error occurred while fetching user exam");
+      err.status = error.response.status;
+      err.message = error.response.data?.message || "Failed to fetch exam";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Submit and correct translation exam
+export const submitTranslationExam = async ({
+  examId,
+  answers,
+  freelancerId,
+  token,
+}) => {
+  try {
+    console.log(answers);
+    const response = await axios.post(
+      `${
+        import.meta.env.VITE_BACKEND_NODE_URL
+      }/translation-exam/correct/${examId}`,
+      { answers, freelancerId, token },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while submitting exam");
+      err.code = error.response.status;
+      err.message = error.response.data?.message || "Failed to submit exam";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Generate multiple translation exam questions
+export const generateMultipleTranslationExams = async ({
+  languagePairs,
+  email,
+}) => {
+  try {
+    const response = await axios.post(
+      `${
+        import.meta.env.VITE_BACKEND_NODE_URL
+      }/translation-exam/generate-multiple/${email}`,
+      {
+        exams: languagePairs.map((pair) => ({
+          initial_language: {
+            value: pair.from.id,
+            label: `${pair.from.languageName}/${pair.from.countryName}`,
+          },
+          target_language: {
+            value: pair.to.id,
+            label: `${pair.to.languageName}/${pair.to.countryName}`,
+          },
+          examDate: pair.examDate,
+        })),
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(response.data);
     return response.data.data;
   } catch (error) {
     if (error.response) {
-      const err = new Error("An error occurred while fetching user exam");
+      const err = new Error(
+        "An error occurred while generating multiple exam questions"
+      );
       err.code = error.response.status;
-      err.message = error.response.data?.message || "Failed to fetch exam";
+      err.message = error.response.data?.message || "Failed to generate exams";
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");

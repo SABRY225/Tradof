@@ -6,7 +6,7 @@ import {
   getUpcomingdProjects,
 } from "@/Util/Https/companyHttp.js";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import { queryClient } from "@/Util/Https/http.js";
 
 export default function UpcomingProject() {
@@ -23,26 +23,10 @@ export default function UpcomingProject() {
     mutationFn: deleteProject,
     onError: (error) => {
       console.error("Error deleting project:", error);
-      toast.error("Error deleting project", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      message.error("Error deleting project");
     },
     onSuccess: (data) => {
-      toast.success("Project deleted successfully", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      message.success("Project deleted successfully");
       // Refetch the projects after deletion
       queryClient.invalidateQueries(["upcomingProject"]);
       queryClient.refetchQueries(["upcomingProject"]);
@@ -50,15 +34,7 @@ export default function UpcomingProject() {
   });
   if (isError) {
     console.error("Error fetching data:", error);
-    toast.error("Error fetching data", {
-      position: "top-right",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
+    message.error("Error fetching data");
   }
   const handleDelete = (id) => {
     handelDeleteProject({ id, token });

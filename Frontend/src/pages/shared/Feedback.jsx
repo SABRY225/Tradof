@@ -18,7 +18,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { sendFeedback } from "@/Util/Https/http";
 import Cookies from "js-cookie";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import { useNavigate } from "react-router-dom";
 
 function Feedback() {
@@ -41,15 +41,7 @@ function Feedback() {
 
       const rate = ratingsMap[rating];
       if (!rate || !reason) {
-        toast.error("rete and reason for rate are required.", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        });
+        message.error("rete and reason for rate are required.");
       }
 
       const data = await sendFeedback({
@@ -59,26 +51,10 @@ function Feedback() {
         idea,
       });
       console.log("Feedback response:", data);
-      toast.success(data?.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.success(data?.message);
       navigate("/user/dashboard");
     } catch (error) {
-      toast.error(error?.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+      message.error(error?.message);
     }
   };
 

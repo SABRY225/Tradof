@@ -3,7 +3,7 @@ import ButtonFelid from "@/UI/ButtonFelid";
 import Plus from "../../assets/icons/plus.svg";
 import { addAdmin } from "../../Util/Https/adminHttp";
 import { useAuth } from "@/context/AuthContext";
-import {toast} from "react-toastify";
+import { message } from "antd";
 import { GetAllAdmins } from "@/Util/Https/adminHttp";
 
 function AddAdmin({ admins, setAdmins }) {
@@ -44,20 +44,20 @@ function AddAdmin({ admins, setAdmins }) {
 
     if (adminData.password !== adminData.confirmPassword) {
       setError("Passwords do not match");
-      toast.error("Passwords do not match");
+      message.error("Passwords do not match");
       return;
     }
 
     try {
       await addAdmin({ data: adminData });
-      toast.success("Admin added successfully");
+      message.success("Admin added successfully");
 
       const updatedAdmins = await GetAllAdmins();
       setAdmins(updatedAdmins);
 
       closeModal();
     } catch (error) {
-      toast.error("Error adding admin");
+      message.error("Error adding admin");
     }
   };
 
