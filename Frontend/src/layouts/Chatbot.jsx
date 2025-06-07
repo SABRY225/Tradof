@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import logoIcon from "../assets/icons/logo.svg";
 import { FadeLoader } from "react-spinners";
 import { rightArrow } from "@/assets/paths";
-// import { getMessages, sendMessage } from "@/Util/Https/http";
+import { getMessages, sendMessage } from "@/Util/Https/http";
 
 const Chatbot = ({ user }) => {
   const [messages, setMessages] = useState([]);
