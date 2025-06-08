@@ -1,0 +1,1043 @@
+import { QueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import Cookies from "js-cookie";
+
+export const queryClient = new QueryClient();
+
+// refresh token
+
+export const refreshToken = async ({ oldToken }) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/auth/refresh-token`,
+      { oldToken }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching the token");
+      err.code = error.response.status;
+      err.info = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// get all subscriptions
+export const getAllSubscriptions = async () => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/package`
+    );
+
+    return response.data.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching the packages");
+      err.code = error.response.status;
+      err.info = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// get all counters for register
+export const getAllCountries = async ({ signal }) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/country`,
+      {
+        signal,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching the countries");
+      err.code = error.response.status;
+      err.info = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// get country by id
+export const getCountryById = async ({ signal, id }) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/country/${id}`,
+      {
+        signal,
+      }
+    );
+    // console.log(response);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching the country");
+      err.code = error.response.status;
+      err.info = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// get all languages for register
+export const getAllLanguages = async () => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/language`
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while fetching the languages");
+      err.code = error.response.status;
+      err.info = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// get all specialization for register
+export const getAllSpecializations = async () => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/specialization`
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error(
+        "An error occurred while fetching the specialization"
+      );
+      err.code = error.response.status;
+      err.info = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+async function urlToFile(imageUrl, filename = "downloaded-image.jpg") {
+  const response = await fetch(imageUrl);
+  const blob = await response.blob();
+  return new File([blob], filename, { type: blob.type });
+}
+
+// upload image in cloudinary
+export const uploadImage = async ({ imageURL }) => {
+  try {
+    const image = await urlToFile(imageURL, "user-image.jpg");
+    // console.log("Converted File:", image);
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("upload_preset", "user_photo"); // Change this to your preset
+    try {
+      const { data } = await axios.post(
+        "https://api.cloudinary.com/v1_1/dolzghrv6/image/upload",
+        formData
+      );
+      // console.log(data);
+      return data.secure_url;
+    } catch (error) {
+      console.error("Upload failed", error);
+    }
+  } catch (error) {
+    console.error("Error converting URL to file", error);
+  }
+};
+
+// register for freelancers
+export const registerFreelancers = async ({ signal, data }) => {
+  try {
+    // console.log(data.profileImageUrl);
+    const imageURL = await uploadImage({ imageURL: data.profileImageUrl });
+    const handleData = {
+      ...data,
+      profileImageUrl: imageURL,
+    };
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/auth/register-freelancer`,
+      handleData,
+      {
+        signal,
+        headers: {
+          "Content-Type": "application/json", // Ensure JSON format
+        },
+      }
+    );
+    // console.log(response);
+    return response;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error(
+        "An error occurred while registering the freelancer"
+      );
+      err.code = error.response.status;
+      if (error.response.status === 400) {
+        err.message = "Email address already exists";
+        err.felid = "email";
+      } else if (
+        error.response.data.errors &&
+        typeof error.response.data.errors === "object"
+      ) {
+        // Extract error messages from the object
+        err.errors = error.response.data.errors;
+      } else {
+        err.message =
+          error.response.data?.message || "An unexpected error occurred";
+      }
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// register for companies
+export const registerCompanies = async ({ signal, data }) => {
+  try {
+    const imageURL = await uploadImage({ imageURL: data.profileImageUrl });
+    const handleData = {
+      ...data,
+      profileImageUrl: imageURL,
+    };
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/auth/register-company`,
+      handleData,
+      {
+        signal,
+        headers: {
+          "Content-Type": "application/json", // Ensure JSON format
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while registering the company");
+      err.code = error.response.status;
+      if (error.response.status === 400) {
+        err.message = "Email address already exists";
+        err.felid = "email";
+      } else if (
+        error.response.data.errors &&
+        typeof error.response.data.errors === "object"
+      ) {
+        // Extract error messages from the object
+        err.errors = error.response.data.errors;
+      } else {
+        err.message =
+          error.response.data?.message || "An unexpected error occurred";
+      }
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// login user
+export const loginUser = async ({ signal, data }) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/auth/log-in`,
+      data,
+      {
+        signal,
+        headers: {
+          "Content-Type": "application/json", // Ensure JSON format
+        },
+      }
+    );
+    // console.log(response);
+
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while Login");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const restPassword = async ({ signal, data }) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/auth/forget-password`,
+      data,
+      {
+        signal,
+        headers: {
+          "Content-Type": "application/json", // Ensure JSON format
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while send otp");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const verifyEmail = async ({ signal, data }) => {
+  console.log(data);
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/auth/verify-otp`,
+      data,
+      {
+        signal,
+        headers: {
+          "Content-Type": "application/json", // Ensure JSON format
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while verify email");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const changePassword = async ({ signal, data }) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/auth/change-password`,
+      data,
+      {
+        signal,
+        headers: {
+          "Content-Type": "application/json", // Ensure JSON format
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while change password");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// SABRY API
+export const fatchDataUser = async ({ userId, token }) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/auth/user/${userId}`,
+      {
+        headers: {
+          "Content-Type": "application/json", // Ensure JSON format
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while fatch user detailes");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const fatchProjectDetailes = async ({ id, token }) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/project/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json", // Ensure JSON format
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while fatch project detailes");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const fatchProjectCard = async ({ id, token }) => {
+  try {
+    const response = await axios.get(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/project/GetProjectCardData?projectId=${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json", // Ensure JSON format
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while fatch project card");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const sendFeedback = async ({ token, rate, reasonRate, idea }) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/feedback`,
+      { rate, reasonRate, idea },
+      {
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while send feedback");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const searchAskQuestion = async ({ token, query }) => {
+  try {
+    const response = await axios.get(
+      `${
+        import.meta.env.VITE_BACKEND_NODE_URL
+      }/askQuestion/search?query=${query}`,
+      {
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while search AskQuestion");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const sendAskQuestion = async ({ token, question }) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/askQuestion`,
+      { question },
+      {
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const err = new Error("An error occurred while send AskQuestion");
+      err.code = error.response.status;
+      err.message = error.response.data;
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// rabi3 in code
+
+export const createCalender = async ({ token }) => {
+  try {
+    console.log(token);
+    const response = await axios.post(
+      import.meta.env.VITE_CALENDER_URL,
+      {},
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error();
+      err.code = error.response.status;
+      if (error.response.status === 409) {
+        err.message = "Calendar already exists";
+        err.alreadyExists = true; // custom flag to handle in loader
+      } else {
+        err.message =
+          error.response.data?.message ||
+          "An error occurred while creating calendar";
+      }
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Function to check if email exists in freelancer emails from the API
+export const checkFreelancerEmailExists = async ({
+  token,
+  emailToCheck,
+  companyId,
+}) => {
+  try {
+    const response = await axios.get(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/project/allstartedprojects?companyId=${companyId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token here
+        },
+      }
+    );
+
+    const { data } = response;
+    const matchedItem = data.items.find((item) => {
+      console.log("Checking item:", item.freelancerEmail); // Debug log
+      return (
+        item.freelancerEmail &&
+        item.freelancerEmail.toLowerCase() === emailToCheck.toLowerCase()
+      );
+    });
+    return {
+      exist: matchedItem !== undefined,
+      freelancerFirstName: matchedItem?.freelancerFirstName || null,
+      freelancerLastName: matchedItem?.freelancerLastName || null,
+      freelancerId: matchedItem?.freelancerId || null,
+      freelancerProfileImageUrl: matchedItem?.freelancerProfileImageUrl || null,
+      freelancerEmail: matchedItem?.freelancerEmail || null,
+    };
+  } catch (error) {
+    if (error.response) {
+      const err = new Error();
+      err.code = error.response.status;
+      err.message =
+        error.response.data?.message ||
+        "An error occurred while creating event";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const createEvent = async ({ token, data }) => {
+  const userId = Cookies.get("userId");
+  const role = Cookies.get("role");
+  try {
+    let newDate = data;
+    console.log(token, data.people[0], userId);
+    if (data.isMeeting) {
+      if (role === "Freelancer") {
+        throw new Error("You not allow to create meetings.");
+      }
+      const participation = await checkFreelancerEmailExists({
+        token,
+        emailToCheck: data.people[0],
+        companyId: userId,
+      });
+      if (!participation?.exist) {
+        // console.log(participation);
+        throw new Error("Not allow to create meeting with this user.");
+      }
+      newDate = {
+        ...data,
+        participation: {
+          firstName: participation.freelancerFirstName,
+          lastName: participation.freelancerLastName,
+          id: participation.freelancerId,
+          profileImageUrl: participation.freelancerProfileImageUrl,
+          email: participation.freelancerEmail,
+          role: role === "CompanyAdmin" ? "Freelancer" : "CompanyAdmin",
+        },
+      };
+    }
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_CALENDER_URL}/event`,
+      newDate,
+      {
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error();
+      err.code = error.response.status;
+      err.message =
+        error.response.data?.message ||
+        "An error occurred while creating event";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const getAllEvents = async ({
+  token,
+  day = "",
+  month = "",
+  year = "",
+}) => {
+  try {
+    const url = `${
+      import.meta.env.VITE_CALENDER_URL
+    }/events?day=${day}&month=${month}&year=${year}`;
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: token,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error();
+      err.code = error.response.status;
+      err.message =
+        error.response.data?.message ||
+        "An error occurred while creating event";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const signByGoogle = async () => {
+  console.log("signByGoogle");
+  const googleLoginUrl = "https://tradof.runasp.net/api/auth/google-login";
+  const width = 500;
+  const height = 600;
+  const left = window.screen.width / 2 - width / 2;
+  const top = window.screen.height / 2 - height / 2;
+
+  const popup = window.open(
+    googleLoginUrl,
+    "Google Login",
+    `width=${width},height=${height},top=${top},left=${left}`
+  );
+
+  if (!popup) {
+    console.error("Failed to open login popup. It may have been blocked.");
+    return;
+  }
+
+  const cleanup = () => {
+    window.removeEventListener("message", handleMessage);
+    clearInterval(checkPopupClosed);
+    clearTimeout(timeout);
+    popup?.close();
+  };
+
+  const handleMessage = (event) => {
+    // You may need to adjust the origin
+    if (event.origin !== "https://tradof.runasp.net") return;
+    if (event.source !== popup) return;
+
+    const { token, userId, role, refreshToken } = event.data;
+    // console.log(event.data);
+    if (token && userId && role && refreshToken) {
+      Cookies.set("token", token, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      Cookies.set("refreshToken", refreshToken, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      Cookies.set("userId", userId, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      Cookies.set("role", role, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      console.log("Login successful!");
+      window.location.href = "/user/dashboard"; // fallback
+    } else {
+      console.warn("Incomplete login data received:", event.data);
+    }
+    cleanup();
+  };
+
+  window.addEventListener("message", handleMessage);
+
+  const checkPopupClosed = setInterval(() => {
+    if (popup.closed) {
+      console.warn("Login popup was closed by the user.");
+      cleanup();
+    }
+  }, 500);
+  const timeout = setTimeout(() => {
+    console.error("Login process timed out.");
+    cleanup();
+  }, 2 * 60 * 1000);
+};
+
+export const addReview = async ({ id }) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/user/increase-profile-view/${id}`,
+      {},
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error();
+      err.code = error.response.status;
+      err.message =
+        error.response.data?.message || "An error occurred while add review";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const settingNotification = async ({ token, data }) => {
+  try {
+    const response = await axios.patch(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/notification/setting`,
+      data,
+      {
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error();
+      err.code = error.response.status;
+      err.message =
+        error.response.data?.message || "An error occurred while set setting";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const getSettingNotification = async ({ token }) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/notification/setting`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    // console.log(response);
+    return response.data.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error();
+      err.code = error.response.status;
+      err.message =
+        error.response.data?.message || "An error occurred while get setting";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Event related endpoints
+export const deleteEvent = async ({ token, eventId }) => {
+  console.log(token, eventId);
+  try {
+    const response = await axios.delete(
+      `${import.meta.env.VITE_CALENDER_URL}/${eventId}`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const createProjectRating = async ({ token, data }) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/project/create-rating`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while creating project rating");
+      err.code = error.response.status;
+      err.message = error.response.data?.message || "Failed to create rating";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Generate translation exam questions
+export const generateTranslationExam = async ({
+  token,
+  freelancerId,
+  initial,
+  target,
+  email,
+  examDate,
+}) => {
+  try {
+    const response = await axios.post(
+      `${
+        import.meta.env.VITE_BACKEND_NODE_URL
+      }/translation-exam/generate/${email}`,
+      {
+        initial_language: initial,
+        target_language: target,
+        examDate,
+        token,
+        freelancerId,
+      },
+      {
+        headers: {
+          Authorization: `${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(response.data);
+    return response.data.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error(
+        "An error occurred while generating exam questions"
+      );
+      err.code = error.response.status;
+      err.message = error.response.data?.message || "Failed to generate exam";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Get user translation exam
+export const getUserTranslationExam = async ({ examId }) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_NODE_URL}/translation-exam/${examId}`
+    );
+    console.log(response.data);
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
+
+    if (error.response) {
+      const err = new Error("An error occurred while fetching user exam");
+      err.status = error.response.status;
+      err.message = error.response.data?.message || "Failed to fetch exam";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Submit and correct translation exam
+export const submitTranslationExam = async ({
+  examId,
+  answers,
+  freelancerId,
+  token,
+}) => {
+  try {
+    console.log(answers);
+    const response = await axios.post(
+      `${
+        import.meta.env.VITE_BACKEND_NODE_URL
+      }/translation-exam/correct/${examId}`,
+      { answers, freelancerId, token },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error("An error occurred while submitting exam");
+      err.code = error.response.status;
+      err.message = error.response.data?.message || "Failed to submit exam";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Generate multiple translation exam questions
+export const generateMultipleTranslationExams = async ({
+  languagePairs,
+  email,
+}) => {
+  try {
+    const response = await axios.post(
+      `${
+        import.meta.env.VITE_BACKEND_NODE_URL
+      }/translation-exam/generate-multiple/${email}`,
+      {
+        exams: languagePairs.map((pair) => ({
+          initial_language: {
+            value: pair.from.id,
+            label: `${pair.from.languageName}/${pair.from.countryName}`,
+          },
+          target_language: {
+            value: pair.to.id,
+            label: `${pair.to.languageName}/${pair.to.countryName}`,
+          },
+          examDate: pair.examDate,
+        })),
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(response.data);
+    return response.data.data;
+  } catch (error) {
+    if (error.response) {
+      const err = new Error(
+        "An error occurred while generating multiple exam questions"
+      );
+      err.code = error.response.status;
+      err.message = error.response.data?.message || "Failed to generate exams";
+      throw err;
+    }
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+
+export const getTopRatedUsers = async () => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/project/top-rated-users`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch top-rated users");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching top-rated users:", error);
+    return [];
+  }
+};
+
+export const getMessages = async (userId, token) => {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_BACKEND_NODE_URL}/technicalSupport/${userId}`, {
+      headers: {
+        Authorization: token,
+      },
+    });
+    return response.data.messages;
+  } catch (error) {
+    throw new Error("Error fetching messages: " + error.message);
+  }
+};
+
+export const sendMessage = async (userId, token, formData) => {
+  try {
+    const response = await axios.post(`${import.meta.env.VITE_BACKEND_NODE_URL}/technicalSupport`, formData, {
+      headers: {
+        Authorization: token,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data.message;
+  } catch (error) {
+    throw new Error("Error sending message: " + error.message);
+  }
+};
+
+
+export const getInvoices = async (token) => {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_BACKEND_NODE_URL}/financial/invoices`,{
+      headers: {
+        Authorization: token,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch invoices:', error);
+    throw error;
+  }
+};
