@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProjectDetails from "@/components/shared/ProjectDetails";
 import ButtonFelid from "@/UI/ButtonFelid";
 import { getCompany } from "@/Util/Https/companyHttp";
@@ -21,6 +21,18 @@ export default function PayProject() {
     user: { token, role },
   } = useAuth();
 
+  useEffect(() => {
+    // Set initial rating and review based on user role
+    if (role === "Freelancer" && project?.ratingFromFreelancer) {
+      setRating(project.ratingFromFreelancer.ratingValue);
+      setReview(project.ratingFromFreelancer.review);
+    } else if (role === "CompanyAdmin" && project?.ratingFromCompany) {
+      setRating(project.ratingFromCompany.ratingValue);
+      setReview(project.ratingFromCompany.review);
+    }
+  }, [project, role]);
+
+  console.log(project);
   const companyFiles = project?.files.filter(
     (file) => file.isFreelancerUpload === false
   );
@@ -162,28 +174,33 @@ export default function PayProject() {
               disabled={isSubmitting}
             />
             <div className="flex gap-5 items-center">
-              <button
-                onClick={handleRatingSubmit}
-                disabled={isSubmitting || rating === 0}
-                className={`px-4 py-2 rounded-md text-white font-medium transition-colors text-[14px] w-fit ${
-                  isSubmitting || rating === 0
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-main-color hover:bg-main-color/90"
-                }`}
-              >
-                {isSubmitting ? "Submitting..." : "Submit Rating"}
-              </button>
-              {isSubmitting && (
-                <FadeLoader
-                  color="#000"
-                  cssOverride={{ width: "0px", height: "0px" }}
-                  height={3}
-                  width={3}
-                  loading
-                  margin={-11}
-                  radius={15}
-                  speedMultiplier={1}
-                />
+              {((role === "Freelancer" && !project?.ratingFromFreelancer) ||
+                (role === "CompanyAdmin" && !project?.ratingFromCompany)) && (
+                <>
+                  <button
+                    onClick={handleRatingSubmit}
+                    disabled={isSubmitting || rating === 0}
+                    className={`px-4 py-2 rounded-md text-white font-medium transition-colors text-[14px] w-fit ${
+                      isSubmitting || rating === 0
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-main-color hover:bg-main-color/90"
+                    }`}
+                  >
+                    {isSubmitting ? "Submitting..." : "Submit Rating"}
+                  </button>
+                  {isSubmitting && (
+                    <FadeLoader
+                      color="#000"
+                      cssOverride={{ width: "0px", height: "0px" }}
+                      height={3}
+                      width={3}
+                      loading
+                      margin={-11}
+                      radius={15}
+                      speedMultiplier={1}
+                    />
+                  )}
+                </>
               )}
             </div>
           </div>

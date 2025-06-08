@@ -7,6 +7,13 @@ import {
   blackFinances,
   blackOffers,
   chat,
+  project,
+  feedback,
+  evaluation,
+  report,
+  subscription,
+  withdraw,
+  ask,
 } from "../../assets/paths";
 import { useAuth } from "@/context/AuthContext";
 import { message } from "antd";
@@ -48,11 +55,25 @@ const getIcon = (type) => {
       return blackOffers;
     case "Message":
       return chat;
+    case "Project":
+      return project;
+    case "Feedback":
+      return feedback;
+    case "Evaluation":
+      return evaluation;
+    case "Report":
+      return report;
+    case "Subscriptions":
+      return subscription;
+    case "Withdraw Profit":
+      return withdraw;
+    case "AskQuestion":
+      return ask;
   }
 };
 export default function Notification({ classes }) {
   const {
-    user: { userId, role,subRole,companyId },
+    user: { userId, role, subRole, companyId },
   } = useAuth();
   const socket = useSocket();
 
@@ -109,10 +130,9 @@ export default function Notification({ classes }) {
   useEffect(() => {
     if (!userId) return;
     // socket.emit("getNotifications", { projectId: "7", userId });
-    if (role == "admin")
-      socket.emit("getNotifications", { userId: "admin" });
-    else{
-        socket.emit("getNotifications", { userId });
+    if (role == "admin") socket.emit("getNotifications", { userId: "admin" });
+    else {
+      socket.emit("getNotifications", { userId });
     }
     // console.log(projectId, senderId);
     const handleNotificationList = (data) => {
@@ -194,7 +214,11 @@ export default function Notification({ classes }) {
                     New
                   </span>
                   <h1 className="flex gap-2 font-roboto-condensed font-medium">
-                    <img src={getIcon(note.type)} alt="" />
+                    <img
+                      src={getIcon(note.type)}
+                      alt="icon"
+                      className="w-[22px] h-[22px]"
+                    />
                     {note.type}
                   </h1>
                   <p className="flex items-end font-roboto-condensed font-light">
@@ -214,7 +238,11 @@ export default function Notification({ classes }) {
                 <DialogHeader>
                   <DialogTitle>
                     <h1 className="flex gap-2 font-roboto-condensed font-medium">
-                      <img src={getIcon(note.type)} alt="" />
+                      <img
+                        src={getIcon(note.type)}
+                        alt="icon"
+                        className="w-[30px] h-[30px]"
+                      />
                       {note.type}
                     </h1>
                   </DialogTitle>
@@ -248,7 +276,11 @@ export default function Notification({ classes }) {
                   className="flex flex-col bg-white py-[8px] px-[10px] rounded-lg"
                 >
                   <h1 className="flex gap-2 font-roboto-condensed font-medium">
-                    <img src={getIcon(note.type)} alt="" />
+                    <img
+                      src={getIcon(note.type)}
+                      alt="icon"
+                      className="w-[22px] h-[22px]"
+                    />
                     {note.type}
                   </h1>
                   <p className="flex items-end font-roboto-condensed font-light">
@@ -267,9 +299,13 @@ export default function Notification({ classes }) {
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>
-                    <h1 className="flex gap-2 font-roboto-condensed font-medium">
-                      <img src={getIcon(note.type)} alt="" />
-                      {note.type}
+                    <h1 className="flex items-center gap-2 font-roboto-condensed font-medium">
+                      <img
+                        src={getIcon(note.type)}
+                        alt="icon"
+                        className="w-[40px] h-[40px]"
+                      />
+                      <p className="text-[20px] font-semibold">{note.type}</p>
                     </h1>
                   </DialogTitle>
                   <DialogDescription className="text-black">

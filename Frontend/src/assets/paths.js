@@ -67,11 +67,20 @@ import image from "./icons/image.svg";
 import PDF from "./icons/Pdf.svg";
 import rightArrow from "./icons/rightArrow.svg";
 import video from "./icons/video.svg";
-import closeVideo from './icons/close-video.svg'
+import closeVideo from "./icons/close-video.svg";
+import translation from "./icons/translation.svg";
+import feedback from "./images/feedback.png";
+import evaluation from "./images/check-list.png";
+import report from "./images/report.png";
+import subscription from "./images/subscription.png";
+import withdraw from "./images/spending-money_18018510.png";
+import ask from "./images/ask.png";
+import project from "./images/project.png";
 
 export {
   // a
   active,
+  ask,
   // b
   bluePlus,
   blackCalender,
@@ -105,6 +114,7 @@ export {
   docs,
   // e
   emptyStare,
+  evaluation,
   // f
   facebook,
   files,
@@ -112,6 +122,7 @@ export {
   folder_add,
   file,
   folder,
+  feedback,
   // g
   gmail,
   grayOffers,
@@ -143,10 +154,12 @@ export {
   person,
   people,
   PDF,
+  project,
   // q
   // r
   rabash,
   rightArrow,
+  report,
   // s
   share,
   search,
@@ -154,14 +167,17 @@ export {
   stare,
   send,
   strongBox,
+  subscription,
   // t
   timer,
+  translation,
   // u
   upperarrow,
   // v
   video,
   // w
   whitePlus,
+  withdraw,
   // x
   xlsx,
   // y

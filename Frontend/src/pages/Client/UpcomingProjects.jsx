@@ -7,12 +7,12 @@ import {
   useQuery,
   useMutation,
   useQueryClient,
-  useInfiniteQuery
+  useInfiniteQuery,
 } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { message } from "antd";
+import { message, Modal } from "antd";
 
-const ITEMS_PER_PAGE = 7;
+const ITEMS_PER_PAGE = 5;
 
 function UpcomingProjects() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -28,38 +28,50 @@ function UpcomingProjects() {
       message.success("Project Deleted Successfully");
     },
     onError: (error) => {
-      message.error(error?.response?.data?.message || "Failed to delete project");
+      message.error(
+        error?.response?.data?.message || "Failed to delete project"
+      );
     },
   });
 
- const {
-  data,
-  isLoading,
-  isError,
-  error,
-  fetchNextPage,
-  hasNextPage,
-  isFetchingNextPage,
-} = useInfiniteQuery({
-  queryKey: ["upcoming-projects", userId],
-  queryFn: ({ pageParam = 1 }) =>
-    getUpcomingdProjects({
-      id: userId,
-      token,
-      page: pageParam,
-      pageSize: ITEMS_PER_PAGE,
-    }),
-  getNextPageParam: (lastPage, allPages) => {
-    // Assuming `lastPage` contains pagination metadata like current page and total pages
-    if (lastPage.currentPage < lastPage.totalPages) {
-      return lastPage.currentPage + 1;
-    } else {
-      return undefined;
-    }
-  },
-  staleTime: 5 * 60 * 1000,
-  cacheTime: 10 * 60 * 1000,
-});
+  const showDeleteConfirm = (projectId) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this project?",
+      content: "This action cannot be undone.",
+      okText: "Delete",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk() {
+        deleteMutation.mutate(projectId);
+      },
+    });
+  };
+
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["upcoming-projects", userId],
+    queryFn: ({ pageParam = 1 }) =>
+      getUpcomingdProjects({
+        id: userId,
+        token,
+        page: pageParam,
+        pageSize: ITEMS_PER_PAGE,
+      }),
+    getNextPageParam: (lastPage, pages) => {
+      const totalPages = Math.ceil(lastPage.count / ITEMS_PER_PAGE);
+      return pages.length < totalPages ? pages.length + 1 : undefined;
+    },
+    keepPreviousData: true,
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
+  });
 
   const projects = data?.pages.flatMap((page) => page.items) || [];
 
@@ -177,7 +189,7 @@ function UpcomingProjects() {
                 </div>
                 <div className="flex justify-end mt-4">
                   <button
-                    onClick={() => deleteMutation.mutate(project.id)}
+                    onClick={() => showDeleteConfirm(project.id)}
                     className="flex items-center gap-2 text-[#FF3B30] hover:opacity-80 transition-opacity"
                   >
                     <img src={rabash} alt="delete" width={20} />

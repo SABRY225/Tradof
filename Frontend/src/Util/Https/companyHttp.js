@@ -176,10 +176,10 @@ export const createProject = async ({ signal, data, token }) => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      console.log(error);
+      console.log(error.response);
       const err = new Error("An error occurred while create project");
       err.code = error.response.status;
-      err.message = error.response.data;
+      err.message = error.response.data.message;
       throw err;
     }
     throw new Error(error.message || "An unexpected error occurred");
