@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { ToastContainer } from "react-toastify";
 import { MantineProvider } from "@mantine/core";
 import { StreamProvider } from "@/Context/StreamContext";
 
@@ -14,7 +13,6 @@ import "@fontsource/roboto/700.css";
 import "./index.css";
 
 import { queryClient } from "./Util/Https/http";
-import { AuthProvider } from "./Context/AuthContext";
 
 import LoginLayout from "./layouts/LoginLayout";
 import MainLayout from "./layouts/MainLayout";
@@ -70,6 +68,7 @@ import ExamPage from "./pages/Exams/ExamPage";
 import TermsOfService from "./pages/TermsOfService";
 // import AdminReports from "./pages/Admin/AdminReports";
 import Invoices from "./pages/shared/Invoices";
+import { AuthProvider } from "./Context/AuthContext";
 // import Privacy from "./pages/PrivacyPolicy";
 
 // create routes
