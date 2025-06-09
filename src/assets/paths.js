@@ -122,7 +122,7 @@ export {
   folder_add,
   file,
   folder,
-  feedback,
+  feedbackIcon,
   // g
   gmail,
   grayOffers,
