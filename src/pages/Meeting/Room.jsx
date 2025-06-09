@@ -76,7 +76,7 @@ export default function Room() {
           video: true,
           audio: true,
         });
-        myStream.getAudioTracks().forEach(track => track.enabled = true);// Disable all tracks
+        stream.getTracks().forEach((track) => (track.enabled = false)); // Disable all tracks
         setMyStream(stream);
       } catch (err) {
         console.error("Error getting user media", err);
