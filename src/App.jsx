@@ -1,9 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
-<<<<<<< HEAD:src/App.jsx
-=======
-// import { ToastContainer } from "react-toastify";
->>>>>>> 3f596851499a4d6c56d9d33e76204101e6c7b966:Frontend/src/App.jsx
 import { MantineProvider } from "@mantine/core";
 import { StreamProvider } from "@/context/StreamContext";
 
@@ -69,15 +65,10 @@ import AllCompanies from "./pages/Admin/AllCompanies";
 import FreeExam, { loaderExam, ErrorBoundary } from "./pages/Exams/FreeExam";
 import ExamPage from "./pages/Exams/ExamPage";
 import TermsOfService from "./pages/TermsOfService";
-// import AdminReports from "./pages/Admin/AdminReports";
 import Invoices from "./pages/shared/Invoices";
-<<<<<<< HEAD:src/App.jsx
 import { AuthProvider } from "./context/AuthContext";
 import { SocketProvider } from "./context/SocketProvider";
-=======
-import EmployeeLayout from "./layouts/employeeLayout";
 import { message } from "antd";
->>>>>>> 3f596851499a4d6c56d9d33e76204101e6c7b966:Frontend/src/App.jsx
 // import Privacy from "./pages/PrivacyPolicy";
 
 // create routes
