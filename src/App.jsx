@@ -56,7 +56,6 @@ import SettingAdmin from "./pages/Admin/SettingAdmin";
 import SuccessPayment from "./pages/payment";
 import PlanPage from "./pages/PlanPage";
 import ProfitWithdrawalRequests from "./pages/Admin/ProfitWithdrawalRequests";
-import TeamPage from "./pages/TeamPage";
 import ProjectPage, { projectLoader } from "./pages/shared/ProjectPage";
 import ErrorPage from "./pages/ErrorPage";
 import PayProject, { payProjectLoader } from "./pages/shared/PayProject";
@@ -71,7 +70,6 @@ import ExamPage from "./pages/Exams/ExamPage";
 import TermsOfService from "./pages/TermsOfService";
 // import AdminReports from "./pages/Admin/AdminReports";
 import Invoices from "./pages/shared/Invoices";
-import EmployeeLayout from "./layouts/employeeLayout";
 // import Privacy from "./pages/PrivacyPolicy";
 
 // create routes
@@ -216,11 +214,6 @@ const router = createBrowserRouter([
       },
       { path: ":examId", element: <ExamPage /> },
     ],
-  },
-  {
-    path: "/employee",
-
-    element: <EmployeeLayout />,
   },
   {
     path: "test2",
