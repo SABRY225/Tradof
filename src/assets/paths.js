@@ -69,7 +69,7 @@ import rightArrow from "./icons/rightArrow.svg";
 import video from "./icons/video.svg";
 import closeVideo from "./icons/close-video.svg";
 import translation from "./icons/translation.svg";
-import feedback from "./images/feedback.png";
+import feedbackIcon from "./images/feedbackIcon.png";
 import evaluation from "./images/check-list.png";
 import report from "./images/report.png";
 import subscription from "./images/subscription.png";

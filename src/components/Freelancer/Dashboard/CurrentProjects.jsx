@@ -248,7 +248,7 @@ export default function CurrentProjects({ classes }) {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
                   <div className="p-3 truncate max-w-[250px] ">
-                    {project?.description}
+                    {project?.name}
                   </div>
                   <div className="flex gap-2 p-3 items-center">
                     <img

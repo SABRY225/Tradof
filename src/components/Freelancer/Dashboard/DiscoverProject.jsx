@@ -13,10 +13,9 @@ import { useQuery } from "@tanstack/react-query";
 import { getUnassignedProjects } from "@/Util/Https/freelancerHttp";
 import { Link, useNavigate } from "react-router-dom";
 import Loading from "@/pages/Loading";
-import Pagination from "@/UI/Pagination";
+// import Pagination from "@/UI/Pagination";
 import getTimeAgo from "@/Util/getTime";
-
-
+import { Pagination } from "antd";
 
 const ITEMS_PER_PAGE = 5;
 export default function DiscoverProject({ classes }) {
@@ -24,15 +23,18 @@ export default function DiscoverProject({ classes }) {
     user: { userId, token },
   } = useAuth();
   const [currentPage, setCurrentPage] = useState(1);
+  const [parPage, setParPage] = useState(10);
 
+  console.log(currentPage);
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["unassigned-projects", userId, currentPage],
+    queryKey: ["unassigned-projects", userId, currentPage, parPage],
     queryFn: ({ signal }) =>
       getUnassignedProjects({
         signal,
         token,
         indexPage: currentPage,
-        pageSize: ITEMS_PER_PAGE,
+        pageSize: parPage,
+        applied: "false",
       }),
     keepPreviousData: true,
     staleTime: 5 * 60 * 1000,
@@ -40,8 +42,18 @@ export default function DiscoverProject({ classes }) {
   });
 
   const { items = [], count = 0 } = data || {};
+  // const filteredItems = items.filter((item) => !item.applied);
 
-  // console.log(items);
+  const onShowSizeChange = (current, pageSize) => {
+    setCurrentPage(current);
+    setParPage(pageSize);
+    console.log(current, pageSize);
+  };
+  const onChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    console.log("Page: ", pageNumber);
+  };
+  // console.log(filteredItems, items);
   return (
     <motion.div
       initial={{ x: "-50rem" }}
@@ -60,7 +72,7 @@ export default function DiscoverProject({ classes }) {
           Loading...
         </div>
       )}
-      {!isLoading && count === 0 && (
+      {!isLoading && items.length === 0 && (
         <div className="text-center font-medium text-[20px] bg-white w-1/2 mx-auto py-2 rounded-md shadow">
           Not found projects.
         </div>
@@ -112,11 +124,19 @@ export default function DiscoverProject({ classes }) {
           </Link>
         </div>
       ))}
-      <Pagination
+      {/* <Pagination
         setCurrentPage={setCurrentPage}
         currentPage={currentPage}
         ITEMS_PER_PAGE={ITEMS_PER_PAGE}
         length={count}
+      /> */}
+      <Pagination
+        align="center"
+        showSizeChanger
+        onShowSizeChange={onShowSizeChange}
+        defaultCurrent={currentPage}
+        total={count}
+        onChange={onChange}
       />
     </motion.div>
   );

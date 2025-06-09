@@ -497,7 +497,7 @@ export const sendAskQuestion = async ({ token, question }) => {
 
 export const createCalender = async ({ token }) => {
   try {
-    console.log(token);
+    // console.log(token);
     const response = await axios.post(
       import.meta.env.VITE_CALENDER_URL,
       {},

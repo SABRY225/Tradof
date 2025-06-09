@@ -66,9 +66,9 @@ export default function AvailableProjects() {
       getUnassignedProjects({
         signal,
         token,
+        indexPage: pageParam,
+        pageSize: ITEMS_PER_PAGE,
         filter: {
-          indexPage: pageParam,
-          pageSize: ITEMS_PER_PAGE,
           specializationId: selectedSpecialization,
           languageFromId: selectedLanguages?.languageFromId,
           languageToId: selectedLanguages?.languageToId,
@@ -80,9 +80,9 @@ export default function AvailableProjects() {
       const totalPages = Math.ceil(lastPage.count / ITEMS_PER_PAGE);
       return pages.length < totalPages ? pages.length + 1 : undefined;
     },
-    keepPreviousData: true,
-    staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
+    // keepPreviousData: true,
+    // staleTime: 5 * 60 * 1000,
+    // cacheTime: 10 * 60 * 1000,
   });
 
   // console.log(data);
@@ -90,6 +90,11 @@ export default function AvailableProjects() {
 
   const filteredProjects = useMemo(() => {
     return allProjects.filter((project) => {
+      // First filter out applied projects
+      if (project.applied) {
+        return false;
+      }
+      // Then apply search filter if there's a search query
       if (
         searchQuery &&
         !project.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -133,6 +138,7 @@ export default function AvailableProjects() {
     );
     setSelectedBudget(newValue);
   };
+  console.log(data);
 
   return (
     <div className="bg-background-color">
@@ -295,7 +301,11 @@ export default function AvailableProjects() {
               {filteredProjects.map((project) => (
                 <Projects key={project.id} project={project} />
               ))}
-              {filteredProjects.length === 0 && <div className="text-[20px] font-bold text-gray-500 text-center mt-[50px]">Not found projects</div>}
+              {filteredProjects.length === 0 && (
+                <div className="text-[20px] font-bold text-gray-500 text-center mt-[50px]">
+                  Not found projects
+                </div>
+              )}
             </div>
             {isFetchingNextPage && (
               <div className="text-center py-4">

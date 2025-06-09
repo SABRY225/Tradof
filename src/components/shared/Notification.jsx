@@ -8,7 +8,7 @@ import {
   blackOffers,
   chat,
   project,
-  feedback,
+  feedbackIcon,
   evaluation,
   report,
   subscription,
@@ -58,7 +58,7 @@ const getIcon = (type) => {
     case "Project":
       return project;
     case "Feedback":
-      return feedback;
+      return feedbackIcon;
     case "Evaluation":
       return evaluation;
     case "Report":
@@ -268,8 +268,8 @@ export default function Notification({ classes }) {
         {/* Seen Notifications */}
         {filteredNotifications
           .filter((note) => note.seen)
-          .map((note) => (
-            <Dialog>
+          .map((note, index) => (
+            <Dialog key={index}>
               <DialogTrigger className="w-full">
                 <li
                   key={note._id}

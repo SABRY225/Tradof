@@ -65,7 +65,7 @@ export function ErrorBoundary() {
   }, [error, navigate]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center no-copy">
       <Card className="w-full max-w-md">
         <div className="text-center">
           <WarningOutlined className="text-4xl text-red-500 mb-4" />
@@ -676,7 +676,7 @@ const FreeExam = () => {
   const allAnswered = answeredCount >= totalQuestions;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 no-copy ">
       <div className="min-h-screen bg-gray-50 flex flex-col">
         {/* Header */}
         <header className="bg-white shadow-md py-3 border-b border-gray-200 sticky top-0 z-10">

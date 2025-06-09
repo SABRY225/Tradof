@@ -19,6 +19,7 @@ export default function ProjectCard({
   projectDetails,
   isCanceled,
   proposalId,
+  isPaid,
 }) {
   const { revalidate } = useRevalidator();
   const [messageApi, contextHolder] = message.useMessage();
@@ -204,7 +205,10 @@ export default function ProjectCard({
     });
   };
 
-  // console.log(projectDetails);;
+  console.log(
+    projectDetails?.state === "OnReviewing" &&
+      (role === "Freelancer" || !isPaid)
+  );
   return (
     <>
       {contextHolder}
@@ -297,7 +301,7 @@ export default function ProjectCard({
                       role === "CompanyAdmin"
                         ? "bg-gray-400 cursor-not-allowed"
                         : projectDetails?.state === "OnReviewing" &&
-                          role === "Freelancer"
+                          (role === "Freelancer" || !isPaid)
                         ? "bg-gray-400 cursor-not-allowed"
                         : "bg-second-color"
                     }  px-2 py-1 font-regular`}
@@ -306,7 +310,7 @@ export default function ProjectCard({
                       (projectDetails?.state === "Active" &&
                         role === "CompanyAdmin") ||
                       (projectDetails?.state === "OnReviewing" &&
-                        role === "Freelancer")
+                        (role === "Freelancer" || !isPaid))
                     }
                   />
                 </div>

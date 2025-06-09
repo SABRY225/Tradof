@@ -31,7 +31,7 @@ export default function ProjectPage() {
   const { project, projectCard } = useLoaderData();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-
+  const [paymentState, setPaymentState] = useState();
   const { data: editRequest } = useQuery({
     queryKey: ["editRequest", project?.id],
     queryFn: () => getEditRequest({ projectId: project?.id, token }),
@@ -139,7 +139,7 @@ export default function ProjectPage() {
     return null;
   }
 
-  console.log(editRequest);
+  console.log(project);
 
   const ownerCard = {
     name: projectCard?.ownerName,
@@ -256,7 +256,6 @@ export default function ProjectPage() {
             closable
           />
         )}
-        
 
         <div className="grid grid-cols-[repeat(11,1fr)] gap-x-[20px]">
           <div className="col-start-1 col-end-12 lg:col-start-1 lg:col-end-4 row-start-1 row-end-6">
@@ -267,11 +266,14 @@ export default function ProjectPage() {
                 deliveryTime={project?.days}
                 freelancerId={project?.freelancerId}
                 statusProject={project?.status}
+                paymentState={paymentState}
+                setPaymentState={setPaymentState}
               />
               <ProjectCard
                 projectDetails={projectDetails}
                 isCanceled={project.cancellationAccepted}
                 proposalId={project?.proposalId}
+                isPaid={paymentState === "paid"}
               />
             </div>
           </div>
