@@ -746,7 +746,23 @@ export default function Room() {
     }
   }, [isChatOpen]);
 
-  console.log(participant);
+  function hasAudioTrack(stream) {
+    return !!(
+      stream &&
+      stream.getAudioTracks &&
+      stream.getAudioTracks().length > 0
+    );
+  }
+
+  if (!hasAudioTrack(myStream)) {
+    console.warn("No audio tracks found in the my stream");
+  }
+
+  if (!hasAudioTrack(remoteStream)) {
+    console.warn("No audio tracks found in the remote stream");
+  }
+
+
 
   return (
     <div className="bg-background-color">

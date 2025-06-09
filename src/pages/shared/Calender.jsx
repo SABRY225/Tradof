@@ -68,6 +68,7 @@ const customComponents = {
       }
     };
 
+    console.log(calendarEvent);;
     return (
       <div className="p-4 bg-white rounded-lg shadow-lg">
         <div className="space-y-3">
@@ -165,7 +166,7 @@ const customComponents = {
                     Participants:
                   </span>
                   <div className="flex flex-wrap gap-2">
-                    {calendarEvent.meeting.participants.map(({ user }) => (
+                    {calendarEvent?.meeting?.participants.map(({ user }) => (
                       <span
                         key={user.id}
                         className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-full flex items-center gap-1"
