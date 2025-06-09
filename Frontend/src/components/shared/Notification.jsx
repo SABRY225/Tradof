@@ -8,7 +8,7 @@ import {
   blackOffers,
   chat,
   project,
-  feedback,
+  feedbackIcon,
   evaluation,
   report,
   subscription,
@@ -58,7 +58,7 @@ const getIcon = (type) => {
     case "Project":
       return project;
     case "Feedback":
-      return feedback;
+      return feedbackIcon;
     case "Evaluation":
       return evaluation;
     case "Report":
