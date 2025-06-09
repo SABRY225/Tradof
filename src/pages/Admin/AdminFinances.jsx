@@ -1,4 +1,4 @@
-import Cards from "@/components/Admin/finances/cards";
+import Cards from "@/components/Admin/finances/Cards";
 import Chart from "@/components/Admin/finances/Chart";
 import Subscriptions from "@/components/Admin/finances/subscriptions";
 
