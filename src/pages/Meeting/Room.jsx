@@ -43,7 +43,6 @@ export default function Room() {
   const role = Cookies.get("role");
   const email = Cookies.get("email");
   const profileImageUrl = Cookies.get("profileImageUrl");
-  // const [networkStatus, setNetworkStatus] = useState("Excellent");
   const socket = useSocket();
   const [remoteSocketId, setRemoteSocketId] = useState(null);
   const [myStream, setMyStream] = useState();
@@ -58,7 +57,8 @@ export default function Room() {
   const [unreadMessages, setUnreadMessages] = useState(0);
 
   const startTimeRef = useRef(Date.now());
-  // Add timer effect
+
+  // Timer effect
   useEffect(() => {
     const timer = setInterval(() => {
       const elapsedSeconds = Math.floor(
@@ -69,6 +69,8 @@ export default function Room() {
 
     return () => clearInterval(timer);
   }, []);
+
+  // Initialize stream with audio enabled by default
   useEffect(() => {
     const initStream = async () => {
       try {
@@ -76,12 +78,24 @@ export default function Room() {
           video: true,
           audio: true,
         });
-        stream.getTracks().forEach((track) => (track.enabled = false)); // Disable all tracks
+        // Enable audio by default, disable video by default
+        stream.getAudioTracks().forEach(track => {
+          track.enabled = true;
+          console.log(`Audio track initialized: ${track.enabled ? 'enabled' : 'disabled'}`);
+        });
+        stream.getVideoTracks().forEach(track => {
+          track.enabled = false;
+          console.log(`Video track initialized: ${track.enabled ? 'enabled' : 'disabled'}`);
+        });
         setMyStream(stream);
+        setMicOn(true);
+        setVideoOn(false);
       } catch (err) {
         console.error("Error getting user media", err);
+        message.error("Failed to access microphone or camera. Please check permissions.");
       }
     };
+
     if (cameraStream || micStream) {
       const newStream = new MediaStream();
 
@@ -94,18 +108,27 @@ export default function Room() {
       if (micStream) {
         micStream
           .getAudioTracks()
-          .forEach((track) => newStream.addTrack(track));
+          .forEach((track) => {
+            track.enabled = true;
+            newStream.addTrack(track);
+          });
       }
-      console.log(newStream);
+      console.log("New stream with existing tracks:", newStream);
       setMyStream(newStream);
+      setMicOn(true);
     } else {
       initStream();
     }
+    
     socket.emit("join-room", { roomId: roomId, email: email });
-    // Cleanup function
+
     return () => {
       if (myStream) {
-        myStream.getTracks().forEach((track) => track.stop());
+        console.log("Cleaning up tracks...");
+        myStream.getTracks().forEach((track) => {
+          console.log(`Stopping track: ${track.kind}`);
+          track.stop();
+        });
       }
     };
   }, [roomId, socket, cameraStream, micStream]);
@@ -116,20 +139,24 @@ export default function Room() {
   }, []);
 
   const handleCallUser = useCallback(async () => {
-    console.log(remoteSocketId);
+    console.log("Calling user with remoteSocketId:", remoteSocketId);
     if (!remoteSocketId) {
       handleSocketError({ message: "Wait until your participation join" });
       return;
     }
     try {
-      console.log("CALL USER");
+      console.log("Creating offer...");
       const offer = await peer.getOffer();
+      console.log("Emitting call-user with offer:", offer);
       socket.emit("call-user", { to: remoteSocketId, offer });
       setCallState("end");
+      // Send streams immediately after call starts
+      setTimeout(sendStreams, 1000);
     } catch (error) {
       console.error("Error initiating call:", error);
+      message.error("Failed to start call. Please try again.");
     }
-  }, [remoteSocketId, socket]);
+  }, [remoteSocketId, socket, handleSocketError]);
 
   const handleUserJoined = useCallback(
     async ({ user, socketId }) => {
@@ -154,46 +181,75 @@ export default function Room() {
 
   const handleIncommingCall = useCallback(
     async ({ from, offer }) => {
+      console.log("Incoming call from:", from);
       setRemoteSocketId(from);
       const ans = await peer.getAnswer(offer);
+      console.log("Sending answer:", ans);
       setActiveStartCall(true);
       socket.emit("call-accepted", { to: from, answer: ans });
+      // Send streams immediately after accepting call
+      setTimeout(sendStreams, 1000);
     },
     [socket]
   );
 
   const sendStreams = useCallback(() => {
-    if (!myStream || !peer.peer) return;
+    if (!myStream || !peer.peer) {
+      console.log("Cannot send streams - myStream or peer not available");
+      return;
+    }
 
-    const existingSenders = peer.peer.getSenders();
-    const existingTrackIds = new Set(
-      existingSenders.map((sender) => sender.track?.id)
-    );
+    console.log("Sending streams...");
+    const audioTracks = myStream.getAudioTracks();
+    const videoTracks = myStream.getVideoTracks();
 
-    myStream.getTracks().forEach((track) => {
-      if (!existingTrackIds.has(track.id)) {
-        console.log("Adding new track:", track.kind);
-        peer.peer.addTrack(track, myStream);
-      }
+    // Log current tracks
+    console.log("Current audio tracks:", audioTracks);
+    console.log("Current video tracks:", videoTracks);
+
+    // Remove existing tracks first
+    const senders = peer.peer.getSenders();
+    senders.forEach(sender => {
+      console.log(`Removing sender with track: ${sender.track?.kind}`);
+      peer.peer.removeTrack(sender);
     });
+
+    // Add audio track if exists
+    if (audioTracks.length > 0) {
+      console.log("Adding audio track:", audioTracks[0]);
+      peer.peer.addTrack(audioTracks[0], myStream);
+    } else {
+      console.warn("No audio track available to send");
+    }
+
+    // Add video track if exists
+    if (videoTracks.length > 0) {
+      console.log("Adding video track:", videoTracks[0]);
+      peer.peer.addTrack(videoTracks[0], myStream);
+    } else {
+      console.warn("No video track available to send");
+    }
   }, [myStream]);
 
   const handleCallAccepted = useCallback(
     async ({ from, answer }) => {
+      console.log("Call accepted from:", from);
       await peer.setLocalDescription(answer);
-      console.log("Call Accepted!");
+      console.log("Call Accepted! Description set.");
       sendStreams();
     },
     [sendStreams]
   );
 
   const handleNegoNeeded = useCallback(async () => {
+    console.log("Negotiation needed, creating offer...");
     const offer = await peer.getOffer();
     socket.emit("peer-negotiation-needed", { to: remoteSocketId, offer });
   }, [remoteSocketId, socket]);
 
   const handleNegoNeedIncomming = useCallback(
     async ({ from, offer }) => {
+      console.log("Incoming negotiation needed from:", from);
       const ans = await peer.getAnswer(offer);
       socket.emit("peer-negotiation-needed-done", { to: from, answer: ans });
     },
@@ -201,6 +257,7 @@ export default function Room() {
   );
 
   const handleNegoNeedFinal = useCallback(async ({ answer }) => {
+    console.log("Setting final negotiation answer...");
     await peer.setLocalDescription(answer);
   }, []);
 
@@ -212,50 +269,72 @@ export default function Room() {
   }, [handleNegoNeeded]);
 
   useEffect(() => {
-    peer.peer.addEventListener("track", async (ev) => {
-      const remoteStream = ev.streams;
-      console.log("GOT TRACKS!!");
-      setRemoteStream(remoteStream[0]);
-    });
+    const handleTrackEvent = async (ev) => {
+      if (ev.streams && ev.streams.length > 0) {
+        const remoteStream = ev.streams[0];
+        console.log("Received remote stream with tracks:", remoteStream.getTracks());
+        
+        // Check audio tracks
+        const audioTracks = remoteStream.getAudioTracks();
+        if (audioTracks.length > 0) {
+          console.log("Audio track received:", {
+            enabled: audioTracks[0].enabled,
+            muted: audioTracks[0].muted,
+            readyState: audioTracks[0].readyState
+          });
+          setRemoteMicOn(audioTracks[0].enabled && !audioTracks[0].muted);
+        } else {
+          console.warn("No audio track in remote stream");
+          setRemoteMicOn(false);
+        }
+        
+        // Check video tracks
+        const videoTracks = remoteStream.getVideoTracks();
+        if (videoTracks.length > 0) {
+          console.log("Video track received:", {
+            enabled: videoTracks[0].enabled,
+            muted: videoTracks[0].muted,
+            readyState: videoTracks[0].readyState
+          });
+          setRemoteVideoOn(videoTracks[0].enabled && !videoTracks[0].muted);
+        } else {
+          console.warn("No video track in remote stream");
+          setRemoteVideoOn(false);
+        }
+        
+        setRemoteStream(remoteStream);
+      }
+    };
+
+    peer.peer.addEventListener("track", handleTrackEvent);
+    return () => {
+      peer.peer.removeEventListener("track", handleTrackEvent);
+    };
   }, []);
 
   const handleLeaveMeeting = useCallback(async () => {
     try {
-      console.log("LEAVE");
-      // Stop and disable all local tracks
+      console.log("Leaving meeting...");
+      
+      // Stop local tracks
       if (myStream) {
-        myStream.getTracks().forEach((track) => {
+        myStream.getTracks().forEach(track => {
+          console.log(`Stopping local ${track.kind} track`);
           track.stop();
-          track.enabled = false;
-        });
-        myStream.getVideoTracks().forEach((track) => {
-          track.stop();
-          track.enabled = false;
-        });
-        myStream.getAudioTracks().forEach((track) => {
-          track.stop();
-          track.enabled = false;
         });
       }
 
-      // Stop and disable all remote tracks
+      // Stop remote tracks
       if (remoteStream) {
-        remoteStream.getTracks().forEach((track) => {
+        remoteStream.getTracks().forEach(track => {
+          console.log(`Stopping remote ${track.kind} track`);
           track.stop();
-          track.enabled = false;
-        });
-        remoteStream.getVideoTracks().forEach((track) => {
-          track.stop();
-          track.enabled = false;
-        });
-        remoteStream.getAudioTracks().forEach((track) => {
-          track.stop();
-          track.enabled = false;
         });
       }
 
-      // Close peer connection if it exists
+      // Close peer connection
       if (peer.peer) {
+        console.log("Closing peer connection...");
         peer.sendMessage({
           type: "leave",
           email: email,
@@ -263,36 +342,27 @@ export default function Room() {
         });
         peer.peer.close();
       }
+
+      // Notify server
       socket.emit("user-disconnect", { roomId });
       window.location.href = "../waiting/" + roomId;
 
-      // Reset all states
-      setMyStream(null);
-      setRemoteStream(null);
-      setRemoteSocketId(null);
-
-      // Notify the other user and navigate
     } catch (error) {
       console.error("Error while disconnecting:", error);
-      // Still try to navigate even if there's an error
       window.location.href = "../waiting/" + roomId;
     }
-  }, [myStream, remoteStream, remoteSocketId, socket]);
+  }, [myStream, remoteStream, remoteSocketId, socket, roomId, email]);
 
   const handleLeaveMeetingWithConfirmation = useCallback(async () => {
     const confirmLeave = window.confirm(
       "Are you sure you want to leave the meeting? This will end your participation."
     );
 
-    if (!confirmLeave) {
-      return;
+    if (confirmLeave) {
+      await handleLeaveMeeting();
     }
-
-    // Use the improved leave function
-    await handleLeaveMeeting();
   }, [handleLeaveMeeting]);
 
-  // // You can also add this cleanup function to handle page unload
   const handlePageUnload = useCallback(() => {
     if (myStream) {
       myStream.getTracks().forEach((track) => track.stop());
@@ -310,16 +380,13 @@ export default function Room() {
     }
   }, [myStream, peer, socket, roomId, email]);
 
-  // Add this useEffect to handle page unload
   useEffect(() => {
     const handleBeforeUnload = (event) => {
       handlePageUnload();
-      // Optionally show confirmation dialog
       event.returnValue = "Are you sure you want to leave the meeting?";
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
-
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
@@ -352,159 +419,43 @@ export default function Room() {
     handleNegoNeedFinal,
   ]);
 
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      // Redirect to home page on refresh
-      // window.location.href = "/meeting";
-      navigate("/meeting"); // safely redirect using React Router
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, []);
-
-  useEffect(() => {
-    console.log("Remote stream updated:", remoteStream);
-
-    if (!remoteStream) {
-      // Reset states when no remote stream
-      setRemoteMicOn(false);
-      setRemoteVideoOn(false);
-      return;
-    }
-
-    const audioTrack = remoteStream.getAudioTracks()[0];
-    const videoTrack = remoteStream.getVideoTracks()[0];
-
-    console.log("Remote tracks:", { audioTrack, videoTrack });
-
-    // Handle audio track
-    if (audioTrack) {
-      // Check both enabled state and muted state
-      const isAudioActive = audioTrack.enabled && !audioTrack.muted;
-      setRemoteMicOn(isAudioActive);
-
-      console.log("Audio track state:", {
-        enabled: audioTrack.enabled,
-        muted: audioTrack.muted,
-        readyState: audioTrack.readyState,
-        isActive: isAudioActive,
-      });
-
-      // Set up event listeners
-      const handleAudioMute = () => {
-        console.log("Remote audio muted");
-        setRemoteMicOn(false);
-      };
-
-      const handleAudioUnmute = () => {
-        console.log("Remote audio unmuted");
-        setRemoteMicOn(audioTrack.enabled); // Only set true if also enabled
-      };
-
-      const handleAudioEnded = () => {
-        console.log("Remote audio track ended");
-        setRemoteMicOn(false);
-      };
-
-      // Add event listeners
-      audioTrack.addEventListener("mute", handleAudioMute);
-      audioTrack.addEventListener("unmute", handleAudioUnmute);
-      audioTrack.addEventListener("ended", handleAudioEnded);
-
-      // Cleanup function for audio
-      var cleanupAudio = () => {
-        audioTrack.removeEventListener("mute", handleAudioMute);
-        audioTrack.removeEventListener("unmute", handleAudioUnmute);
-        audioTrack.removeEventListener("ended", handleAudioEnded);
-      };
-    } else {
-      setRemoteMicOn(false);
-      var cleanupAudio = () => {};
-    }
-
-    // Handle video track
-    if (videoTrack) {
-      // Check both enabled state and muted state
-      const isVideoActive = videoTrack.enabled && !videoTrack.muted;
-      setRemoteVideoOn(isVideoActive);
-
-      console.log("Video track state:", {
-        enabled: videoTrack.enabled,
-        muted: videoTrack.muted,
-        readyState: videoTrack.readyState,
-        isActive: isVideoActive,
-      });
-
-      // Set up event listeners
-      const handleVideoMute = () => {
-        console.log("Remote video muted");
-        setRemoteVideoOn(false);
-      };
-
-      const handleVideoUnmute = () => {
-        console.log("Remote video unmuted");
-        setRemoteVideoOn(videoTrack.enabled); // Only set true if also enabled
-      };
-
-      const handleVideoEnded = () => {
-        console.log("Remote video track ended");
-        setRemoteVideoOn(false);
-      };
-
-      // Add event listeners
-      videoTrack.addEventListener("mute", handleVideoMute);
-      videoTrack.addEventListener("unmute", handleVideoUnmute);
-      videoTrack.addEventListener("ended", handleVideoEnded);
-
-      // Cleanup function for video
-      var cleanupVideo = () => {
-        videoTrack.removeEventListener("mute", handleVideoMute);
-        videoTrack.removeEventListener("unmute", handleVideoUnmute);
-        videoTrack.removeEventListener("ended", handleVideoEnded);
-      };
-    } else {
-      setRemoteVideoOn(false);
-      var cleanupVideo = () => {};
-    }
-
-    // Cleanup function
-    return () => {
-      cleanupAudio();
-      cleanupVideo();
-    };
-  }, [remoteStream, setRemoteMicOn, setRemoteVideoOn]);
-
   const toggleMicrophone = useCallback(async () => {
     if (!myStream) {
       console.warn("No stream available");
       return;
     }
 
-    const audioTrack = myStream.getAudioTracks()[0];
-    console.log("Current audio track:", audioTrack);
+    const audioTracks = myStream.getAudioTracks();
+    console.log("Current audio tracks:", audioTracks);
 
-    if (audioTrack) {
-      // Audio track exists, just toggle it
+    if (audioTracks.length > 0) {
+      // Toggle existing audio track
+      const audioTrack = audioTracks[0];
       audioTrack.enabled = !audioTrack.enabled;
       setMicOn(audioTrack.enabled);
       console.log(`Microphone ${audioTrack.enabled ? "enabled" : "disabled"}`);
 
-      // Send mic state to remote peer via data channel
-      const messageSent = peer.sendMessage({
+      // Update peer connection
+      const senders = peer.peer.getSenders();
+      const audioSender = senders.find(sender => sender.track?.kind === "audio");
+      
+      if (audioSender) {
+        try {
+          await audioSender.replaceTrack(audioTrack);
+          console.log("Updated audio track in peer connection");
+        } catch (error) {
+          console.error("Error updating audio track in peer connection:", error);
+        }
+      }
+
+      // Send state to remote peer
+      peer.sendMessage({
         type: "micToggle",
         enabled: audioTrack.enabled,
         timestamp: Date.now(),
       });
-
-      if (!messageSent) {
-        console.warn("Could not send mic state to remote peer");
-      }
-    } else if (!isMicOn) {
-      // No audio track exists and mic is off, create new track
+    } else {
+      // No audio track exists, create new one
       try {
         console.log("Creating new audio track...");
         const audioStream = await navigator.mediaDevices.getUserMedia({
@@ -512,58 +463,32 @@ export default function Room() {
         });
 
         const newAudioTrack = audioStream.getAudioTracks()[0];
-
         if (newAudioTrack) {
-          // Add the new track to the existing stream
           myStream.addTrack(newAudioTrack);
-
-          // Enable the track
           newAudioTrack.enabled = true;
           setMicOn(true);
 
-          console.log("New audio track created and enabled:", newAudioTrack);
-
-          // Update peer connection with new track
-          if (peer.peer && callState !== "end") {
-            try {
-              const senders = peer.peer.getSenders();
-              const audioSender = senders.find(
-                (sender) =>
-                  sender.track === null || sender.track?.kind === undefined
-              );
-
-              if (audioSender) {
-                // Replace null track with new audio track
-                await audioSender.replaceTrack(newAudioTrack);
-              } else {
-                // Add new sender for audio track
-                peer.peer.addTrack(newAudioTrack, myStream);
-              }
-
-              console.log("Peer connection updated with new audio track");
-            } catch (peerError) {
-              console.error("Error updating peer connection:", peerError);
-            }
+          // Add to peer connection
+          if (peer.peer) {
+            peer.peer.addTrack(newAudioTrack, myStream);
           }
 
-          // Send mic state to remote peer
+          // Send state to remote peer
           peer.sendMessage({
             type: "micToggle",
             enabled: true,
             timestamp: Date.now(),
           });
 
-          // Update the stream state to trigger re-render
+          // Update stream state
           setMyStream(new MediaStream([...myStream.getTracks()]));
         }
       } catch (error) {
         console.error("Error creating new audio track:", error);
-        // Could show user notification here
+        message.error("Failed to access microphone. Please check permissions.");
       }
-    } else {
-      console.warn("No audio track available and mic is already on");
     }
-  }, [myStream, isMicOn, callState, peer, setMicOn, setMyStream]);
+  }, [myStream, peer, setMicOn, setMyStream]);
 
   const toggleCamera = useCallback(async () => {
     if (!myStream) {
@@ -571,27 +496,37 @@ export default function Room() {
       return;
     }
 
-    const videoTrack = myStream.getVideoTracks()[0];
-    console.log("Current video track:", videoTrack);
+    const videoTracks = myStream.getVideoTracks();
+    console.log("Current video tracks:", videoTracks);
 
-    if (videoTrack) {
-      // Video track exists, just toggle it
+    if (videoTracks.length > 0) {
+      // Toggle existing video track
+      const videoTrack = videoTracks[0];
       videoTrack.enabled = !videoTrack.enabled;
       setVideoOn(videoTrack.enabled);
       console.log(`Camera ${videoTrack.enabled ? "enabled" : "disabled"}`);
 
-      // Send camera state to remote peer via data channel
-      const messageSent = peer.sendMessage({
+      // Update peer connection
+      const senders = peer.peer.getSenders();
+      const videoSender = senders.find(sender => sender.track?.kind === "video");
+      
+      if (videoSender) {
+        try {
+          await videoSender.replaceTrack(videoTrack);
+          console.log("Updated video track in peer connection");
+        } catch (error) {
+          console.error("Error updating video track in peer connection:", error);
+        }
+      }
+
+      // Send state to remote peer
+      peer.sendMessage({
         type: "videoToggle",
         enabled: videoTrack.enabled,
         timestamp: Date.now(),
       });
-
-      if (!messageSent) {
-        console.warn("Could not send camera state to remote peer");
-      }
-    } else if (!isVideoOn) {
-      // No video track exists and camera is off, create new track
+    } else {
+      // No video track exists, create new one
       try {
         console.log("Creating new video track...");
         const videoStream = await navigator.mediaDevices.getUserMedia({
@@ -599,110 +534,68 @@ export default function Room() {
         });
 
         const newVideoTrack = videoStream.getVideoTracks()[0];
-
         if (newVideoTrack) {
-          // Add the new track to the existing stream
           myStream.addTrack(newVideoTrack);
-
-          // Enable the track
           newVideoTrack.enabled = true;
           setVideoOn(true);
 
-          console.log("New video track created and enabled:", newVideoTrack);
-
-          // Update peer connection with new track
-          if (peer.peer && callState !== "end") {
-            try {
-              const senders = peer.peer.getSenders();
-              const videoSender = senders.find(
-                (sender) =>
-                  sender.track === null || sender.track?.kind === undefined
-              );
-
-              if (videoSender) {
-                // Replace null track with new video track
-                await videoSender.replaceTrack(newVideoTrack);
-              } else {
-                // Add new sender for video track
-                peer.peer.addTrack(newVideoTrack, myStream);
-              }
-
-              console.log("Peer connection updated with new video track");
-            } catch (peerError) {
-              console.error("Error updating peer connection:", peerError);
-            }
+          // Add to peer connection
+          if (peer.peer) {
+            peer.peer.addTrack(newVideoTrack, myStream);
           }
 
-          // Send camera state to remote peer
+          // Send state to remote peer
           peer.sendMessage({
             type: "videoToggle",
             enabled: true,
             timestamp: Date.now(),
           });
 
-          // Update the stream state to trigger re-render
+          // Update stream state
           setMyStream(new MediaStream([...myStream.getTracks()]));
         }
       } catch (error) {
         console.error("Error creating new video track:", error);
-        message.error("Failed to access camera. Please check your permissions.");
-      }
-    } else {
-      console.warn("No video track available and camera is already on");
-    }
-
-    // Update peer connection for existing tracks
-    if (videoTrack && peer.peer && callState !== "end") {
-      try {
-        const senders = peer.peer.getSenders();
-        const videoSender = senders.find(
-          (sender) => sender.track?.kind === "video"
-        );
-
-        if (videoSender && videoSender.track) {
-          // The track is already updated, no need to modify sender.track.enabled
-          // The peer connection will automatically reflect the track state
-          console.log("Peer connection will reflect video track state change");
-        }
-      } catch (peerError) {
-        console.error("Error updating peer connection:", peerError);
+        message.error("Failed to access camera. Please check permissions.");
       }
     }
-  }, [myStream, isVideoOn, callState, peer, setVideoOn, setMyStream]);
+  }, [myStream, peer, setVideoOn, setMyStream]);
 
   useEffect(() => {
     // Listen for mic toggle messages from remote peer
-    peer.onMessage("micToggle", (message) => {
+    const handleMicToggle = (message) => {
       console.log("Received mic toggle from remote:", message.enabled);
       setRemoteMicOn(message.enabled);
-    });
+    };
 
     // Listen for camera toggle messages from remote peer
-    peer.onMessage("videoToggle", (message) => {
+    const handleVideoToggle = (message) => {
       console.log("Received camera toggle from remote:", message.enabled);
       setRemoteVideoOn(message.enabled);
-    });
+    };
 
-    peer.onMessage("leave", (message) => {
+    const handleLeave = (message) => {
       handleSocketError({ message: `User ${message.email} leave meeting` });
       setCallState("start");
       setRemoteMicOn(false);
       setRemoteSocketId(null);
       setRemoteStream(null);
       setRemoteVideoOn(false);
-    });
-
-    // Cleanup on unmount
-    return () => {
-      peer.offMessage("micToggle");
-      peer.offMessage("videoToggle");
-      peer.offMessage("leave");
     };
-  }, []);
+
+    peer.onMessage("micToggle", handleMicToggle);
+    peer.onMessage("videoToggle", handleVideoToggle);
+    peer.onMessage("leave", handleLeave);
+
+    return () => {
+      peer.offMessage("micToggle", handleMicToggle);
+      peer.offMessage("videoToggle", handleVideoToggle);
+      peer.offMessage("leave", handleLeave);
+    };
+  }, [handleSocketError]);
 
   useEffect(() => {
-    // Listen for chat messages from remote peer
-    peer.onMessage("chat", (message) => {
+    const handleChatMessage = (message) => {
       setChatMessages((prev) => [
         ...prev,
         {
@@ -715,16 +608,17 @@ export default function Room() {
       if (!isChatOpen) {
         setUnreadMessages((prev) => prev + 1);
       }
-    });
+    };
 
+    peer.onMessage("chat", handleChatMessage);
     return () => {
-      peer.offMessage("chat");
+      peer.offMessage("chat", handleChatMessage);
     };
   }, [isChatOpen]);
 
-  const handleSendMessage = useCallback((message) => {
+  const handleSendMessage = useCallback((messageText) => {
     const newMessage = {
-      text: message,
+      text: messageText,
       sender: firstName + " " + lastName,
       timestamp: Date.now(),
       isOwn: true,
@@ -732,12 +626,11 @@ export default function Room() {
 
     setChatMessages((prev) => [...prev, newMessage]);
 
-    // Send message to remote peer
     peer.sendMessage({
       type: "chat",
       ...newMessage,
     });
-  }, []);
+  }, [firstName, lastName]);
 
   const handleToggleChat = useCallback(() => {
     setIsChatOpen((prev) => !prev);
@@ -745,8 +638,6 @@ export default function Room() {
       setUnreadMessages(0);
     }
   }, [isChatOpen]);
-
-  console.log(participant);
 
   return (
     <div className="bg-background-color">
@@ -771,6 +662,7 @@ export default function Room() {
               </div>
             )}
           </div>
+          
           {/* Video Grid */}
           <div
             className={`max-w-screen-xl mx-auto w-full py-[30px] grid grid-cols-1 ${
