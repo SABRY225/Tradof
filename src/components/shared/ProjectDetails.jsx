@@ -12,7 +12,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { message } from "antd";
 import { deleteProjectFile, uploadProjectFile } from "@/Util/Https/companyHttp";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/Context/AuthContext";
 import { FadeLoader } from "react-spinners";
 import { Link } from "react-router-dom";
 import getTimeAgo from "@/Util/getTime";

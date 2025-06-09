@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/chart";
 import { useQuery } from "@tanstack/react-query";
 import { getIncomeStatistics } from "@/Util/Https/adminHttp";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/Context/AuthContext";
 
 const monthNames = [
   "January",

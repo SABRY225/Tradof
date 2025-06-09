@@ -17,7 +17,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createEvent } from "@/Util/Https/http";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { useSocket } from "@/context/SocketProvider";
+import { useSocket } from "@/Context/SocketProvider";
 
 dayjs.extend(customParseFormat);
 const dateFormat = "YYYY-MM-DD HH:mm";

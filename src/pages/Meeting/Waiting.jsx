@@ -15,8 +15,8 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import ReactPlayer from "react-player";
-import { useSocket } from "@/context/SocketProvider";
-import { useStream } from "@/context/StreamContext";
+import { useSocket } from "@/Context/SocketProvider";
+import { useStream } from "@/Context/StreamContext";
 
 export default function Waiting() {
   const { roomId: meetingId } = useParams();

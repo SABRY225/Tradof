@@ -3,7 +3,7 @@ import person from "../../../assets/images/1560a64114a9372e.jpg";
 import { openPage } from "../../../assets/paths.js";
 import { ProjectStatus } from "../../../Util/status";
 import { getStartedProjects } from "@/Util/Https/companyHttp";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/Context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { message } from "antd";
 

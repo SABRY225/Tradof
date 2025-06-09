@@ -7,7 +7,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { getAllCountries, queryClient } from "@/Util/Https/http.js";
 import { editProfile as editCompany } from "@/Util/Https/companyHttp.js";
 import { settingsLoader } from "@/pages/shared/Setting.jsx";
-import { useAuth } from "@/context/AuthContext.jsx";
+import { useAuth } from "@/Context/AuthContext.jsx";
 import { message } from "antd";
 import { FadeLoader } from "react-spinners";
 import { editProfile as editFreelancer } from "@/Util/Https/freelancerHttp.js";

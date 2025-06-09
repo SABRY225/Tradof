@@ -7,7 +7,7 @@ import { fatchProjectDetailes, createProjectRating } from "@/Util/Https/http";
 import Cookies from "js-cookie";
 import PhoneInput from "react-phone-number-input";
 import { useLoaderData } from "react-router-dom";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/Context/AuthContext";
 import { stare, emptyStare } from "@/assets/paths.js";
 import { FadeLoader } from "react-spinners";
 import { message } from "antd";

@@ -29,7 +29,7 @@ import {
   useParams,
 } from "react-router-dom";
 import Loading from "../Loading";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/Context/AuthContext";
 
 const { Panel } = Collapse;
 const { Title, Text } = Typography;

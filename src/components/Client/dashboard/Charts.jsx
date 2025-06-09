@@ -11,7 +11,7 @@ import {
 } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { companyChart } from "@/Util/Https/companyHttp";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/Context/AuthContext";
 
 // const data = [
 //   { date: "Jan", projects: 0, cost: 0 },

@@ -3,7 +3,7 @@ import Reviews from "@/components/Profile/Reviews";
 import ProfileInformation from "@/components/Profile/ProfileInformation";
 import ContactInfo from "@/components/Profile/ContactInfo";
 import OperationalInfo from "@/components/Profile/OperationalInfo";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/Context/AuthContext";
 import TranslationServices from "@/components/Profile/TranslationServices";
 import ProfessionalDetails from "@/components/Profile/ProfessionalDetails";
 import { useLoaderData, useLocation } from "react-router-dom";

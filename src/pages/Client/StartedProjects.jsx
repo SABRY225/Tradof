@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { SearchIcon } from "lucide-react";
 import PageTitle from "@/UI/PageTitle";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/Context/AuthContext";
 import { getStartedProjects } from "@/Util/Https/companyHttp";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Avatar } from "@mantine/core";

@@ -1,5 +1,5 @@
 import { cardRemove, cardTick, strongBox } from "@/assets/paths";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/Context/AuthContext";
 import { getAdminStatistics } from "@/Util/Https/adminHttp";
 import { useQuery } from "@tanstack/react-query";
 

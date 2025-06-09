@@ -1,4 +1,4 @@
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/Context/AuthContext";
 import ClientDashboard from "./Client/ClientDashboard";
 import FreelancerDashboard from "./Freelancer/FreelancerDashboard";
 import { useNavigate } from "react-router-dom";

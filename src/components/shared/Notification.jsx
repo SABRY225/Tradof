@@ -15,7 +15,7 @@ import {
   withdraw,
   ask,
 } from "../../assets/paths";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/Context/AuthContext";
 import { message } from "antd";
 import {
   Dialog,
@@ -26,7 +26,7 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { useSocket } from "@/context/SocketProvider";
+import { useSocket } from "@/Context/SocketProvider";
 
 const commonClasses =
   "font-epilogue outline-none border-[1px] text-[12px] border-[#D6D7D7] rounded-full p-2 px-3 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]";

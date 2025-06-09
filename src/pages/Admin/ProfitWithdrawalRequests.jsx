@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { editProfitWithdrawalRequests, getProfitWithdrawalRequests } from '@/Util/Https/adminHttp';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/Context/AuthContext';
 import Loading from '../Loading';
 
 const modalStyle = {

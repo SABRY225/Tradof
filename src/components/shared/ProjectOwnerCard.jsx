@@ -1,4 +1,4 @@
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/Context/AuthContext";
 import person from "../../assets/images/1560a64114a9372e.jpg";
 import { stare, emptyStare } from "../../assets/paths.js";
 

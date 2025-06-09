@@ -37,7 +37,7 @@ import {
   getUserTranslationExam,
   submitTranslationExam,
 } from "@/Util/Https/http";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/Context/AuthContext";
 import Cookies from "js-cookie";
 import Loading from "../Loading";
 

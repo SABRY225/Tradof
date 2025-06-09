@@ -1,4 +1,4 @@
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/Context/AuthContext";
 import CardChart from "@/UI/FreeChart";
 import { getStatistics } from "@/Util/Https/freelancerHttp";
 import { useQuery } from "@tanstack/react-query";

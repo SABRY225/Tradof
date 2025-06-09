@@ -1,7 +1,7 @@
 import AddAdmin from "@/components/Setting/AddAdmin"
 import EditProfileAdmin from "@/components/Setting/EditProfileAdmin"
 import Plans from "@/components/Setting/Plans"
-import { useAuth } from "@/context/AuthContext"
+import { useAuth } from "@/Context/AuthContext"
 import PageTitle from "@/UI/PageTitle"
 import { GetAllAdmins } from "@/Util/Https/adminHttp"
 import { fatchDataUser, getAllSubscriptions } from "@/Util/Https/http"

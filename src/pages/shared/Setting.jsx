@@ -4,7 +4,7 @@ import EditProfile from "@/components/Setting/EditProfile";
 import Notifications from "@/components/Setting/Notifications";
 import SocialMedia from "@/components/Setting/SocialMedia";
 import Subscription from "@/components/Setting/Subscription";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/Context/AuthContext";
 import PageTitle from "@/UI/PageTitle";
 import { getCompany, getEmployeeToCompany } from "@/Util/Https/companyHttp";
 import { getFreelancer } from "@/Util/Https/freelancerHttp";

@@ -10,7 +10,7 @@ import {
 
 import { logo, calender, notification, droplist } from "../../assets/paths.js";
 import DropList from "../../components/Navbar/DropList";
-import { useAuth } from "@/context/AuthContext.jsx";
+import { useAuth } from "@/Context/AuthContext.jsx";
 import Notification from "./Notification.jsx";
 import { getFreelancer } from "@/Util/Https/freelancerHttp.js";
 import { getCompany } from "@/Util/Https/companyHttp.js";

@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useStream } from "@/context/StreamContext";
+import { useStream } from "@/Context/StreamContext";
 import peer from "@/Util/peer";
 
 import { message } from "antd";
 import Cookies from "js-cookie";
-import { useSocket } from "@/context/SocketProvider";
+import { useSocket } from "@/Context/SocketProvider";
 import VideoShow from "./VideoShow";
 import VideoControls from "./VideoControls";
 import { Button } from "@/components/ui/button";

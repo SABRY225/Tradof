@@ -12,7 +12,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/Context/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { getOffersChart } from "@/Util/Https/freelancerHttp";
 import { FadeLoader } from "react-spinners";

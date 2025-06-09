@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 import { MantineProvider } from "@mantine/core";
-import { StreamProvider } from "@/context/StreamContext";
+import { StreamProvider } from "@/Context/StreamContext";
 
 import "@mantine/core/styles.css";
 import "@mantine/core/styles/global.css";
@@ -14,7 +14,7 @@ import "@fontsource/roboto/700.css";
 import "./index.css";
 
 import { queryClient } from "./Util/Https/http";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider } from "./Context/AuthContext";
 
 import LoginLayout from "./layouts/LoginLayout";
 import MainLayout from "./layouts/MainLayout";
@@ -62,7 +62,7 @@ import PayProject, { payProjectLoader } from "./pages/shared/PayProject";
 import { userDataLoader } from "./components/shared/UserNavbar";
 import Waiting from "./pages/Meeting/Waiting";
 import Room from "./pages/Meeting/Room";
-import { SocketProvider } from "./context/SocketProvider";
+import { SocketProvider } from "./Context/SocketProvider";
 import AllFreelancers from "./pages/Admin/AllFreelancers";
 import AllCompanies from "./pages/Admin/AllCompanies";
 import FreeExam, { loaderExam, ErrorBoundary } from "./pages/Exams/FreeExam";

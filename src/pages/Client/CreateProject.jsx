@@ -8,7 +8,7 @@ import ButtonFelid from "@/UI/ButtonFelid";
 import PageTitle from "../../UI/PageTitle";
 import { getAllLanguages, getAllSpecializations } from "@/Util/Https/http";
 import { createProject } from "@/Util/Https/companyHttp";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/Context/AuthContext";
 import { message } from "antd";
 import { FadeLoader } from "react-spinners";
 

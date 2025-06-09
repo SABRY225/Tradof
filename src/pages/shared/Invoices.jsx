@@ -3,7 +3,7 @@ import InvoiceCard from "@/components/shared/InvoiceCard";
 import PageTitle from "@/UI/PageTitle";
 import { Box, Loader } from "@mantine/core";
 import { getInvoices } from "@/Util/Https/http";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/Context/AuthContext";
 import Loading from "../Loading";
 
 function Invoices() {
