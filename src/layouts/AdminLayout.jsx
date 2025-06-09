@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 import Footer from "@/components/shared/Footer";
 import AdminNavbar from "@/components/shared/AdminNavbar";

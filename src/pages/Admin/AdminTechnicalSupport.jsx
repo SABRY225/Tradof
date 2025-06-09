@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import UsersList from './UsersList';
 import ChatWindow from './ChatWindow';
-import { useAuth } from '@/Context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import PageTitle from '@/UI/PageTitle';
 import { Box } from '@mui/material';
 

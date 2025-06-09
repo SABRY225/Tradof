@@ -27,7 +27,7 @@ import {
 import { Link, useLoaderData } from "react-router-dom";
 import { message } from "antd";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import Loading from "../Loading";
 import { use } from "react";
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { getSubscriptionData } from "@/Util/Https/companyHttp";
 
 export default function Subscription() {

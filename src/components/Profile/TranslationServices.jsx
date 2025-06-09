@@ -7,7 +7,7 @@ import {
   deleteLanguagePairs,
 } from "@/Util/Https/freelancerHttp";
 import { generateTranslationExam } from "@/Util/Https/http";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { FadeLoader } from "react-spinners";
 import dayjs from "dayjs";
 import { getAllLanguages, queryClient } from "@/Util/Https/http";

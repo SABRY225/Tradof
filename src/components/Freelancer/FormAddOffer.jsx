@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Minus, Plus } from "lucide-react";
 import { useState, useEffect } from "react";
 import ButtonFelid from "@/UI/ButtonFelid";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { message } from "antd";
 import { FadeLoader } from "react-spinners";
 import { AddOffer } from "@/Util/Https/freelancerHttp";

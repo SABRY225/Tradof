@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { blueOffers, openPage, rabash } from "@/assets/paths";
 import PageTitle from "@/UI/PageTitle";
 import { deleteProject, getUpcomingdProjects } from "@/Util/Https/companyHttp";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import {
   useQuery,
   useMutation,

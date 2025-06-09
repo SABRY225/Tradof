@@ -3,7 +3,7 @@ import photo from "../../../assets/images/1560a64114a9372e.jpg";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { getAllSubscriptions } from "@/Util/Https/adminHttp";
 import Pagination from "@/UI/Pagination";
 

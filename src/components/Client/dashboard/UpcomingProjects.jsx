@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { openPage, blueOffers, rabash } from "../../../assets/paths.js";
-import { useAuth } from "@/Context/AuthContext.jsx";
+import { useAuth } from "@/context/AuthContext.jsx";
 import {
   deleteProject,
   getUpcomingdProjects,

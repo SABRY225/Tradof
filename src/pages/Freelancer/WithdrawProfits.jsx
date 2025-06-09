@@ -11,7 +11,7 @@ import { Navigate, useParams } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // CSS for toast notifications
 import { sendWithdrawRequest } from "@/Util/Https/freelancerHttp";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 function WithdrawProfits() {
   const { amountMoney } = useParams();

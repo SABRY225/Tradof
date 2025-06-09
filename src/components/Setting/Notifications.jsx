@@ -1,4 +1,4 @@
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { getSettingNotification, settingNotification } from "@/Util/Https/http";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";

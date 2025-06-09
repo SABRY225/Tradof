@@ -1,4 +1,4 @@
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import {  useLoaderData } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import ProjectDetails from "@/components/shared/ProjectDetails";

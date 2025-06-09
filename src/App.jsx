@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { MantineProvider } from "@mantine/core";
-import { StreamProvider } from "@/Context/StreamContext";
+import { StreamProvider } from "@/context/StreamContext";
 
 import "@mantine/core/styles.css";
 import "@mantine/core/styles/global.css";
@@ -67,8 +67,8 @@ import ExamPage from "./pages/Exams/ExamPage";
 import TermsOfService from "./pages/TermsOfService";
 // import AdminReports from "./pages/Admin/AdminReports";
 import Invoices from "./pages/shared/Invoices";
-import { AuthProvider } from "./Context/AuthContext";
-import { SocketProvider } from "./Context/SocketProvider";
+import { AuthProvider } from "./context/AuthContext";
+import { SocketProvider } from "./context/SocketProvider";
 // import Privacy from "./pages/PrivacyPolicy";
 
 // create routes

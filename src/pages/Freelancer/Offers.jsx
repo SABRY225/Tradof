@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
 import PageTitle from "@/UI/PageTitle";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { fatchOffers } from "@/Util/Https/freelancerHttp";
 import {
   calendar,

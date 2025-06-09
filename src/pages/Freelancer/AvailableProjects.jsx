@@ -6,7 +6,7 @@ import { Minus, Plus } from "lucide-react";
 import Combobox from "../../components/ui/Combobox";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useLoaderData } from "react-router-dom";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { getUnassignedProjects } from "@/Util/Https/freelancerHttp";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { getAllSpecializations } from "@/Util/Https/http";

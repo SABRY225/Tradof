@@ -4,7 +4,7 @@ import {
   useNavigation,
   useLocation,
 } from "react-router-dom";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 import UserNavbar from "../components/shared/UserNavbar";
 import Footer from "@/components/shared/Footer";

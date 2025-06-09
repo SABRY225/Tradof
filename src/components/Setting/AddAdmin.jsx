@@ -2,7 +2,7 @@ import { useState } from "react";
 import ButtonFelid from "@/UI/ButtonFelid";
 import Plus from "../../assets/icons/plus.svg";
 import { addAdmin } from "../../Util/Https/adminHttp";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { message } from "antd";
 import { GetAllAdmins } from "@/Util/Https/adminHttp";
 

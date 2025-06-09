@@ -5,7 +5,7 @@ import InputFelid from "@/UI/InputFelid";
 import { facebook, linkedin, gmail } from "../../assets/paths.js";
 import { useMutation } from "@tanstack/react-query";
 import { editSocialMedia as CompanyMedia } from "@/Util/Https/companyHttp.js";
-import { useAuth } from "@/Context/AuthContext.jsx";
+import { useAuth } from "@/context/AuthContext.jsx";
 import { message } from "antd";
 import { FadeLoader } from "react-spinners";
 import { editSocialMedia as FreelancerMedia } from "@/Util/Https/freelancerHttp.js";

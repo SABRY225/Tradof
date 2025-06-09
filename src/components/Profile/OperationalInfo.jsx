@@ -13,7 +13,7 @@ import {
   deletePreferredLanguage,
   deleteSpecialization,
 } from "@/Util/Https/companyHttp";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { message } from "antd";
 import { useRevalidator } from "react-router-dom";
 import { FadeLoader } from "react-spinners";

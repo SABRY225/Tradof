@@ -10,7 +10,7 @@ import {
   droplist,
 } from "../../assets/paths.js";
 import DropList from "../../components/Navbar/DropList";
-import { useAuth } from "@/Context/AuthContext.jsx";
+import { useAuth } from "@/context/AuthContext.jsx";
 import Notification from "./Notification.jsx";
 
 const List = [

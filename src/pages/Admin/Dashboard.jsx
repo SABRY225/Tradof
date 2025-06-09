@@ -18,7 +18,7 @@ import {
   getStatistics,
   getFreelancersAndCompanies,
 } from "@/Util/Https/adminHttp";
-import { useAuth } from "@/Context/AuthContext.jsx";
+import { useAuth } from "@/context/AuthContext.jsx";
 
 export default function Dashboard() {
   const {

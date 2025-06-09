@@ -5,7 +5,7 @@ import axios from "axios";
 import { message } from "antd";
 
 import Cookies from "js-cookie";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 export default function PlanPage() {
   const {

@@ -1,4 +1,4 @@
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import ButtonFelid from "@/UI/ButtonFelid";
 import InputFelid from "@/UI/InputFelid";
 import { changesPassword as ChangeCompany } from "@/Util/Https/companyHttp";

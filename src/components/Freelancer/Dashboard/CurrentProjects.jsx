@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { ProjectStatus } from "@/Util/status";
 import photo from "../../../assets/images/1560a64114a9372e.jpg";
 import { useState, useMemo } from "react";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentProjects } from "@/Util/Https/freelancerHttp";
 import { useNavigate } from "react-router-dom";

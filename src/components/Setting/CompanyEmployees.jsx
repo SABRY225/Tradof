@@ -9,7 +9,7 @@ import InputFelid from "@/UI/InputFelid";
 import { getAllCountries, queryClient } from "@/Util/Https/http";
 import Combobox from "../ui/Combobox";
 import { upperarrow } from "../../assets/paths";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { addEmployeeToCompany } from "@/Util/Https/companyHttp";
 import { message } from "antd";
 

@@ -1,5 +1,5 @@
 import { file, folder_add } from "@/assets/paths";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 import { deleteProjectFile, uploadProjectFile } from "@/Util/Https/companyHttp";
 import { useMutation } from "@tanstack/react-query";

@@ -11,7 +11,7 @@ import {
   Tab,
 } from "@mui/material";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { GetCompanyProjectsFinancials, GetCompanyStatistics } from "@/Util/Https/companyHttp";
 import { GetFreelancerProjectsFinancials, GetFreelancerStatistics } from "@/Util/Https/freelancerHttp";
 import { search } from "@/assets/paths";

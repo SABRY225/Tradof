@@ -9,7 +9,7 @@ import feedback from "../../assets/icons/feedback.svg";
 import settings from "../../assets/icons/settings.svg";
 import logout from "../../assets/icons/logout.svg";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 export default function DropList({ name, email, photoImage }) {
   const { logout: leave } = useAuth();
   const navigate = useNavigate();
