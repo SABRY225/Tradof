@@ -60,7 +60,6 @@ import PayProject, { payProjectLoader } from "./pages/shared/PayProject";
 import { userDataLoader } from "./components/shared/UserNavbar";
 import Waiting from "./pages/Meeting/Waiting";
 import Room from "./pages/Meeting/Room";
-import { SocketProvider } from "./Context/SocketProvider";
 import AllFreelancers from "./pages/Admin/AllFreelancers";
 import AllCompanies from "./pages/Admin/AllCompanies";
 import FreeExam, { loaderExam, ErrorBoundary } from "./pages/Exams/FreeExam";
@@ -69,6 +68,7 @@ import TermsOfService from "./pages/TermsOfService";
 // import AdminReports from "./pages/Admin/AdminReports";
 import Invoices from "./pages/shared/Invoices";
 import { AuthProvider } from "./Context/AuthContext";
+import { SocketProvider } from "./Context/SocketProvider";
 // import Privacy from "./pages/PrivacyPolicy";
 
 // create routes
