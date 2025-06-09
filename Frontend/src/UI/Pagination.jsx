@@ -24,7 +24,7 @@ export default function Pagination({
   length,
 }) {
   const totalPages = Math.ceil(length / ITEMS_PER_PAGE);
-
+  console.log(currentPage, ITEMS_PER_PAGE, length);
   return (
     <div className="flex justify-center gap-2 mt-4">
       <button

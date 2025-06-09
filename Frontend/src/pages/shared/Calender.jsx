@@ -50,7 +50,6 @@ const customComponents = {
     const [isDeleting, setIsDeleting] = useState(false);
     const queryClient = useQueryClient();
     const token = Cookies.get("token");
-    console.log(calendarEvent);;
     const handleDelete = async () => {
       if (window.confirm("Are you sure you want to delete this event?")) {
         try {
@@ -166,9 +165,9 @@ const customComponents = {
                     Participants:
                   </span>
                   <div className="flex flex-wrap gap-2">
-                    {calendarEvent.people.map((email, index) => (
+                    {calendarEvent.meeting.participants.map(({ user }) => (
                       <span
-                        key={index}
+                        key={user.id}
                         className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-full flex items-center gap-1"
                       >
                         <svg
@@ -183,7 +182,7 @@ const customComponents = {
                             clipRule="evenodd"
                           />
                         </svg>
-                        {email}
+                        {user.email}
                       </span>
                     ))}
                   </div>
@@ -207,10 +206,7 @@ export default function Calender() {
   const [events, setEvents] = useState([]);
   const eventsService = useMemo(() => createEventsServicePlugin(), []);
 
-  const {
-    mutate,
-    isPending,
-  } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: createEvent,
     onSuccess: ({ data }) => {
       console.log(data);
@@ -245,7 +241,7 @@ export default function Calender() {
     placeholderData: (prev) => prev,
     retry: 1,
   });
-  console.log(data);
+  // console.log(data);
   const calender = useLoaderData();
   if (calender?.error) {
     message.error(calendar?.message || "create calender failed!");

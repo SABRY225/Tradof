@@ -68,9 +68,9 @@ function UpcomingProjects() {
       const totalPages = Math.ceil(lastPage.count / ITEMS_PER_PAGE);
       return pages.length < totalPages ? pages.length + 1 : undefined;
     },
-    keepPreviousData: true,
-    staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
+    // keepPreviousData: true,
+    // staleTime: 5 * 60 * 1000,
+    // cacheTime: 10 * 60 * 1000,
   });
 
   const projects = data?.pages.flatMap((page) => page.items) || [];

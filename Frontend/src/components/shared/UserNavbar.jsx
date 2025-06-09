@@ -240,7 +240,7 @@ export const userDataLoader = async ({ request }) => {
   if (!token || !role || !userId) {
     return redirect("/auth");
   }
-  console.log(token, role, userId);
+  // console.log(token, role, userId);
   try {
     const personData =
       role === "Freelancer"

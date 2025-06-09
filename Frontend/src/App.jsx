@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { ToastContainer } from "react-toastify";
+// import { ToastContainer } from "react-toastify";
 import { MantineProvider } from "@mantine/core";
 import { StreamProvider } from "@/context/StreamContext";
 
@@ -72,6 +72,7 @@ import TermsOfService from "./pages/TermsOfService";
 // import AdminReports from "./pages/Admin/AdminReports";
 import Invoices from "./pages/shared/Invoices";
 import EmployeeLayout from "./layouts/employeeLayout";
+import { message } from "antd";
 // import Privacy from "./pages/PrivacyPolicy";
 
 // create routes
@@ -233,6 +234,10 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  message.config({
+    getContainer: () => document.getElementById("root"),
+  });
+
   return (
     <StreamProvider>
       <SocketProvider>

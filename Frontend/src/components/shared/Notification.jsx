@@ -268,8 +268,8 @@ export default function Notification({ classes }) {
         {/* Seen Notifications */}
         {filteredNotifications
           .filter((note) => note.seen)
-          .map((note) => (
-            <Dialog>
+          .map((note, index) => (
+            <Dialog key={index}>
               <DialogTrigger className="w-full">
                 <li
                   key={note._id}

@@ -214,10 +214,10 @@ export default function PayProject() {
           price={project?.price}
         />
 
-        <ButtonFelid
+        {/* <ButtonFelid
           text="Pay money"
           classes="bg-second-color px-10 py-2 font-medium m-auto"
-        />
+        /> */}
       </div>
     </div>
   );

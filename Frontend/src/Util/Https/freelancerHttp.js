@@ -2,7 +2,6 @@ import axios from "axios";
 import { uploadImage } from "./http";
 import { message } from "antd";
 
-
 export const getFreelancer = async ({ signal, id, token }) => {
   try {
     const response = await axios.get(
@@ -501,10 +500,21 @@ export const getCurrentProjects = async ({
   }
 };
 
-export const getUnassignedProjects = async ({ signal, token, filter }) => {
+export const getUnassignedProjects = async ({
+  signal,
+  token,
+  filter,
+  applied,
+  pageSize,
+  indexPage,
+}) => {
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/project/unassigned-projects`,
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/project/unassigned-projects?pageIndex=${indexPage}&pageSize=${pageSize}&${
+        applied ? "applied=" + applied : ""
+      }`,
       {
         params: { ...filter },
         signal,

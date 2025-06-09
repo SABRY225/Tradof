@@ -6,11 +6,12 @@ import { useEffect, useState } from "react";
 import Combobox from "../../components/ui/Combobox";
 import ButtonFelid from "@/UI/ButtonFelid";
 import PageTitle from "../../UI/PageTitle";
-import { getAllLanguages, getAllSpecializations } from "@/Util/Https/http";
+import { getAllLanguages, getAllSpecializations, queryClient } from "@/Util/Https/http";
 import { createProject } from "@/Util/Https/companyHttp";
 import { useAuth } from "@/context/AuthContext";
 import { message } from "antd";
 import { FadeLoader } from "react-spinners";
+import { useNavigate } from "react-router-dom";
 
 const commonClasses =
   "font-epilogue outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]";
@@ -19,6 +20,7 @@ export default function CreateProject() {
   const {
     user: { userId, token },
   } = useAuth();
+  const navigate = useNavigate();
   const [handleLanguage, setHandleLanguage] = useState([]);
   const {
     data: languages,
@@ -43,12 +45,17 @@ export default function CreateProject() {
   } = useMutation({
     mutationKey: ["CreateProject"],
     mutationFn: createProject,
+    onMutate: () => {
+      message.loading("Creating project...");
+    },
     onError: (error) => {
       console.log(error);
       message.error(error.message);
     },
     onSuccess: () => {
       message.success("Create Project Successfully");
+      queryClient.refetchQueries(["upcoming-projects", userId]);
+      navigate("../upcoming");
     },
   });
 

@@ -4,25 +4,30 @@ import ButtonFelid from "@/UI/ButtonFelid";
 import { getStatusPayProject, PayProjectPayment } from "@/Util/Https/companyHttp";
 import { useParams } from "react-router-dom";
 
-export default function ProjectPayment({freelancerId,budget,deliveryTime,statusProject}) {
-  console.log(statusProject);
-  
+export default function ProjectPayment({
+  freelancerId,
+  budget,
+  deliveryTime,
+  statusProject,
+  paymentState,
+  setPaymentState,
+}) {
   const {
-    user: { token,role },
+    user: { token, role },
   } = useAuth();
 
-  const [status, setStatus] = useState(null);
+  // const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [payLoading, setPayLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const {projectId} = useParams(); 
+  const { projectId } = useParams();
 
   useEffect(() => {
     const fetchStatus = async () => {
       try {
         const data = await getStatusPayProject(token, projectId);
-        
-        setStatus(data.paymentStatus); 
+
+        setPaymentState(data.paymentStatus);
       } catch (err) {
         console.error("Error fetching status", err);
       } finally {
@@ -37,19 +42,27 @@ export default function ProjectPayment({freelancerId,budget,deliveryTime,statusP
     setPayLoading(true);
     setMessage("");
     try {
-      const data = await PayProjectPayment(token, projectId, freelancerId, budget, deliveryTime);
+      const data = await PayProjectPayment(
+        token,
+        projectId,
+        freelancerId,
+        budget,
+        deliveryTime
+      );
       console.log(data);
-      if(data.success){
-      setMessage("Payment successful");
-      window.location.href=data.iframURL
+      if (data.success) {
+        setMessage("Payment successful");
+        window.location.href = data.iframURL;
       }
     } catch (err) {
-      setMessage("Payment failed: " + (err.response?.data?.message || err.message));
+      setMessage(
+        "Payment failed: " + (err.response?.data?.message || err.message)
+      );
     } finally {
       setPayLoading(false);
     }
   };
-
+  console.log(paymentState);
   return (
     <div className="flex-1 h-[100%]">
       <h1 className="italic border-b-2 border-main-color w-fit ml-2 pl-2">
@@ -60,40 +73,54 @@ export default function ProjectPayment({freelancerId,budget,deliveryTime,statusP
         {loading ? (
           <p className="text-center text-gray-500">Loading payment status...</p>
         ) : (
-<div className="space-y-4 bg-card-color ">
-  {loading ? (
-    <p className="text-center text-gray-500 italic">Loading payment status...</p>
-  ) : (
-    <div className="grid grid-cols-1 sm:grid-3 gap-4 text-center">
-      <div className="flex justify-between  items-center bg-white rounded-lg shadow p-2">
-        <p className="text-sm text-gray-500 mb-1">Price of Project</p>
-        <p className="text-sm font-semibold text-main-color ">{budget || "N/A"} EGP</p>
-      </div>
+          <div className="space-y-4 bg-card-color ">
+            {loading ? (
+              <p className="text-center text-gray-500 italic">
+                Loading payment status...
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-3 gap-4 text-center">
+                <div className="flex justify-between  items-center bg-white rounded-lg shadow p-2">
+                  <p className="text-sm text-gray-500 mb-1">Price of Project</p>
+                  <p className="text-sm font-semibold text-main-color ">
+                    {budget || "N/A"} EGP
+                  </p>
+                </div>
 
-      <div className="flex justify-between  items-center bg-white rounded-lg shadow p-2">
-        <p className=" text-sm text-gray-500 mb-1">Agreed Period</p>
-        <p className="text-sm font-semibold text-main-color">{deliveryTime || "N/A"} days</p>
-      </div>
+                <div className="flex justify-between  items-center bg-white rounded-lg shadow p-2">
+                  <p className=" text-sm text-gray-500 mb-1">Agreed Period</p>
+                  <p className="text-sm font-semibold text-main-color">
+                    {deliveryTime || "N/A"} days
+                  </p>
+                </div>
 
-      <div className="flex justify-between  items-center bg-white rounded-lg shadow p-2">
-        <p className=" text-sm text-gray-500 mb-1">Payment Status</p>
-        <p className={`text-sm font-semibold ${status === "paid" ? "text-green-600" : "text-red-600"}`}>
-          {status || "N/A"}
-        </p>
-      </div>
-    </div>
-  )}
-</div>
-
+                <div className="flex justify-between  items-center bg-white rounded-lg shadow p-2">
+                  <p className=" text-sm text-gray-500 mb-1">Payment Status</p>
+                  <p
+                    className={`text-sm font-semibold ${
+                      paymentState === "paid"
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {paymentState || "N/A"}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         )}
-  {status !== "paid"&&statusProject?.statusName==="OnReviewing" && role=="CompanyAdmin"&& <ButtonFelid
-          text={payLoading ? "Processing..." : "Pay money"}
-          classes="bg-second-color px-10 py-2 font-medium m-auto"
-          disabled={payLoading || status === "paid"}
-          onClick={handlePay}
-        />
-}
-        
+        {paymentState !== "paid" &&
+          statusProject?.statusName === "OnReviewing" &&
+          role == "CompanyAdmin" && (
+            <ButtonFelid
+              text={payLoading ? "Processing..." : "Pay money"}
+              classes="bg-second-color px-10 py-2 font-medium m-auto"
+              disabled={payLoading || paymentState === "paid"}
+              onClick={handlePay}
+            />
+          )}
+
         {message && (
           <p className="text-center mt-2 text-sm text-blue-600">{message}</p>
         )}
