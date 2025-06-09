@@ -74,7 +74,7 @@ export default function VideoShow({
               )}
               <ReactPlayer
                 playing
-                autoPlay
+                muted={!remote}
                 height="100%"
                 width="100%"
                 url={stream}
