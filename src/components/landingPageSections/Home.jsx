@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import image_1 from "../../assets/images/landing-1.png";
 import { useNavigate } from "react-router-dom";
 import ButtonFelid from "@/UI/ButtonFelid";
+import Magnet from "../ui/Magnet";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ export default function Home() {
           initial={{ y: "-300rem" }}
           animate={{ y: "0" }}
           transition={{ type: "keyframes", duration: 1 }}
-          className="hidden polygon-background-2 z-[-1] absolute bg-[#d2d4f6] h-full md:w-full w-[92vh] md:flex items-center justify-center "
+          className="hidden polygon-background-2-2 z-[-1] absolute bg-[#d2d4f6] h-full w-full md:flex items-center justify-center"
           style={{
             clipPath: "polygon(0 0, 100% 0, 100% 40%, 0% 95%)",
           }}
@@ -21,7 +22,7 @@ export default function Home() {
           initial={{ y: "-300rem" }}
           animate={{ y: "0" }}
           transition={{ type: "keyframes", duration: 1.3 }}
-          className="polygon-background-1 z-[-1] absolute bg-[#6c63ff] h-full md:w-full w-[92vh] md:flex items-center justify-center"
+          className="polygon-background-1-1 z-[-1] absolute bg-[#6c63ff] h-full w-full md:flex items-center justify-center"
           style={{
             clipPath: "polygon(0 0, 100% 0, 100% 30%, 0 93%)",
           }}
@@ -50,13 +51,15 @@ export default function Home() {
               brand story, language should never be a barrier. That's where we
               come in.
             </p>
-            <ButtonFelid
-              type="button"
-              text="Get Start"
-              classes="text-[15px] px-[20px] py-[10px] bg-second-color"
-              onClick={() => navigate("/auth")}
-              style={{ width: "170px" }}
-            />
+            <Magnet padding={200} disabled={false} magnetStrength={10}>
+              <ButtonFelid
+                type="button"
+                text="Get Start"
+                classes="text-[15px] px-[20px] py-[10px] bg-second-color"
+                onClick={() => navigate("/auth")}
+                style={{ width: "170px" }}
+              />
+            </Magnet>
           </motion.div>
 
           <motion.div
@@ -77,8 +80,27 @@ export default function Home() {
       </div>
       <style>{`
         @media (max-width: 1020px) {
-          .polygon-background-1 {
+          .polygon-background-1-1 {
             clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important;
+          }
+          .polygon-background-2-2 {
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .polygon-background-1-1 {
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important;
+          }
+          .polygon-background-2-2 {
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important;
+          }
+        }
+        @media (min-width: 1021px) {
+          .polygon-background-1-1 {
+            clip-path: polygon(0 0, 100% 0, 100% 30%, 0 93%) !important;
+          }
+          .polygon-background-2-2 {
+            clip-path: polygon(0 0, 100% 0, 100% 40%, 0% 95%) !important;
           }
         }
       `}</style>

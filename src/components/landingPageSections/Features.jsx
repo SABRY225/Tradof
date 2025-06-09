@@ -131,10 +131,10 @@ const Features = () => {
               variants={buttonVariants}
               initial="hidden"
               animate="visible"
-              custom={index} 
+              custom={index}
               onClick={() => setSelectedFeature(feature.name)}
-              whileHover={{ scale: 1.05 }} 
-              whileTap={{ scale: 0.95 }} 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               className={`flex items-center gap-3 p-2 text-left transition border-b-2 rounded-lg
               ${
                 selectedFeature === feature.name

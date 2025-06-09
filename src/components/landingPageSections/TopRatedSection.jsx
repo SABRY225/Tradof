@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, Rate } from "antd";
 import { getTopRatedUsers } from "@/Util/Https/http";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function TopRatedSection() {
   const [activeTab, setActiveTab] = useState("companies");
@@ -18,6 +19,48 @@ export default function TopRatedSection() {
   }, []);
 
   const dataList = activeTab === "companies" ? companies : translators;
+
+  const containerVariants = {
+    hidden: (direction) => ({
+      x: direction === "left" ? -500 : 500,
+      opacity: 0,
+    }),
+    visible: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+        duration: 0.3,
+        staggerChildren: 0.05,
+      },
+    },
+    exit: (direction) => ({
+      x: direction === "left" ? 500 : -500,
+      opacity: 0,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+        duration: 0.2,
+      },
+    }),
+  };
+
+  const itemVariants = {
+    hidden: { y: 10, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+        duration: 0.2,
+      },
+    },
+  };
 
   return (
     <>
@@ -59,34 +102,46 @@ export default function TopRatedSection() {
           </button>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-[70px] max-w-2xl">
-          {dataList.map((item) => (
-            <div key={item.id} className="flex flex-col items-center p-4 rounded-lg">
-              <div
-                className={`rounded-full p-1 ${
-                  activeTab === "companies"
-                    ? "border-4 border-blue-500"
-                    : "border-4 border-green-500"
-                }`}
+          <motion.div
+            key={activeTab}
+            custom={activeTab === "companies" ? "left" : "right"}
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{type:"keyframes"}}
+            className="flex flex-wrap items-center justify-center gap-[70px] max-w-2xl overflow-hidden"
+          >
+            {dataList.map((item) => (
+              <motion.div
+                key={item.id}
+                variants={itemVariants}
+                className="flex flex-col items-center p-4 rounded-lg overflow-hidden"
               >
-                <Avatar
-                  src={item.profileImageUrl || ""}
-                  alt={`${item.firstName} ${item.lastName}`}
-                  className="w-[100px] h-[100px] rounded-full object-cover"
+                <div
+                  className={`rounded-full p-1 ${
+                    activeTab === "companies"
+                      ? "border-2 border-blue-500"
+                      : "border-2 border-[#6c63ff]"
+                  }`}
+                >
+                  <Avatar
+                    src={item.profileImageUrl || ""}
+                    alt={`${item.firstName} ${item.lastName}`}
+                    className="w-[100px] h-[100px] rounded-full object-cover"
+                  />
+                </div>
+                <p className="font-semibold text-lg mt-2">
+                  {item.firstName} {item.lastName}
+                </p>
+                <Rate
+                  disabled
+                  allowHalf
+                  defaultValue={item.averageRating}
+                  style={{ fontSize: "16px", marginTop: "4px" }}
                 />
-              </div>
-              <p className="font-semibold text-lg mt-2">
-                {item.firstName} {item.lastName}
-              </p>
-              <Rate
-                disabled
-                allowHalf
-                defaultValue={item.averageRating }
-                style={{ fontSize: "16px", marginTop: "4px" }}
-              />
-            </div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </motion.div>
       </div>
     </>
   );

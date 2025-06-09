@@ -99,6 +99,13 @@ export default function AdminNavbar() {
             </div>
           </Link>
           <button
+            onClick={() => setIsNavOpen(!isNavOpen)}
+            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden focus:ring-2"
+          >
+            <span className="sr-only">Open main menu</span>
+            <img src={droplist} alt="drop list icon" />
+          </button>
+          <button
             onClick={handleLogout}
             className="px-4 py-2 text-white rounded-md transition-colors duration-200 font-medium flex items-center space-x-2"
           >

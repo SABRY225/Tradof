@@ -6,6 +6,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { searchAskQuestion, sendAskQuestion } from "@/Util/Https/http";
 import Cookies from "js-cookie";
 import { message } from "antd";
+import askqustion from "../../assets/images/askquestion.png";
 
 function AskQuestion() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -51,206 +52,243 @@ function AskQuestion() {
   };
 
   return (
-    <div className="relative overflow-hidden ">
+    <div className="relative overflow-hidden min-h-screen">
       <div className="bg-background-color absolute top-0 left-0 w-full h-full z-[-1]"></div>
       <motion.div
         initial={{ y: "-300rem" }}
         animate={{ y: "0" }}
         transition={{ type: "keyframes", duration: 1 }}
-        className="hidden polygon-background-2 z-[-1] absolute bg-[#d2d4f6] h-full md:w-full w-[92vh] md:flex items-center justify-center"
+        className="hidden md:block polygon-background-2 z-[-1] absolute bg-[#d2d4f6] h-full w-full md:flex items-center justify-center"
         style={{ clipPath: "polygon(0 0, 100% 0, 100% 40%, 0% 95%)" }}
       />
       <motion.div
         initial={{ y: "-300rem" }}
         animate={{ y: "0" }}
         transition={{ type: "keyframes", duration: 1.3 }}
-        className="polygon-background-1 z-[-1] absolute bg-[#6c63ff] h-full md:w-full w-[92vh] md:flex items-center justify-center"
+        className="hidden md:block polygon-background-1 z-[-1] absolute bg-[#6c63ff] h-full w-full md:flex items-center justify-center"
         style={{ clipPath: "polygon(0 0, 100% 0, 100% 30%, 0 93%)" }}
       />
-      <Container maxWidth="xl" sx={{ py: 4, mx: { md: "101px", xs: "0px" } }}>
-        <motion.div
-          initial={{ x: "-500rem" }}
-          animate={{ x: "0" }}
-          transition={{ type: "keyframes", duration: 1.2 }}
-          className="flex flex-col gap-[30px] items-start py-8 px-4"
-        >
-          <Typography
-            sx={{
-              fontSize: { md: "46px", xs: "30px" },
-              color: "white",
-              fontWeight: 500,
-              mb: 1,
-              width: "100%",
-              fontFamily: "Roboto, sans-serif",
-            }}
-          >
-            We are here to help you
-          </Typography>
-
-          <TextField
-            fullWidth
-            placeholder="search for your question"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            label="Search"
-            variant="outlined"
-            InputLabelProps={{ shrink: true }}
-            sx={{
-              maxWidth: "600px",
-              "& .MuiOutlinedInput-root": {
-                backgroundColor: "transparent",
-                borderRadius: 2,
-                color: "white",
-              },
-              "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: "white",
-              },
-              "& .MuiInputLabel-root": {
-                color: "white",
-                backgroundColor: "#6c63ff",
-                px: 1,
-              },
-              "& input::placeholder": {
-                color: "rgba(255, 255, 255, 0.7)",
-              },
-            }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <SearchIcon sx={{ color: "white", cursor: "pointer" }} />
-                </InputAdornment>
-              ),
-            }}
-          />
-
-          {loading ? (
-            <Typography sx={{ color: "white" }}>Loading...</Typography>
-          ) : searchQuery && searchResults.length > 0 ? (
-            <Box sx={{ mt: 2 }}>
-              {searchResults.map((item, index) => (
-                <Box
-                  key={index}
-                  sx={{
-                    bgcolor: "#E5E5FF",
-                    mb: 2,
-                    p: 2,
-                    borderRadius: 2,
-                    width: { md: "40vw", xs: "81vw" },
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: "#6C63FF",
-                      mb: 1,
-                      fontSize: "20px",
-                      fontStyle: "italic",
-                    }}
-                  >
-                    {item.question}
-                  </Typography>
-                  <Typography sx={{ color: "#000", mb: 1, fontSize: "14px" }}>
-                    {item.answer}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          ) : searchQuery && searchResults.length === 0 ? (
-            <Typography sx={{ color: "white" }}>No Questions Found</Typography>
-          ) : (
-            <form onSubmit={handleSubmit} className="w-full max-w-[600px]">
-              <TextField
-                fullWidth
-                multiline
-                rows={4}
-                placeholder="write a new question"
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                label="Question"
-                variant="outlined"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                sx={{
-                  mb: 2,
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "transparent",
-                    borderRadius: 2,
-                    color: "white",
-                  },
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "white",
-                  },
-                  "& .MuiInputLabel-root": {
-                    color: "white",
-                    backgroundColor: "#6c63ff",
-                    px: 1,
-                  },
-                  "& textarea::placeholder": {
-                    color: "rgba(255, 255, 255, 0.7)",
-                  },
-                }}
-              />
-
-              <Button
-                type="submit"
-                variant="contained"
-                sx={{
-                  px: 4,
-                  py: 1,
-                  bgcolor: "#FF6B6B",
-                  "&:hover": {
-                    bgcolor: "#FF5252",
-                  },
-                  borderRadius: 1,
-                }}
-              >
-                Send
-              </Button>
-            </form>
-          )}
-        </motion.div>
-      </Container>
-
-      <Box
+      <Container
+        maxWidth="xl"
         sx={{
-          mt: "auto",
-          width: "100%",
-          position: "relative",
-          bottom: 20,
-          left: "50%",
-          transform: "translateX(-50%)",
+          py: { xs: 2, sm: 3, md: 4 },
+          px: { xs: 2, sm: 3, md: 4 },
+          mx: { xs: "0px", sm: "20px", md: "100px" },
         }}
       >
-        <Typography
-          variant="h4"
-          sx={{
-            textAlign: "center",
-            color: "#1a1a1a",
-            fontFamily: "Roboto, sans-serif",
-            fontSize: { md: "32px", xs: "25px" },
-            fontWeight: 500,
-            marginTop: { md: "1rem", xs: "3rem" },
-            marginBottom: "1rem",
-          }}
-        >
-          Frequently asked questions
-        </Typography>
+        <div className="flex flex-col md:flex-row gap-8 md:w-[90%] w-full">
+          <motion.div
+            initial={{ x: "-500rem" }}
+            animate={{ x: "0" }}
+            transition={{ type: "keyframes", duration: 1.2 }}
+            className="flex flex-col gap-4 sm:gap-6 md:gap-[30px] items-start py-4 sm:py-6 md:py-8 px-2 sm:px-4 w-full md:w-1/2"
+          >
+            <Typography
+              sx={{
+                fontSize: { xs: "32px", sm: "38px", md: "46px" },
+                color: { xs: "#000", md: "white" },
+                fontWeight: 500,
+                width: "100%",
+                fontFamily: "Roboto, sans-serif",
+              }}
+            >
+              We are here to help you
+            </Typography>
 
-        <Typography
-          sx={{
-            textAlign: "center",
-            color: { md: "gray", xs: "white" },
-            fontFamily: "Roboto, sans-serif",
-          }}
-        >
-          There are no questions yet
-        </Typography>
-      </Box>
+            <Typography
+              sx={{
+                color: { xs: "#000", md: "white" },
+                opacity: 0.7,
+                fontFamily: "Roboto, sans-serif",
+                fontSize: { xs: "14px", sm: "16px" },
+              }}
+            >
+              Search for answers or ask a new question
+            </Typography>
+
+            <TextField
+              fullWidth
+              placeholder="Search for your question"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              label="Search"
+              variant="outlined"
+              InputLabelProps={{ shrink: true }}
+              sx={{
+                maxWidth: { xs: "100%", sm: "500px", md: "600px" },
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: "transparent",
+                  borderRadius: 2,
+                  color: { xs: "#000", md: "white" },
+                  height: { xs: "40px", sm: "48px" },
+                },
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: { xs: "#000", md: "white" },
+                },
+                "& .MuiInputLabel-root": {
+                  color: { xs: "#000", md: "white" },
+                  backgroundColor: { xs: "#fff", md: "#6c63ff" },
+                  px: 1,
+                  fontSize: { xs: "14px", sm: "16px" },
+                },
+                "& input::placeholder": {
+                  color: {
+                    xs: "rgba(0, 0, 0, 0.7)",
+                    md: "rgba(255, 255, 255, 0.7)",
+                  },
+                  fontSize: { xs: "14px", sm: "16px" },
+                },
+              }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <SearchIcon
+                      sx={{
+                        color: { xs: "#000", md: "white" },
+                        cursor: "pointer",
+                        fontSize: { xs: "20px", sm: "24px" },
+                      }}
+                    />
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            {loading ? (
+              <Typography
+                sx={{
+                  color: { xs: "#000", md: "white" },
+                  fontSize: { xs: "14px", sm: "16px" },
+                }}
+              >
+                Loading...
+              </Typography>
+            ) : searchQuery && searchResults.length > 0 ? (
+              <Box sx={{ mt: 2, width: "100%" }}>
+                {searchResults.map((item, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      bgcolor: "#E5E5FF",
+                      mb: 2,
+                      p: { xs: 1.5, sm: 2 },
+                      borderRadius: 2,
+                      width: { xs: "100%", sm: "90%", md: "80%" },
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        color: "#6C63FF",
+                        mb: 1,
+                        fontSize: { xs: "16px", sm: "18px", md: "20px" },
+                        fontStyle: "italic",
+                      }}
+                    >
+                      {item.question}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        color: "#000",
+                        mb: 1,
+                        fontSize: { xs: "13px", sm: "14px" },
+                      }}
+                    >
+                      {item.answer}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            ) : searchQuery && searchResults.length === 0 ? (
+              <Typography
+                sx={{
+                  color: { xs: "#000", md: "white" },
+                  fontSize: { xs: "14px", sm: "16px" },
+                }}
+              >
+                No Questions Found
+              </Typography>
+            ) : (
+              <form onSubmit={handleSubmit} className="w-full max-w-[600px]">
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={3}
+                  placeholder="Write your question here..."
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  label="Question"
+                  variant="outlined"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  sx={{
+                    mb: 2,
+                    "& .MuiOutlinedInput-root": {
+                      backgroundColor: "transparent",
+                      borderRadius: 2,
+                      color: { xs: "#000", md: "white" },
+                    },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: { xs: "#000", md: "white" },
+                    },
+                    "& .MuiInputLabel-root": {
+                      color: { xs: "#000", md: "white" },
+                      backgroundColor: { xs: "#fff", md: "#6c63ff" },
+                      px: 1,
+                      fontSize: { xs: "14px", sm: "16px" },
+                    },
+                    "& textarea::placeholder": {
+                      color: {
+                        xs: "rgba(0, 0, 0, 0.7)",
+                        md: "rgba(255, 255, 255, 0.7)",
+                      },
+                      fontSize: { xs: "14px", sm: "16px" },
+                    },
+                  }}
+                />
+
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    px: { xs: 3, sm: 4 },
+                    py: { xs: 0.5, sm: 1 },
+                    bgcolor: "#FF6B6B",
+                    "&:hover": {
+                      bgcolor: "#FF5252",
+                    },
+                    borderRadius: 1,
+                    fontSize: { xs: "14px", sm: "16px" },
+                  }}
+                >
+                  Send
+                </Button>
+              </form>
+            )}
+          </motion.div>
+
+          <motion.div
+            initial={{ x: "500rem" }}
+            animate={{ x: "0" }}
+            transition={{ type: "keyframes", duration: 1.2 }}
+            className="hidden md:flex w-1/2 items-center justify-center"
+          >
+            <img
+              src={askqustion}
+              alt="Ask Question Illustration"
+              className="max-w-full h-auto"
+            />
+          </motion.div>
+        </div>
+      </Container>
 
       <style>{`
         @media (max-width: 1020px) {
           .polygon-background-1 {
-            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important;
+            display: none !important;
+          }
+          .polygon-background-2 {
+            display: none !important;
           }
         }
       `}</style>
