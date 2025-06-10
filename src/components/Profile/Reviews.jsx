@@ -38,10 +38,10 @@ export default function Reviews({ rating, reviews, isShared, currentURL }) {
             <span className="text-lg font-bold text-main-color">Rating</span>
             <span className="italic">{rating} stars</span>
           </div>
-          <div className="flex space-x-4">
+          {/* <div className="flex space-x-4">
             <span className="text-lg font-bold text-main-color">Reviews</span>
             <span className="italic">{reviews} review</span>
-          </div>
+          </div> */}
         </div>
         {!isShared && (
           <AlertDialog>
