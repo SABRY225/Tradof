@@ -15,6 +15,8 @@ import { googleColor } from "@/assets/paths";
 import { GetCurrentSubscription } from "@/Util/Https/companyHttp";
 
 export default function Login() {
+  const [messageApi, contextHolder] = message.useMessage();
+
   const { user, login } = useAuth();
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -22,6 +24,12 @@ export default function Login() {
   const { from, message: loginAlert } = location.state || {};
   const { mutate, data, isPending } = useMutation({
     mutationFn: loginUser,
+    onMutate: () => {
+      messageApi.loading({
+        content: "Login...",
+        key: "login",
+      });
+    },
     onSuccess: async (data) => {
       Cookies.set("token", data.token, {
         expires: 7,
@@ -59,7 +67,10 @@ export default function Login() {
       if (error?.message == "Error checking subscription.") {
         navigate(`/select-plan/${data.token}`);
       } else {
-        message.error(error?.message || "Login failed!");
+        messageApi.error({
+          content: error?.message || "Login failed!",
+          key: "login",
+        });
         setError(error.message);
       }
     },
@@ -70,6 +81,12 @@ export default function Login() {
     isPending: googlePending,
   } = useMutation({
     mutationFn: signByGoogle,
+    onMutate: () => {
+      messageApi.loading({
+        content: "Google login...",
+        key: "googleLogin",
+      });
+    },
     onSuccess: (data) => {
       if (from) {
         console.log(from);
@@ -78,7 +95,10 @@ export default function Login() {
       console.log("Google login data:", data);
     },
     onError: (error) => {
-      message.error(error?.message || "Google login failed!");
+      messageApi.error({
+        content: error?.message || "Google login failed!",
+        key: "googleLogin",
+      });
       setError(error.message);
     },
   });
@@ -116,60 +136,63 @@ export default function Login() {
   if (isPending) return <Loading />;
 
   return (
-    <div className="rounded bg-[#fff] bg-opacity-[50%] backdrop-blur-[50px] p-[30px] md:p-[50px]  font-roboto-condensed text-center shadow">
-      <div className="title font-extrabold text-[40px] md:text-4xl">
-        Login to your account
-      </div>
-      <div className="subTitle text-[17px] font-light text-sm m-5">
-        Don't have an account?{" "}
-        <Link className="text-[#6C63FF] font-semibold" to="sign-up">
-          Sign Up
-        </Link>
-      </div>
-      <div>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <InputFelid
-            title="Email"
-            name="email"
-            requires={["Email required"]}
-            placeholder="Enter your email address"
-            type="text"
-            classes="min-w-[300px] text-[16px] outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]"
-            control={control}
-            errors={errors}
-          />
-          <InputFelid
-            title="Password"
-            name="password"
-            type="password"
-            control={control}
-            errors={errors}
-            placeholder="Enter your password"
-            requires={["password is required"]}
-            classes="min-w-[300px] text-[16px] outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]"
-          />
-          <div className="text-left border-b border-black w-fit">
-            <Link to="forget-password">Forgot Password?</Link>
-          </div>
-          <div className="flex items-center mt-[40px]">
-            <ButtonFelid
-              text="Log in"
-              classes="px-[60px] py-[7px] bg-second-color m-auto"
-              type="submit"
+    <>
+      {contextHolder}
+      <div className="rounded bg-[#fff] bg-opacity-[50%] backdrop-blur-[50px] p-[30px] md:p-[50px]  font-roboto-condensed text-center shadow">
+        <div className="title font-extrabold text-[40px] md:text-4xl">
+          Login to your account
+        </div>
+        <div className="subTitle text-[17px] font-light text-sm m-5">
+          Don't have an account?{" "}
+          <Link className="text-[#6C63FF] font-semibold" to="sign-up">
+            Sign Up
+          </Link>
+        </div>
+        <div>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <InputFelid
+              title="Email"
+              name="email"
+              requires={["Email required"]}
+              placeholder="Enter your email address"
+              type="text"
+              classes="min-w-[300px] text-[16px] outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]"
+              control={control}
+              errors={errors}
             />
-            <button
-              type="button"
-              onClick={() => signGoogle()}
-              className="h-fit w-fit mx-auto flex rounded py-1 px-2 gap-2 font-medium"
-            >
-              <div className="w-8 h-8 bg-white rounded-md flex items-center justify-center">
-                <img src={googleColor} alt="google color" className="w-5 " />
-              </div>
-              <p className="border-b-2 border-black">Sign in with Google</p>
-            </button>
-          </div>
-        </form>
+            <InputFelid
+              title="Password"
+              name="password"
+              type="password"
+              control={control}
+              errors={errors}
+              placeholder="Enter your password"
+              requires={["password is required"]}
+              classes="min-w-[300px] text-[16px] outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]"
+            />
+            <div className="text-left border-b border-black w-fit">
+              <Link to="forget-password">Forgot Password?</Link>
+            </div>
+            <div className="flex items-center mt-[40px]">
+              <ButtonFelid
+                text="Log in"
+                classes="px-[60px] py-[7px] bg-second-color m-auto"
+                type="submit"
+              />
+              <button
+                type="button"
+                onClick={() => signGoogle()}
+                className="h-fit w-fit mx-auto flex rounded py-1 px-2 gap-2 font-medium"
+              >
+                <div className="w-8 h-8 bg-white rounded-md flex items-center justify-center">
+                  <img src={googleColor} alt="google color" className="w-5 " />
+                </div>
+                <p className="border-b-2 border-black">Sign in with Google</p>
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -27,6 +27,7 @@ const commonClasses =
 const ITEMS_PER_PAGE = 20;
 
 const OffersPage = () => {
+  const [messageApi, contextHolder] = message.useMessage();
   const { user } = useAuth();
   const token = user?.token;
   const navigate = useNavigate();
@@ -35,7 +36,6 @@ const OffersPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { projectId } = useParams();
   const queryClient = useQueryClient();
-  const [messageApi, contextHolder] = message.useMessage();
 
   const {
     data,
@@ -70,13 +70,13 @@ const OffersPage = () => {
     onMutate: () => {
       messageApi.loading({
         content: "Sending accept proposal...",
-        key: "accept",
+        key: "acceptOffer",
       });
     },
     onSuccess: () => {
       messageApi.success({
         content: "Proposal accepted successfully",
-        key: "accept",
+        key: "acceptOffer",
         duration: 2.5,
       });
       queryClient.invalidateQueries(["offers", projectId]);
@@ -85,7 +85,7 @@ const OffersPage = () => {
     onError: (error) => {
       messageApi.error({
         content: error?.message || "Failed to accept proposal",
-        key: "accept",
+        key: "acceptOffer",
       });
     },
   });
@@ -100,7 +100,7 @@ const OffersPage = () => {
     onMutate: () => {
       messageApi.loading({
         content: "Sending Deny proposal...",
-        key: "deny",
+        key: "denyOffer",
       });
       console.log("loading");
     },
@@ -108,7 +108,7 @@ const OffersPage = () => {
       console.log("success");
       messageApi.success({
         content: "Proposal denied successfully",
-        key: "deny",
+        key: "denyOffer",
         duration: 2.5,
       });
       queryClient.invalidateQueries(["offers", projectId]);
@@ -116,7 +116,7 @@ const OffersPage = () => {
     onError: (error) => {
       messageApi.error({
         content: error?.message || "Failed to deny proposal",
-        key: "deny",
+        key: "denyOffer",
       });
     },
   });

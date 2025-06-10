@@ -25,6 +25,7 @@ import { ProjectStatus } from "@/Util/status";
 import ProjectPayment from "@/components/shared/ProjectPayment";
 
 export default function ProjectPage() {
+  const [messageApi, contextHolder] = message.useMessage();
   const {
     user: { userId, token, role },
   } = useAuth();
@@ -46,13 +47,26 @@ export default function ProjectPage() {
     useMutation({
       mutationFn: () =>
         acceptProjectCancellation({ projectId: project?.id, token }),
+      onMutate: () => {
+        messageApi.loading({
+          content: "Accepting cancellation project...",
+          key: "acceptingCancellation",
+        });
+      },
       onSuccess: () => {
-        message.success("Project cancellation accepted successfully");
+        messageApi.success({
+          content: "Project cancellation accepted successfully",
+          key: "acceptingCancellation",
+          duration: 2.5,
+        });
         queryClient.invalidateQueries({ queryKey: ["project", project?.id] });
         navigate("/user/dashboard");
       },
       onError: (error) => {
-        message.error(error.message || "Failed to accept cancellation");
+        messageApi.error({
+          content: error?.message || "Failed to accept cancellation",
+          key: "acceptingCancellation",
+        });
       },
     });
 
@@ -60,35 +74,74 @@ export default function ProjectPage() {
     useMutation({
       mutationFn: () =>
         rejectProjectCancellation({ projectId: project?.id, token }),
+      onMutate: () => {
+        messageApi.loading({
+          content: "Rejecting cancellation project...",
+          key: "rejectingCancellation",
+        });
+      },
       onSuccess: () => {
-        message.success("Project cancellation rejected successfully");
+        messageApi.success({
+          content: "Project cancellation rejected successfully",
+          key: "rejectingCancellation",
+          duration: 2.5,
+        });
         queryClient.invalidateQueries({ queryKey: ["project", project?.id] });
       },
       onError: (error) => {
-        message.error(error.message || "Failed to reject cancellation");
+        messageApi.error({
+          content: error?.message || "Failed to reject cancellation",
+          key: "rejectingCancellation",
+        });
       },
     });
 
   const { mutate: handleAcceptEdit, isPending: isAcceptingEdit } = useMutation({
     mutationFn: acceptEditRequest,
+    onMutate: () => {
+      messageApi.loading({
+        content: "Accepting edit proposal...",
+        key: "acceptingEditProposal",
+      });
+    },
     onSuccess: () => {
-      message.success("Edit request accepted successfully");
+      messageApi.success({
+        content: "Edit request accepted successfully",
+        key: "acceptingEditProposal",
+        duration: 2.5,
+      });
       queryClient.invalidateQueries({ queryKey: ["editRequest", project?.id] });
       queryClient.invalidateQueries({ queryKey: ["project", project?.id] });
     },
     onError: (error) => {
-      message.error(error.message || "Failed to accept edit request");
+      messageApi.error({
+        content: error?.message || "Failed to accept edit request",
+        key: "acceptingEditProposal",
+      });
     },
   });
 
   const { mutate: handleDenyEdit, isPending: isDenyingEdit } = useMutation({
     mutationFn: denyEditRequest,
+    onMutate: () => {
+      messageApi.loading({
+        content: "Deny edit proposal...",
+        key: "denyEditProposal",
+      });
+    },
     onSuccess: () => {
-      message.success("Edit request denied successfully");
+      messageApi.success({
+        content: "Edit request denied successfully",
+        key: "denyEditProposal",
+        duration: 2.5,
+      });
       queryClient.invalidateQueries({ queryKey: ["editRequest", project?.id] });
     },
     onError: (error) => {
-      message.error(error.message || "Failed to deny edit request");
+      messageApi.error({
+        content: error?.message || "Failed to deny edit request",
+        key: "denyEditProposal",
+      });
     },
   });
 
@@ -139,7 +192,7 @@ export default function ProjectPage() {
     return null;
   }
 
-  console.log(project);
+  // console.log(project);
 
   const ownerCard = {
     name: projectCard?.ownerName,
@@ -167,63 +220,68 @@ export default function ProjectPage() {
   );
 
   return (
-    <div className="bg-background-color">
-      {/* Hidden button that gets auto-clicked */}
-      <div className="container max-w-screen-xl mx-auto w-full p-5 py-[30px]">
-        <header className="font-medium mb-5">
-          <span className="text-main-color font-roboto-condensed">
-            Dashboard /{" "}
-          </span>
-          Project / <span className="font-regular italic">{project?.name}</span>
-        </header>
-        {project?.cancellationAccepted && (
-          <Alert
-            className="my-3"
-            message="The Project is canceled"
-            type="warning"
-            showIcon
-          />
-        )}
-        {project?.cancellationRequested &&
-          !project?.cancellationAccepted &&
-          role === "Freelancer" && (
+    <>
+      {contextHolder}
+      <div className="bg-background-color">
+        {/* Hidden button that gets auto-clicked */}
+        <div className="container max-w-screen-xl mx-auto w-full p-5 py-[30px]">
+          <header className="font-medium mb-5">
+            <span className="text-main-color font-roboto-condensed">
+              Dashboard /{" "}
+            </span>
+            Project /{" "}
+            <span className="font-regular italic">{project?.name}</span>
+          </header>
+          {project?.cancellationAccepted && (
             <Alert
-              className="my-5"
-              message="Cancellation request"
-              description="Project Owner request to cancel this project, and you can Accept or Reject this request."
-              type="info"
-              action={
-                <Space direction="vertical">
-                  <Button
-                    size="small"
-                    type="primary"
-                    loading={isAccepting}
-                    onClick={() => showConfirmModal("Accept")}
-                  >
-                    Accept
-                  </Button>
-                  <Button
-                    size="small"
-                    danger
-                    ghost
-                    loading={isRejecting}
-                    onClick={() => showConfirmModal("Reject")}
-                  >
-                    Reject
-                  </Button>
-                </Space>
-              }
-              closable
+              className="my-3"
+              message="The Project is canceled"
+              type="warning"
+              showIcon
             />
           )}
-        {editRequest && editRequest.status === 0 && role === "CompanyAdmin" && (
-          <Alert
-            className="my-5"
-            message="Edit Proposal Request"
-            description={`Freelancer has requested to change the project details:
+          {project?.cancellationRequested &&
+            !project?.cancellationAccepted &&
+            role === "Freelancer" && (
+              <Alert
+                className="my-5"
+                message="Cancellation request"
+                description="Project Owner request to cancel this project, and you can Accept or Reject this request."
+                type="info"
+                action={
+                  <Space direction="vertical">
+                    <Button
+                      size="small"
+                      type="primary"
+                      loading={isAccepting}
+                      onClick={() => showConfirmModal("Accept")}
+                    >
+                      Accept
+                    </Button>
+                    <Button
+                      size="small"
+                      danger
+                      ghost
+                      loading={isRejecting}
+                      onClick={() => showConfirmModal("Reject")}
+                    >
+                      Reject
+                    </Button>
+                  </Space>
+                }
+                closable
+              />
+            )}
+          {editRequest &&
+            editRequest.status === 0 &&
+            role === "CompanyAdmin" && (
+              <Alert
+                className="my-5"
+                message="Edit Proposal Request"
+                description={`Freelancer has requested to change the project details:
               ${
                 editRequest.newPrice
-                  ? `\nNew Price: $${editRequest.newPrice}`
+                  ? `\nNew Price: EGP${editRequest.newPrice}`
                   : ""
               }
               ${
@@ -231,78 +289,79 @@ export default function ProjectPage() {
                   ? `\nNew Duration: ${editRequest.newDuration} days`
                   : ""
               }`}
-            type="info"
-            action={
-              <Space direction="vertical">
-                <Button
-                  size="small"
-                  type="primary"
-                  loading={isAcceptingEdit}
-                  onClick={() => showEditRequestModal("Accept")}
-                >
-                  Accept
-                </Button>
-                <Button
-                  size="small"
-                  danger
-                  ghost
-                  loading={isDenyingEdit}
-                  onClick={() => showEditRequestModal("Deny")}
-                >
-                  Deny
-                </Button>
-              </Space>
-            }
-            closable
-          />
-        )}
-
-        <div className="grid grid-cols-[repeat(11,1fr)] gap-x-[20px]">
-          <div className="col-start-1 col-end-12 lg:col-start-1 lg:col-end-4 row-start-1 row-end-6">
-            <div className="flex flex-col md:flex-row lg:flex-col justify-between gap-5 h-[100%]">
-              <ProjectOwnerCard ownerCard={ownerCard} />
-              <ProjectPayment
-                budget={project?.price}
-                deliveryTime={project?.days}
-                freelancerId={project?.freelancerId}
-                statusProject={project?.status}
-                paymentState={paymentState}
-                setPaymentState={setPaymentState}
+                type="info"
+                action={
+                  <Space direction="vertical">
+                    <Button
+                      size="small"
+                      type="primary"
+                      loading={isAcceptingEdit}
+                      onClick={() => showEditRequestModal("Accept")}
+                    >
+                      Accept
+                    </Button>
+                    <Button
+                      size="small"
+                      danger
+                      ghost
+                      loading={isDenyingEdit}
+                      onClick={() => showEditRequestModal("Deny")}
+                    >
+                      Deny
+                    </Button>
+                  </Space>
+                }
+                closable
               />
-              <ProjectCard
-                projectDetails={projectDetails}
+            )}
+
+          <div className="grid grid-cols-[repeat(11,1fr)] gap-x-[20px]">
+            <div className="col-start-1 col-end-12 lg:col-start-1 lg:col-end-4 row-start-1 row-end-6">
+              <div className="flex flex-col md:flex-row lg:flex-col justify-between gap-5 h-[100%]">
+                <ProjectOwnerCard ownerCard={ownerCard} />
+                <ProjectPayment
+                  budget={project?.price}
+                  deliveryTime={project?.days}
+                  freelancerId={project?.freelancerId}
+                  statusProject={project?.status}
+                  paymentState={paymentState}
+                  setPaymentState={setPaymentState}
+                />
+                <ProjectCard
+                  projectDetails={projectDetails}
+                  isCanceled={project.cancellationAccepted}
+                  proposalId={project?.proposalId}
+                  isPaid={paymentState === "paid"}
+                />
+              </div>
+            </div>
+            <div className="col-start-1 col-end-12 lg:col-start-4 lg:col-end-9 row-start-6 lg:row-start-1 row-end-6">
+              <ProjectDetails
+                project={project}
+                projectFiles={companyFiles || []}
                 isCanceled={project.cancellationAccepted}
-                proposalId={project?.proposalId}
-                isPaid={paymentState === "paid"}
+              />
+              <Workspace
+                files={freelancerFiles || []}
+                projectId={project?.id}
+                isCanceled={project.cancellationAccepted}
+              />
+            </div>
+            <div className="col-start-1 lg:col-start-9 col-end-12 row-start-12 lg:row-start-1">
+              <Chatting
+                projectId={project.id}
+                senderId={userId}
+                freelancerId={project?.freelancerId}
+                companyId={project?.companyId}
+                freelancerEmail={project?.freelancerEmail}
+                companyEmail={projectCard?.ownerEmail}
+                isCanceled={project.cancellationAccepted}
               />
             </div>
           </div>
-          <div className="col-start-1 col-end-12 lg:col-start-4 lg:col-end-9 row-start-6 lg:row-start-1 row-end-6">
-            <ProjectDetails
-              project={project}
-              projectFiles={companyFiles || []}
-              isCanceled={project.cancellationAccepted}
-            />
-            <Workspace
-              files={freelancerFiles || []}
-              projectId={project?.id}
-              isCanceled={project.cancellationAccepted}
-            />
-          </div>
-          <div className="col-start-1 lg:col-start-9 col-end-12 row-start-12 lg:row-start-1">
-            <Chatting
-              projectId={project.id}
-              senderId={userId}
-              freelancerId={project?.freelancerId}
-              companyId={project?.companyId}
-              freelancerEmail={project?.freelancerEmail}
-              companyEmail={projectCard?.ownerEmail}
-              isCanceled={project.cancellationAccepted}
-            />
-          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

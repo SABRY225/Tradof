@@ -22,11 +22,11 @@ import { message } from "antd";
 import { useNavigate } from "react-router-dom";
 
 function Feedback() {
+  const [messageApi, contextHolder] = message.useMessage();
   const [rating, setRating] = useState(50);
   const [reason, setReason] = useState("");
   const [idea, setIdea] = useState("");
   const token = Cookies.get("token");
-  const [messageApi, contextHolder] = message.useMessage();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,9 +51,15 @@ function Feedback() {
         idea,
       });
       console.log("Feedback response:", data);
-      messageApi.success(data?.message);
+      messageApi.success({
+        content: data?.message,
+        duration: 2.5,
+      });
+      messageApi.success();
     } catch (error) {
-      messageApi.error(error?.message);
+      messageApi.error({
+        content: error?.message,
+      });
     }
   };
 

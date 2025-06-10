@@ -15,7 +15,7 @@ export default function Charts({ classes }) {
   const activeChart = data
     ? [{ completed: data.active, inCompleted: data.completed + data.cancelled }]
     : null;
-  const inProgressChart = data
+  const completedChart = data
     ? [
         {
           completed: data.completed,
@@ -23,7 +23,7 @@ export default function Charts({ classes }) {
         },
       ]
     : null;
-  const acceptedChart = data
+  const cancelledChart =  data
     ? [
         {
           completed: data.cancelled,
@@ -40,19 +40,19 @@ export default function Charts({ classes }) {
         name="Active"
         data={activeChart}
         isLoading={isLoading}
-        label="Not active project yet..."
+        label="active project"
       />
       <CardChart
-        name="In progress"
-        data={inProgressChart}
+        name="Completed"
+        data={completedChart}
         isLoading={isLoading}
-        label="Not started project yet..."
+        label="completed project"
       />
       <CardChart
-        name="Accepted"
-        data={acceptedChart}
+        name="Canceled"
+        data={cancelledChart}
         isLoading={isLoading}
-        label="Not accepted project yet..."
+        label="canceled project"
       />
     </div>
   );

@@ -8,7 +8,7 @@ import TranslationServices from "@/components/Profile/TranslationServices";
 import ProfessionalDetails from "@/components/Profile/ProfessionalDetails";
 import { useLoaderData, useLocation } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { addReview } from "@/Util/Https/http";
 
 export default function Profile() {
@@ -16,25 +16,26 @@ export default function Profile() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const share = queryParams.get("share");
-  const sessionId = queryParams.get("sessionId"); // assuming this is part of the URL
+  const sessionId = queryParams.get("sessionId");
+  const { person: loaderPerson } = useLoaderData();
+  const [person, setPerson] = useState(loaderPerson);
+  const [role, setRole] = useState(user?.role);
 
-  const { person, role } = useLoaderData();
-  const addReviewMutation = useMutation({
-    mutationFn: () => addReview({ id: person.userId }), // customize if needed
-    onSuccess: () => {
-      console.log("Review submitted from shared link.");
-    },
-    onError: (error) => {
-      console.error("Error submitting review", error);
-    },
-  });
   useEffect(() => {
     if (share) {
-      console.log(sessionId);;
-      addReviewMutation.mutate();
+      const dataParam = queryParams.get("data");
+      if (dataParam) {
+        try {
+          const decodedData = JSON.parse(decodeURIComponent(dataParam));
+          setPerson(decodedData);
+          setRole(queryParams.get("role") || user?.role);
+        } catch (error) {
+          console.error("Error parsing shared data:", error);
+        }
+      }
     }
   }, [share]);
-  // console.log(person);
+
   const profileData = {
     image: person?.profileImageUrl,
     firstName: person?.firstName,
@@ -51,8 +52,6 @@ export default function Profile() {
     phone: person?.phone,
     location: person?.companyAddress,
   };
-
-  // console.log(person?.freelancerLanguagePairs);
 
   const languagePairs = person?.freelancerLanguagePairs?.map((lang) => ({
     id: lang.id,
@@ -80,45 +79,39 @@ export default function Profile() {
   };
 
   const preferredLanguages = person?.preferredLanguages;
-
+  // console.log(person);
   const industriesServed = person?.specializations;
 
   const currentURL = new URL(
     window.location.origin + location.pathname + location.search
   );
 
-  // Encode and append to URL as query string
   const encoded = encodeURIComponent(JSON.stringify(person));
-  currentURL.searchParams.set("data", encoded); // URL becomes ?...&data=...
-  currentURL.searchParams.set("share", "true"); // URL becomes ?...&data=...
-  currentURL.searchParams.set("role", role || user?.role); // URL becomes ?...&data=...
+  currentURL.searchParams.set("data", encoded);
+  currentURL.searchParams.set("share", "true");
+  currentURL.searchParams.set("role", role || user?.role);
 
-  // Final shareable URL as string
   const finalURL = currentURL.toString();
 
   return (
     <div className="bg-background-color">
       <div className=" container bg-background-color max-w-screen-xl mx-auto p-4 w-full py-[40px]">
-        {/* Rating & Reviews */}
         <Reviews
           rating={person?.ratingSum}
           reviews={person?.profileViews}
           isShared={share}
           currentURL={finalURL}
         />
-        {/* Profile Information */}
         <ProfileInformation profileData={profileData} isShared={share} />
-        {/* Contact Info */}
         <ContactInfo contactData={contactData} isShared={share} />
-        {/* Operational Info */}
-        {(user?.role || role) === "CompanyAdmin" && (
+        {role === "CompanyAdmin" && (
           <OperationalInfo
             preferredLanguages={preferredLanguages}
             industriesServed={industriesServed}
             isShared={share}
           />
         )}
-        {(user?.role || role) === "Freelancer" && (
+        {role === "Freelancer" && (
           <>
             <TranslationServices
               languagesPairs={languagePairs}

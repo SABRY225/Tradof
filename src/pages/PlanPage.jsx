@@ -8,6 +8,7 @@ import Cookies from "js-cookie";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 export default function PlanPage() {
+  const [messageApi, contextHolder] = message.useMessage();
   const {
     user: { userId, role },
   } = useAuth();
@@ -28,7 +29,10 @@ export default function PlanPage() {
       );
 
       if (response.data.type == "Free") {
-        message.success(response.data.message);
+        messageApi.success({
+          content: response.data.message,
+          duration: 2.5,
+        });
         if (role === "admin") {
           navigate("/admin/dashboard"); // Redirect to admin dashboard
         } else {
@@ -38,19 +42,24 @@ export default function PlanPage() {
         window.location.href = response.data.iframURL;
       }
     } catch (err) {
-      message.error(err?.message);
+      messageApi.error({
+        content: err?.message,
+      });
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto mt-10 text-center">
-      <div className="flex justify-center">
-        <img src={logo} alt={logo} width={150} />
+    <>
+      {contextHolder}
+      <div className="max-w-5xl mx-auto mt-10 text-center">
+        <div className="flex justify-center">
+          <img src={logo} alt={logo} width={150} />
+        </div>
+        <h1 className="text-3xl font-bold mb-6 text-center mt-5 text-[#6D63FF] ">
+          Choose Your Plan
+        </h1>
+        <SelectPlan onPlanSelect={handlePlanSelect} />
       </div>
-      <h1 className="text-3xl font-bold mb-6 text-center mt-5 text-[#6D63FF] ">
-        Choose Your Plan
-      </h1>
-      <SelectPlan onPlanSelect={handlePlanSelect} />
-    </div>
+    </>
   );
 }

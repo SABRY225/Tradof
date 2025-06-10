@@ -68,7 +68,7 @@ const customComponents = {
       }
     };
 
-    console.log(calendarEvent);;
+    console.log(calendarEvent);
     return (
       <div className="p-4 bg-white rounded-lg shadow-lg">
         <div className="space-y-3">
@@ -198,6 +198,8 @@ const customComponents = {
 };
 
 export default function Calender() {
+  const [messageApi, contextHolder] = message.useMessage();
+
   const {
     user: { token },
   } = useAuth();
@@ -209,6 +211,12 @@ export default function Calender() {
 
   const { mutate, isPending } = useMutation({
     mutationFn: createEvent,
+    onMutate: () => {
+      messageApi.loading({
+        content: "Creating event...",
+        key: "createEvent",
+      });
+    },
     onSuccess: ({ data }) => {
       console.log(data);
       const event = {
@@ -227,13 +235,18 @@ export default function Calender() {
       }
       setEvents((prevEvents) => [...prevEvents, event]);
       setOpen(false);
-      message.success(
-        `Create ${event.isMeeting ? "meeting" : "event"} Success!`
-      );
+      messageApi.success({
+        content: `Create ${event.isMeeting ? "meeting" : "event"} Success!`,
+        key: "createEvent",
+        duration: 2.5,
+      });
     },
     onError: (error) => {
       console.error("Error creating event:", error);
-      message.error(error.message || "Create event failed!");
+      messageApi.error({
+        content: error?.message || "Create event failed!",
+        key: "createEvent",
+      });
     },
   });
   const { data, isError, isLoading } = useQuery({
@@ -245,7 +258,9 @@ export default function Calender() {
   // console.log(data);
   const calender = useLoaderData();
   if (calender?.error) {
-    message.error(calendar?.message || "create calender failed!");
+    messageApi.error({
+      content: calendar?.message || "create calender failed!",
+    });
   }
   const AddEventMonth = useCallback(() => {
     setTimeout(() => {
@@ -358,7 +373,7 @@ export default function Calender() {
   const handleAddEvent = (newEvent) => {
     const token = Cookies.get("token");
     if (!token) {
-      message.error("No authentication token found!");
+      messageApi.error({ content: "No authentication token found!" });
       return;
     }
 
@@ -374,29 +389,32 @@ export default function Calender() {
     console.log("Event Data:", newEvent);
   };
   return (
-    <div className="bg-background-color">
-      <PageTitle title="Calender" subtitle="Check your dates" />
-      <div className="container max-w-screen-xl mx-auto px-4 w-full py-[30px] overflow-x-auto">
-        {!isLoading && (
-          <>
-            <ScheduleXCalendar
-              customComponents={customComponents}
-              calendarApp={calendar}
-            />
-            {open && (
-              <EventModel
-                handleAddEvent={handleAddEvent}
-                open={open}
-                date={selectDate}
-                setOpen={setOpen}
-                isPending={isPending}
+    <>
+      {contextHolder}
+      <div className="bg-background-color">
+        <PageTitle title="Calender" subtitle="Check your dates" />
+        <div className="container max-w-screen-xl mx-auto px-4 w-full py-[30px] overflow-x-auto">
+          {!isLoading && (
+            <>
+              <ScheduleXCalendar
+                customComponents={customComponents}
+                calendarApp={calendar}
               />
-            )}
-          </>
-        )}
-        {isLoading && <Loading />}
+              {open && (
+                <EventModel
+                  handleAddEvent={handleAddEvent}
+                  open={open}
+                  date={selectDate}
+                  setOpen={setOpen}
+                  isPending={isPending}
+                />
+              )}
+            </>
+          )}
+          {isLoading && <Loading />}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

@@ -11,16 +11,32 @@ import Loading from "./Loading";
 import { Password } from "@mui/icons-material";
 
 export default function RestPassword() {
+  const [messageApi, contextHolder] = message.useMessage();
+
   const { email, resetToken } = useParams();
   const navigate = useNavigate();
   const { mutate, isPending } = useMutation({
     mutationFn: changePassword,
+    onMutate: () => {
+      messageApi.loading({
+        content: "Sending change password request...",
+        key: "changePassword",
+      });
+    },
     onSuccess: () => {
-      message.success("change password successfully!");
+      messageApi.success({
+        content: "change password successfully!",
+        key: "changePassword",
+        duration: 2.5,
+      });
+      message.success();
       navigate("/auth");
     },
     onError: (error) => {
-      message.error(error?.message || "change password failed!");
+      messageApi.error({
+        content: error?.message || "change password failed!",
+        key: "changePassword",
+      });
     },
   });
   const {
@@ -94,50 +110,53 @@ export default function RestPassword() {
   if (isPending) return <Loading />;
 
   return (
-    <div className="rounded bg-[#fff] bg-opacity-[50%] backdrop-blur-[50px] p-[30px] md:p-[50px] font-roboto-condensed text-center shadow">
-      <div className="title font-extrabold text-[40px] md:text-4xl mb-[30px]">
-        Reset your password
+    <>
+      {contextHolder}
+      <div className="rounded bg-[#fff] bg-opacity-[50%] backdrop-blur-[50px] p-[30px] md:p-[50px] font-roboto-condensed text-center shadow">
+        <div className="title font-extrabold text-[40px] md:text-4xl mb-[30px]">
+          Reset your password
+        </div>
+        <div>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <InputFelid
+              title="Email Address"
+              name="email"
+              requires={["Email required"]}
+              placeholder="Enter your email address"
+              type="text"
+              classes="disable text-[16px] outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]"
+              control={control}
+              errors={errors}
+              disabled
+            />
+            <InputFelid
+              title="Password"
+              name="password"
+              requires={["password required"]}
+              placeholder="Enter your password"
+              type="password"
+              classes="text-[16px] outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]"
+              control={control}
+              errors={errors}
+            />
+            <InputFelid
+              title="Confirm Password"
+              name="confirmPassword"
+              requires={["Password must match is required"]}
+              placeholder="Enter your password"
+              type="password"
+              classes="text-[16px] outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]"
+              control={control}
+              errors={errors}
+            />
+            <ButtonFelid
+              text="Save Password"
+              classes="mt-[40px] m-auto px-[37px] py-[7px] bg-second-color"
+              type="submit"
+            />
+          </form>
+        </div>
       </div>
-      <div>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <InputFelid
-            title="Email Address"
-            name="email"
-            requires={["Email required"]}
-            placeholder="Enter your email address"
-            type="text"
-            classes="disable text-[16px] outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]"
-            control={control}
-            errors={errors}
-            disabled
-          />
-          <InputFelid
-            title="Password"
-            name="password"
-            requires={["password required"]}
-            placeholder="Enter your password"
-            type="password"
-            classes="text-[16px] outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]"
-            control={control}
-            errors={errors}
-          />
-          <InputFelid
-            title="Confirm Password"
-            name="confirmPassword"
-            requires={["Password must match is required"]}
-            placeholder="Enter your password"
-            type="password"
-            classes="text-[16px] outline-none border-[1px] border-[#D6D7D7] rounded p-2 w-full focus:border-[#CC99FF] focus:ring-1 focus:ring-[#CC99FF]"
-            control={control}
-            errors={errors}
-          />
-          <ButtonFelid
-            text="Save Password"
-            classes="mt-[40px] m-auto px-[37px] py-[7px] bg-second-color"
-            type="submit"
-          />
-        </form>
-      </div>
-    </div>
+    </>
   );
 }
