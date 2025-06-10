@@ -16,7 +16,7 @@ function Invoices() {
     const fetchInvoices = async () => {
       try {
         const data = await getInvoices(token);
-        // console.log(data.data );
+        console.log(data.data );
         
         setInvoices(data.data || []); 
       } catch (error) {

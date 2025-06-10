@@ -133,10 +133,16 @@ const InvoiceCard = ({ invoice }) => {
              </>
             )}
             {invoice.type === "Withdraw Profits" && (
+              <>
               <tr>
                 <td>Profit Withdrawal</td>
                 <td>{invoice.withdrawProfitId?._id || "N/A"}</td>
               </tr>
+              <tr>
+                <td>Profit Withdrawal</td>
+                <td>{invoice.withdrawProfitId?.paymentStatus || "N/A"}</td>
+              </tr>
+              </>
             )}
             {invoice.type === "Pay Project" && (
               <tr>
@@ -153,7 +159,7 @@ const InvoiceCard = ({ invoice }) => {
 
             {invoice.type === "Subscription" && invoice.subPackageId?.packageId?.price}
             {invoice.type === "Pay Project" && invoice.pFinancialId?.budget}
-            {invoice.type === "Withdraw Profits" && ""}
+            {invoice.type === "Withdraw Profits" && invoice.withdrawProfitId?.amount}
             {" "}EGP
           </p>
         </div>

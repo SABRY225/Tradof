@@ -1,10 +1,9 @@
-import { Box, Container, Paper, Typography } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 import { useEffect } from "react";
 import CheckIcon from "@mui/icons-material/Check";
 import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/icons/logo.svg";
 import axios from "axios";
-import { message } from "antd";
 
 export default function SuccessPayment() {
   const location = useLocation();
@@ -24,7 +23,6 @@ export default function SuccessPayment() {
           { id, success, orderId, message }
         );
         if (response.data.success === true) {
-          message.success(response.data.message);
           setTimeout(() => {
             navigate("/");
           }, 5000);
