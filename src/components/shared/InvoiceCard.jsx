@@ -157,9 +157,9 @@ const InvoiceCard = ({ invoice }) => {
         <div className="mt-6 text-right">
           <p className="total">Total : {" "}
 
-            {invoice.type === "Subscription" && invoice.subPackageId?.packageId?.price}
-            {invoice.type === "Pay Project" && invoice.pFinancialId?.budget}
-            {invoice.type === "Withdraw Profits" && invoice.withdrawProfitId?.amount}
+            {invoice.type == "Subscription" && invoice.subPackageId?.packageId?.price}
+            {invoice.type == "Pay Project" && invoice.pFinancialId?.budget}
+            {invoice.type == "Withdraw Profits" && invoice?.withdrawProfitId?.amount}
             {" "}EGP
           </p>
         </div>
