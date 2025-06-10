@@ -59,7 +59,7 @@ export default function PersonCard({ member }) {
         <img
           src={member.image}
           alt={`${member.name} photo`}
-          className="rounded-full object-cover h-[50px] w-[50px]"
+          className="rounded-full object-cover h-[50px] w-[50px] bg-background-color"
         />
       </AlertDialogTrigger>
       <AlertDialogContent className="py-[50px] max-w-[961px] bg-background-color">

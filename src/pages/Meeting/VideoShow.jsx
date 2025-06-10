@@ -55,6 +55,7 @@ export default function VideoShow({
   user,
   remote = false,
 }) {
+  const [ready, setReady] = useState(false);
   const [dominantColor, setDominantColor] = useState("#6c63ff");
   const profileImageUrl = user.profileImageUrl || "/default-avatar.png";
 
@@ -67,14 +68,18 @@ export default function VideoShow({
       {stream ? (
         <div className="relative border-2 border-[#6c63ff] rounded-lg overflow-hidden shadow-inside flex">
           {isVideoOn ? (
-            <div className="w-full h-full">
+            <div className="w-full h-full relative w-full aspect-[16/9] sm:aspect-[4/3]">
+              {!ready && (
+                <div className="absolute inset-0 bg-black animate-pulse" />
+              )}
               <ReactPlayer
                 playing
-                muted
+                muted={!remote}
                 height="100%"
                 width="100%"
                 url={stream}
                 style={{ margin: "auto" }}
+                onReady={() => setReady(true)}
                 config={{
                   file: {
                     attributes: {

@@ -109,10 +109,12 @@ const StartedProjects = () => {
       <div className="container max-w-screen-xl mx-auto w-full py-[30px] px-4">
         {/* Top Filter Section */}
         <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="text-[16px] font-semibold">State:</div>
-              <div className="flex gap-4">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+              <div className="text-sm sm:text-[16px] font-semibold whitespace-nowrap">
+                State:
+              </div>
+              <div className="flex flex-wrap gap-2 sm:gap-4">
                 {[
                   "All",
                   "Active",
@@ -124,7 +126,7 @@ const StartedProjects = () => {
                 ].map((state) => (
                   <label
                     key={state}
-                    className="flex items-center gap-2 cursor-pointer"
+                    className="flex items-center gap-1 sm:gap-2 cursor-pointer"
                   >
                     <input
                       type="radio"
@@ -132,14 +134,16 @@ const StartedProjects = () => {
                       value={state}
                       checked={filter === state}
                       onChange={(e) => setFilter(e.target.value)}
-                      className="accent-main-color"
+                      className="accent-main-color w-3 h-3 sm:w-4 sm:h-4"
                     />
-                    <span className="text-[14px]">{state}</span>
+                    <span className="text-xs sm:text-[14px] whitespace-nowrap">
+                      {state}
+                    </span>
                   </label>
                 ))}
               </div>
             </div>
-            <div className="relative w-full md:w-[300px]">
+            <div className="relative w-full md:w-[300px] mt-4 md:mt-0">
               <input
                 type="text"
                 placeholder="Search projects..."

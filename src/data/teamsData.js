@@ -34,7 +34,7 @@ export const teamsData = [
     },
     {
         name: "Ahmed Sabry",
-        image: "sabry.jpg",
+        image: "sabry.png",
         subtitle: "Full Stack Developer (MERN)",
         media: [
             {
@@ -172,7 +172,7 @@ export const teamsData = [
     },
     {
         name: "Ahmed Nasser",
-        image: "nasser.jpg",
+        image: "nasser.png",
         subtitle: "Back-End Developer",
         media: [
             {

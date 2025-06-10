@@ -26,7 +26,7 @@ function Feedback() {
   const [reason, setReason] = useState("");
   const [idea, setIdea] = useState("");
   const token = Cookies.get("token");
-  const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,71 +51,68 @@ function Feedback() {
         idea,
       });
       console.log("Feedback response:", data);
-      message.success(data?.message);
-      navigate("/user/dashboard");
+      messageApi.success(data?.message);
     } catch (error) {
-      message.error(error?.message);
+      messageApi.error(error?.message);
     }
   };
 
   return (
     <>
-      <div className="relative overflow-hidden">
+      {contextHolder}
+      <div className="relative overflow-hidden min-h-screen">
         <div className="bg-background-color absolute top-0 left-0 w-full h-full z-[-1]"></div>
         <motion.div
           initial={{ y: "-300rem" }}
           animate={{ y: "0" }}
           transition={{ type: "keyframes", duration: 1 }}
-          className="hidden polygon-background-2 z-[-1] absolute bg-[#d2d4f6] h-full md:w-full w-[92vh] md:flex items-center justify-center"
-          style={{
-            clipPath: "polygon(0 0, 100% 0, 100% 40%, 0% 95%)",
-          }}
-        ></motion.div>
+          className="hidden md:block polygon-background-2 z-[-1] absolute bg-[#d2d4f6] h-full w-full md:flex items-center justify-center"
+          style={{ clipPath: "polygon(0 0, 100% 0, 100% 40%, 0% 95%)" }}
+        />
         <motion.div
           initial={{ y: "-300rem" }}
           animate={{ y: "0" }}
           transition={{ type: "keyframes", duration: 1.3 }}
-          className="polygon-background-1 z-[-1] absolute bg-[#6c63ff] h-full md:w-full w-[92vh] md:flex items-center justify-center"
-          style={{
-            clipPath: "polygon(0 0, 100% 0, 100% 30%, 0 93%)",
-          }}
-        ></motion.div>
+          className="hidden md:block polygon-background-1 z-[-1] absolute bg-[#6c63ff] h-full w-full md:flex items-center justify-center"
+          style={{ clipPath: "polygon(0 0, 100% 0, 100% 30%, 0 93%)" }}
+        />
 
         <Container
           maxWidth="xl"
           sx={{
-            py: 4,
-            mx: { xs: "0px", md: "100px" },
+            py: { xs: 2, sm: 3, md: 4 },
+            px: { xs: 2, sm: 3, md: 4 },
+            mx: { xs: "0px", sm: "20px", md: "100px" },
           }}
         >
-          <div className="flex gap-8 md:w-[90%] w-full">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-8 w-full md:w-[90%]">
             <motion.div
               initial={{ x: "-500rem" }}
               animate={{ x: "0" }}
               transition={{ type: "keyframes", duration: 1.2 }}
-              className="flex flex-col gap-[30px] items-start py-8 px-4 w-full md:w-1/2"
+              className="flex flex-col gap-4 sm:gap-6 md:gap-[30px] items-start py-4 sm:py-6 md:py-8 px-2 sm:px-4 w-full md:w-1/2"
             >
               <Typography
                 sx={{
-                  fontSize: "46px",
-                  color: "white",
+                  fontSize: { xs: "32px", sm: "38px", md: "46px" },
+                  color: { xs: "#000", md: "white" },
                   fontWeight: 500,
                   width: "100%",
                   fontFamily: "Roboto, sans-serif",
                 }}
               >
-                Give us feedback
+                We'd love to hear from you
               </Typography>
 
               <Typography
                 sx={{
-                  color: "white",
+                  color: { xs: "#000", md: "white" },
                   opacity: 0.7,
                   fontFamily: "Roboto, sans-serif",
+                  fontSize: { xs: "14px", sm: "16px" },
                 }}
               >
-                What do you think of the issue search experience within Tradof
-                projects
+                Share your thoughts and help us improve
               </Typography>
 
               <Box sx={{ width: "100%", color: "white", position: "relative" }}>
@@ -137,7 +134,7 @@ function Feedback() {
                         ? faFaceMeh
                         : faFaceSmile
                     }
-                    className="text-white text-3xl"
+                    className="text-main-color md:text-white text-2xl sm:text-3xl"
                   />
                 </div>
                 <Slider
@@ -153,10 +150,12 @@ function Feedback() {
                   ]}
                   sx={{
                     color: "white",
-                    height: "16px",
+                    height: { xs: "12px", sm: "16px" },
                     mt: 4,
                     "& .MuiSlider-thumb": {
                       bgcolor: "white",
+                      width: { xs: "16px", sm: "20px" },
+                      height: { xs: "16px", sm: "20px" },
                     },
                     "& .MuiSlider-track": {
                       bgcolor: "#6C63FF",
@@ -173,7 +172,7 @@ function Feedback() {
                 <Typography
                   sx={{
                     color: "white",
-                    fontSize: "15px",
+                    fontSize: { xs: "13px", sm: "15px" },
                     position: "absolute",
                     left: `${rating}%`,
                     bottom: "-7px",
@@ -194,50 +193,60 @@ function Feedback() {
                 </Typography>
               </Box>
 
-              <form onSubmit={handleSubmit} className="w-full">
+              <form onSubmit={handleSubmit} className="w-full max-w-[600px]">
                 <TextField
                   fullWidth
                   multiline
-                  rows={4}
-                  placeholder="write some thing"
+                  rows={3}
+                  placeholder="Write your feedback here..."
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
-                  label="What are the main reason for your rating"
+                  label="Feedback"
                   variant="outlined"
                   InputLabelProps={{
                     shrink: true,
                   }}
                   sx={{
-                    mb: 3,
+                    mb: 2,
                     "& .MuiOutlinedInput-root": {
                       backgroundColor: "transparent",
                       borderRadius: 2,
-                      color: "white",
+                      color: { xs: "#000", md: "white" },
                     },
                     "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "white",
+                      borderColor: { xs: "#000", md: "white" },
                     },
                     "& .MuiInputLabel-root": {
-                      color: "white",
-                      backgroundColor: "#6c63ff",
+                      color: { xs: "#000", md: "white" },
+                      backgroundColor: { xs: "#fff", md: "#6c63ff" },
                       px: 1,
+                      fontSize: { xs: "14px", sm: "16px" },
                     },
                     "& textarea::placeholder": {
-                      color: "rgba(255, 255, 255, 0.7)",
+                      color: {
+                        xs: "rgba(0, 0, 0, 0.7)",
+                        md: "rgba(255, 255, 255, 0.7)",
+                      },
+                      fontSize: { xs: "14px", sm: "16px" },
                     },
                   }}
                 />
 
-                <Typography sx={{ color: "white", mb: 3, opacity: 0.7 }}>
-                  If you have ideas to improve the experience, share them with
-                  us.
-                </Typography>
+                {/* <Typography
+                  sx={{
+                    color: { xs: "#000", md: "white" },
+                    mb: 1,
+                    fontSize: { xs: "14px", sm: "16px" },
+                  }}
+                >
+                  How would you rate your experience?
+                </Typography> */}
 
                 <TextField
                   fullWidth
                   multiline
-                  rows={4}
-                  placeholder="write some thing"
+                  rows={3}
+                  placeholder="write some thing to improve..."
                   value={idea}
                   onChange={(e) => setIdea(e.target.value)}
                   label="Your idea"
@@ -246,43 +255,47 @@ function Feedback() {
                     shrink: true,
                   }}
                   sx={{
-                    mb: 4,
+                    mb: 2,
                     "& .MuiOutlinedInput-root": {
                       backgroundColor: "transparent",
                       borderRadius: 2,
-                      color: "white",
+                      color: { xs: "#000", md: "white" },
                     },
                     "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "white",
+                      borderColor: { xs: "#000", md: "white" },
                     },
                     "& .MuiInputLabel-root": {
-                      color: "white",
-                      backgroundColor: "#6c63ff",
+                      color: { xs: "#000", md: "white" },
+                      backgroundColor: { xs: "#fff", md: "#6c63ff" },
                       px: 1,
+                      fontSize: { xs: "14px", sm: "16px" },
                     },
                     "& textarea::placeholder": {
-                      color: "rgba(255, 255, 255, 0.7)",
+                      color: {
+                        xs: "rgba(0, 0, 0, 0.7)",
+                        md: "rgba(255, 255, 255, 0.7)",
+                      },
+                      fontSize: { xs: "14px", sm: "16px" },
                     },
                   }}
                 />
 
-                <div className="flex justify-center w-full">
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    sx={{
-                      px: 4,
-                      py: 1,
-                      bgcolor: "#FF6B6B",
-                      "&:hover": {
-                        bgcolor: "#FF5252",
-                      },
-                      borderRadius: 1,
-                    }}
-                  >
-                    Send
-                  </Button>
-                </div>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    px: { xs: 3, sm: 4 },
+                    py: { xs: 0.5, sm: 1 },
+                    bgcolor: "#FF6B6B",
+                    "&:hover": {
+                      bgcolor: "#FF5252",
+                    },
+                    borderRadius: 1,
+                    fontSize: { xs: "14px", sm: "16px" },
+                  }}
+                >
+                  Submit Feedback
+                </Button>
               </form>
             </motion.div>
 
@@ -290,12 +303,12 @@ function Feedback() {
               initial={{ x: "500rem" }}
               animate={{ x: "0" }}
               transition={{ type: "keyframes", duration: 1.2 }}
-              className="w-1/2 md:flex hidden items-center justify-center"
+              className="hidden md:flex w-1/2 items-center justify-center"
             >
               <img
                 src={feedbackImg}
                 alt="Feedback Illustration"
-                className="max-w-[600px] h-auto"
+                className="max-w-full h-auto"
               />
             </motion.div>
           </div>
@@ -304,7 +317,10 @@ function Feedback() {
         <style>{`
           @media (max-width: 1020px) {
             .polygon-background-1 {
-              clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important;
+              display: none !important;
+            }
+            .polygon-background-2 {
+              display: none !important;
             }
           }
         `}</style>

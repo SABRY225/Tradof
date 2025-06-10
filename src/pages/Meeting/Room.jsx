@@ -645,7 +645,9 @@ export default function Room() {
         }
       } catch (error) {
         console.error("Error creating new video track:", error);
-        message.error("Failed to access camera. Please check your permissions.");
+        message.error(
+          "Failed to access camera. Please check your permissions."
+        );
       }
     } else {
       console.warn("No video track available and camera is already on");
@@ -746,7 +748,21 @@ export default function Room() {
     }
   }, [isChatOpen]);
 
-  console.log(participant);
+  function hasAudioTrack(stream) {
+    return !!(
+      stream &&
+      stream.getAudioTracks &&
+      stream.getAudioTracks().length > 0
+    );
+  }
+
+  if (!hasAudioTrack(myStream)) {
+    console.warn("No audio tracks found in the my stream");
+  }
+
+  if (!hasAudioTrack(remoteStream)) {
+    console.warn("No audio tracks found in the remote stream");
+  }
 
   return (
     <div className="bg-background-color">
@@ -801,23 +817,25 @@ export default function Room() {
           </div>
 
           {/* Controls */}
-          <VideoControls
-            isMicOn={isMicOn}
-            isVideoOn={isVideoOn}
-            onToggleMic={toggleMicrophone}
-            onToggleCamera={toggleCamera}
-            callState={callState}
-            activeStartCall={remoteSocketId}
-            handleCallState={
-              callState === "end"
-                ? handleLeaveMeetingWithConfirmation
-                : handleCallUser
-            }
-            participant={participant}
-            isChatOpen={isChatOpen}
-            onToggleChat={handleToggleChat}
-            unreadMessages={unreadMessages}
-          />
+          <div className="sticky bottom-0 left-0 right-0 bg-white z-10">
+            <VideoControls
+              isMicOn={isMicOn}
+              isVideoOn={isVideoOn}
+              onToggleMic={toggleMicrophone}
+              onToggleCamera={toggleCamera}
+              callState={callState}
+              activeStartCall={remoteSocketId}
+              handleCallState={
+                callState === "end"
+                  ? handleLeaveMeetingWithConfirmation
+                  : handleCallUser
+              }
+              participant={participant}
+              isChatOpen={isChatOpen}
+              onToggleChat={handleToggleChat}
+              unreadMessages={unreadMessages}
+            />
+          </div>
         </div>
       </div>
 

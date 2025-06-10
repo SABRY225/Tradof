@@ -8,9 +8,9 @@ import iphone from "../../assets/icons/iphone.svg";
 import PersonCard from "@/UI/PersonCard";
 import { teamsData } from "@/data/teamsData";
 
-
-
 export default function ContactUs({ ...prams }) {
+  const [messageApi, contextHolder] = message.useMessage();
+
   const {
     control,
     handleSubmit,
@@ -27,11 +27,11 @@ export default function ContactUs({ ...prams }) {
   const sendMessage = () => {
     const { email, message } = formData;
     if (email.trim() === "") {
-      message.error("Please enter a valid email");
+      messageApi.error("Please enter a valid email");
       return;
     }
     if (message.trim() === "") {
-      message.error("Please enter a valid message");
+      messageApi.error("Please enter a valid message");
       return;
     }
     const serviceID = import.meta.env.VITE_SEND_MESSAGE_SERVICE_KEY;
@@ -40,31 +40,32 @@ export default function ContactUs({ ...prams }) {
     emailjs
       .send(serviceID, templateID, { email, message }, userID)
       .then(() => {
-        message.success("Message sent successfully!");
+        messageApi.success("Message sent successfully!");
         reset(); // Clear fields after submission
       })
       .catch((error) => {
-        message.error("Failed to send message");
+        messageApi.error("Failed to send message");
         console.error(error);
       });
   };
   return (
     <>
+      {contextHolder}
       <div
-        className="hidden polygon-background-2 z-[-1] absolute bg-[#d2d4f6] h-screen w-full md:flex items-center justify-center "
+        className="hidden polygon-background-2 z-[-1] absolute bg-[#d2d4f6] h-screen w-full md:flex items-center justify-center"
         style={{
           clipPath: "polygon(0px 20%, 100% 0, 100% 100%, 0% 100%)",
         }}
       ></div>
       <div
-        className="polygon-background-1 z-[-1] absolute bg-[#6c63ff] h-screen md:w-full w-[92vh] md:flex items-center justify-center"
+        className="polygon-background-1 z-[-1] absolute bg-[#6c63ff] h-screen w-full md:w-full flex items-center justify-center"
         style={{
           clipPath: "polygon(0px 30%, 100% 1%, 100% 100%, 0px 100%)",
         }}
       ></div>
       <div
         {...prams}
-        className="min-h-screen flex flex-col lg:flex-row md:justify-around items-center md:mx-[140px] pt-[150px]"
+        className="min-h-screen flex flex-col lg:flex-row md:justify-around items-center px-4 sm:px-8 md:px-16 lg:px-[140px] pt-[100px] sm:pt-[120px] md:pt-[150px]"
       >
         <div className="hidden lg:block font-roboto-condensed text-white">
           <div className=" font-roboto-condensed font-regular text-[18px] my-[20px] max-w-[500px]">
@@ -137,6 +138,25 @@ export default function ContactUs({ ...prams }) {
         @media (max-width: 1020px) {
           .polygon-background-1 {
             clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important;
+          }
+          .polygon-background-2 {
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .polygon-background-1 {
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important;
+          }
+          .polygon-background-2 {
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important;
+          }
+        }
+        @media (min-width: 1021px) {
+          .polygon-background-1 {
+            clip-path: polygon(0px 30%, 100% 1%, 100% 100%, 0px 100%) !important;
+          }
+          .polygon-background-2 {
+            clip-path: polygon(0px 20%, 100% 0, 100% 100%, 0% 100%) !important;
           }
         }
       `}</style>
