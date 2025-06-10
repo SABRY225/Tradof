@@ -1,6 +1,7 @@
 import { useAuth } from "@/context/AuthContext";
 import person from "../../assets/images/1560a64114a9372e.jpg";
 import { stare, emptyStare } from "../../assets/paths.js";
+import { Link } from "react-router-dom";
 
 export default function ProjectOwnerCard({ ownerCard }) {
   const {
@@ -17,24 +18,29 @@ export default function ProjectOwnerCard({ ownerCard }) {
     hour12: true,
   });
 
-  console.log(role);
+  console.log(ownerCard);
   return (
     <div className="flex-1 h-[100%]">
       <h1 className="italic border-b-2 border-main-color w-fit ml-2 pl-2">
         Project owner
       </h1>
       <div className="space-y-[20px] bg-card-color rounded-[8px] px-[10px] py-[20px]">
-        <div className="flex space-x-3">
-          <img
-            src={ownerCard?.image}
-            alt="profile photo"
-            className="rounded-full object-cover h-12 w-12"
-          />
-          <div className="text-[15px]">
-            <h1 className="italic">{ownerCard?.company}</h1>
-            <p className="font-light">Owner: {ownerCard?.name}</p>
+        <Link
+          to={`/user/profile?share=true&id=${ownerCard?.id}&role=CompanyAdmin`}
+          target="_blank"
+        >
+          <div className="flex space-x-3">
+            <img
+              src={ownerCard?.image}
+              alt="profile photo"
+              className="rounded-full object-cover h-12 w-12"
+            />
+            <div className="text-[15px]">
+              <h1 className="italic">{ownerCard?.company}</h1>
+              <p className="font-light">Owner: {ownerCard?.name}</p>
+            </div>
           </div>
-        </div>
+        </Link>
         <div>
           <table className="border-separate border-spacing-x-2 text-[15px]">
             <tr>

@@ -25,7 +25,7 @@ import { fatchProjects } from "@/Util/Https/freelancerHttp";
 import { SearchIcon } from "lucide-react";
 import Loading from "@/pages/Loading";
 import { Paper } from "@mantine/core";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import getTimeAgo from "@/Util/getTime";
 const currencies = [
   {
@@ -50,16 +50,21 @@ const Projects = ({ key, project }) => {
 
   return (
     <div key={key} className="mt-8">
-      <div className="px-5 flex items-center justify-end mb-[-15px]">
-        <h1 className="mr-3 text-[15px]">
-          {project?.firstName} {project?.lastName}
-        </h1>
-        <img
-          src={project?.profileImageUrl || person}
-          alt="profile photo"
-          className="w-12 h-12 border-2 border-second-color rounded-full object-cover bg-white text-[8px]"
-        />
-      </div>
+      <Link
+        to={`/user/profile?share=true&id=${project?.companyId}&role=CompanyAdmin`}
+        target="_blank"
+      >
+        <div className="px-5 flex items-center justify-end mb-[-15px]">
+          <h1 className="mr-3 text-[15px]">
+            {project?.firstName} {project?.lastName}
+          </h1>
+          <img
+            src={project?.profileImageUrl || person}
+            alt="profile photo"
+            className="w-12 h-12 border-2 border-second-color rounded-full object-cover bg-white text-[8px]"
+          />
+        </div>
+      </Link>
       <div className="w-[900px] max-w-full mx-auto px-6 py-3 bg-card-color rounded-lg">
         <div className="font-medium text-[20px] font-roboto-condensed border-b border-main-color pb-2">
           {project?.name}

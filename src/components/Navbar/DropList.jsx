@@ -11,7 +11,7 @@ import logout from "../../assets/icons/logout.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 export default function DropList({ name, email, photoImage }) {
-  const { logout: leave } = useAuth();
+  const { logout: leave, user } = useAuth();
   const navigate = useNavigate();
   const [list, setList] = useState([
     {
@@ -74,7 +74,10 @@ export default function DropList({ name, email, photoImage }) {
       className="z-50 my-6 list-none bg-main-color text-white divide-y divide-gray-300 rounded-lg shadow-sm absolute right-4 top-14"
       style={{ boxShadow: "#5050504d 0px 0px 3px 1px" }}
     >
-      <Link to="/user/profile" className="flex items-center gap-2 px-4 py-3">
+      <Link
+        to={`/user/profile/${user?.userId}`}
+        className="flex items-center gap-2 px-4 py-3"
+      >
         <img
           src={photoImage}
           alt="profile image"

@@ -2,11 +2,11 @@ import convertDateToCustomFormat from "@/Util/convertDate";
 import { fatchProjectCard } from "@/Util/Https/http";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import logo from "../../assets/icons/logo.svg";
 import { Avatar, Box } from "@mui/material";
 
-function OfferProjectCard({ offerProject }) {
+function OfferProjectCard({ offerProject, companyId }) {
   const { projectId } = useParams();
   const [project, setData] = useState(null);
   const token = Cookies.get("token");
@@ -80,17 +80,22 @@ function OfferProjectCard({ offerProject }) {
       <div className="flex md:flex-col w-full shadow rounded-[8px] p-3 bg-card-color">
         <div className="flex-grow space-y-[20px] px-[10px] py-[10px] border-r-2 md:border-b-2 md:border-r-0 border-main-color">
           <h1 className="font-medium">Project owner</h1>
-          <div className="flex space-x-3">
-            <img
-              src={ownerCard?.image}
-              alt="profile photo"
-              className="rounded-full object-cover h-12 w-12"
-            />
-            <div className="text-[15px]">
-              <h1 className="italic">{ownerCard?.company}</h1>
-              <p className="font-light">Owner: {ownerCard?.name}</p>
+          <Link
+            to={`/user/profile?share=true&id=${companyId}&role=CompanyAdmin`}
+            target="_blank"
+          >
+            <div className="flex space-x-3">
+              <img
+                src={ownerCard?.image}
+                alt="profile photo"
+                className="rounded-full object-cover h-12 w-12"
+              />
+              <div className="text-[15px]">
+                <h1 className="italic">{ownerCard?.company}</h1>
+                <p className="font-light">Owner: {ownerCard?.name}</p>
+              </div>
             </div>
-          </div>
+          </Link>
           <div className="pb-5">
             <table className="border-separate border-spacing-x-2 text-[15px]">
               <tr>

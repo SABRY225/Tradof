@@ -18,7 +18,7 @@ import {
 } from "@/assets/paths";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { OfferStatus } from "@/Util/status";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { PlusCircle } from "lucide-react";
 
 const ITEMS_PER_PAGE = 20;
@@ -197,21 +197,26 @@ function Offers() {
                 >
                   <div>
                     <div className="flex justify-between">
-                      <div className="font-bold flex items-center">
-                        <img
-                          src={offer?.companyImage}
-                          alt="company"
-                          className="w-12 h-12 rounded-full object-cover"
-                        />
-                        <div className="text-[16px] font-bold ml-2">
-                          <div>
-                            {offer?.companyFirstName} {offer?.companyLastName}
-                          </div>
-                          <div className="text-[13px] font-light">
-                            {offer?.companyEmail}
+                      <Link
+                        to={`/user/profile?share=true&id=${offer?.companyId}&role=CompanyAdmin`}
+                        target="_blank"
+                      >
+                        <div className="font-bold flex items-center">
+                          <img
+                            src={offer?.companyImage}
+                            alt="company"
+                            className="w-12 h-12 rounded-full object-cover"
+                          />
+                          <div className="text-[16px] font-bold ml-2">
+                            <div>
+                              {offer?.companyFirstName} {offer?.companyLastName}
+                            </div>
+                            <div className="text-[13px] font-light">
+                              {offer?.companyEmail}
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      </Link>
 
                       <div className="flex items-center gap-4">
                         <div className="mt-2">

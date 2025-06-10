@@ -16,7 +16,7 @@ import { GetCompanyProjectsFinancials, GetCompanyStatistics } from "@/Util/Https
 import { GetFreelancerProjectsFinancials, GetFreelancerStatistics } from "@/Util/Https/freelancerHttp";
 import { search } from "@/assets/paths";
 import Loading from "../Loading";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Finances() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -108,7 +108,11 @@ export default function Finances() {
                   py: 0.75,
                   fontSize: "0.875rem",
                 }}
-                onClick={() => Navigate(`/user/withdraw-profits/${statistics?.availableBalance}`)}
+                onClick={() =>
+                  Navigate(
+                    `/user/withdraw-profits/${statistics?.availableBalance}`
+                  )
+                }
               >
                 Withdraw Profits
               </Button>
@@ -219,16 +223,16 @@ export default function Finances() {
                     activeTab === 1
                       ? "#4caf50"
                       : activeTab === 2
-                        ? "#ff6b6b"
-                        : "#6c63ff",
+                      ? "#ff6b6b"
+                      : "#6c63ff",
                 },
                 "& .MuiTabs-indicator": {
                   backgroundColor:
                     activeTab === 1
                       ? "#4caf50"
                       : activeTab === 2
-                        ? "#ff6b6b"
-                        : "#6c63ff",
+                      ? "#ff6b6b"
+                      : "#6c63ff",
                 },
               }}
               className="sm:ml-0 ml-4"
@@ -262,7 +266,9 @@ export default function Finances() {
                       px: 2,
                       py: 0.5,
                       bgcolor:
-                        transaction.paymentStatus === "paid" ? "#4caf50" : "#ff6b6b",
+                        transaction.paymentStatus === "paid"
+                          ? "#4caf50"
+                          : "#ff6b6b",
                       color: "white",
                       borderBottomLeftRadius: "8px",
                       fontSize: "0.75rem",
@@ -271,22 +277,29 @@ export default function Finances() {
                   >
                     {transaction.paymentStatus === "paid" ? "PAID" : "Pending"}
                   </Box>
-
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 1.5 }}>
-                    <Avatar
-                      src={transaction.user.profileImageUrl}
-                      alt={transaction.user}
-                      sx={{ width: 36, height: 36, mr: 1.5 }}
-                    />
-                    <Box>
-                      <Typography
-                        variant="subtitle2"
-                        sx={{ fontWeight: 500, color: "#333" }}
-                      >
-                        {transaction.user.firstName}{" "}{transaction.user.lastName}
-                      </Typography>
+                  <Link
+                    to={`/user/profile?share=true&id=${transaction?.user?.id}&role=${role === "Freelancer" ? "CompanyAdmin" : "Freelancer"}`}
+                    target="_blank"
+                  >
+                    <Box
+                      sx={{ display: "flex", alignItems: "center", mb: 1.5 }}
+                    >
+                      <Avatar
+                        src={transaction.user.profileImageUrl}
+                        alt={transaction.user}
+                        sx={{ width: 36, height: 36, mr: 1.5 }}
+                      />
+                      <Box>
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ fontWeight: 500, color: "#333" }}
+                        >
+                          {transaction.user.firstName}{" "}
+                          {transaction.user.lastName}
+                        </Typography>
+                      </Box>
                     </Box>
-                  </Box>
+                  </Link>
 
                   <Typography variant="body2" sx={{ fontWeight: 500, mb: 1.5 }}>
                     {transaction.prjectData.name}
@@ -350,13 +363,11 @@ export default function Finances() {
                     <Typography variant="h6" sx={{ fontWeight: 700 }}>
                       {`${transaction.prjectData.depoistPrice} EGP`}
                     </Typography>
-
                   </Box>
                 </Paper>
               </Grid>
             ))}
           </Grid>
-
         </div>
       </div>
     </div>

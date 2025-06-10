@@ -6,7 +6,7 @@ import {
   Denyproposal,
   deleteProject,
 } from "@/Util/Https/companyHttp";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import convertDateToCustomFormat from "@/Util/convertDate";
 import ButtonFelid from "@/UI/ButtonFelid";
 import { docs, download, file, image, PDF, search, xlsx } from "@/assets/paths";
@@ -259,7 +259,7 @@ const OffersPage = () => {
     );
   }
 
-  console.log(offers);
+  // console.log(offers);
 
   return (
     <>
@@ -371,16 +371,21 @@ const OffersPage = () => {
               <div className="grid grid-cols-1 gap-4">
                 {filteredOffers.map((offer, index) => (
                   <div key={offer.id || index}>
-                    <div className="flex items-center gap-2 mb-[-15px] ml-[10px]">
-                      <img
-                        src={offer?.freelancerImageUrl}
-                        alt="profile"
-                        className="w-12 h-12 rounded-full object-cover bg-white border border-second-color"
-                      />
-                      <div className="text-[16px] font-roboto-condensed">
-                        <div>{offer?.freelancerName}</div>
+                    <Link
+                      to={`/user/profile?share=true&id=${offer?.freelancerId}&role=Freelancer`}
+                      target="_blank"
+                    >
+                      <div className="flex items-center gap-2 mb-[-15px] ml-[10px]">
+                        <img
+                          src={offer?.freelancerImageUrl}
+                          alt="profile"
+                          className="w-12 h-12 rounded-full object-cover bg-white border border-second-color"
+                        />
+                        <div className="text-[16px] font-roboto-condensed">
+                          <div>{offer?.freelancerName}</div>
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                     <div className="bg-card-color rounded-lg p-[20px] ">
                       <div className="font-light">
                         {offer?.proposalDescription}

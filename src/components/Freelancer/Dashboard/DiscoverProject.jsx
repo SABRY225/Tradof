@@ -53,7 +53,7 @@ export default function DiscoverProject({ classes }) {
     setCurrentPage(pageNumber);
     console.log("Page: ", pageNumber);
   };
-  // console.log(filteredItems, items);
+  console.log(items);
   return (
     <motion.div
       initial={{ x: "-50rem" }}
@@ -85,17 +85,22 @@ export default function DiscoverProject({ classes }) {
           <div className="font-roboto-condensed text-[20px]">
             {project?.description}
           </div>
-          <div className="flex items-center gap-2">
-            <img
-              src={project?.profileImageUrl}
-              alt="photo"
-              width={30}
-              className="h-[30px] rounded-full object-cover"
-            />
-            <p className="text-[12px]  font-roboto-condensed">
-              {project?.firstName + " " + project?.lastName}
-            </p>
-          </div>
+          <Link
+            to={`/user/profile?share=true&id=${project?.companyId}&role=CompanyAdmin`}
+            target="_blank"
+          >
+            <div className="flex items-center gap-2">
+              <img
+                src={project?.profileImageUrl}
+                alt="photo"
+                width={30}
+                className="h-[30px] rounded-full object-cover"
+              />
+              <p className="text-[12px]  font-roboto-condensed">
+                {project?.firstName + " " + project?.lastName}
+              </p>
+            </div>
+          </Link>
           <div className="flex flex-col md:flex-row md:gap-[30px]">
             <div className="flex gap-2">
               <img src={timer} alt="icon" width={15} />

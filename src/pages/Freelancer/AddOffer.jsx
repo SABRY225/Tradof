@@ -23,7 +23,10 @@ function AddOffer() {
             <FormAddOffer />
           </div>
           <div className="col-start-9 col-end-12">
-            <OfferProjectCard offerProject={projectCard} />
+            <OfferProjectCard
+              offerProject={projectCard}
+              companyId={project?.companyId}
+            />
           </div>
         </div>
       </div>

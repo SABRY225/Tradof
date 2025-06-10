@@ -192,9 +192,10 @@ export default function ProjectPage() {
     return null;
   }
 
-  // console.log(project);
+  console.log(projectCard);
 
   const ownerCard = {
+    id: project?.companyId,
     name: projectCard?.ownerName,
     email: projectCard?.ownerEmail,
     company: projectCard?.companyName,

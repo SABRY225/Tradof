@@ -10,6 +10,8 @@ import { useLoaderData, useLocation } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { addReview } from "@/Util/Https/http";
+import { getFreelancer } from "@/Util/Https/freelancerHttp";
+import { getCompany } from "@/Util/Https/companyHttp";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -22,25 +24,48 @@ export default function Profile() {
   const [role, setRole] = useState(user?.role);
 
   useEffect(() => {
-    if (share) {
-      const dataParam = queryParams.get("data");
-      if (dataParam) {
-        try {
-          const decodedData = JSON.parse(decodeURIComponent(dataParam));
-          setPerson(decodedData);
-          setRole(queryParams.get("role") || user?.role);
-        } catch (error) {
-          console.error("Error parsing shared data:", error);
+    console.log(share);
+    const fetchSharedData = async () => {
+      if (share) {
+        const dataParam = queryParams.get("data");
+        const id = queryParams.get("id");
+        const roleParam = queryParams.get("role");
+        console.log(roleParam);
+        if (dataParam) {
+          try {
+            const decodedData = JSON.parse(decodeURIComponent(dataParam));
+            setPerson(decodedData);
+            setRole(roleParam);
+          } catch (error) {
+            console.error("Error parsing shared data:", error);
+          }
+        } else if (id && roleParam) {
+          try {
+            let data;
+            if (roleParam === "Freelancer") {
+              data = await getFreelancer({ id, token: user?.token });
+            } else if (roleParam === "CompanyAdmin") {
+              data = await getCompany({ id, token: user?.token });
+            }
+            if (data) {
+              setPerson(data);
+              setRole(roleParam);
+            }
+          } catch (error) {
+            console.error("Error fetching shared profile:", error);
+          }
         }
       }
-    }
-  }, [share]);
+    };
+
+    fetchSharedData();
+  }, [share, queryParams, user?.token, user?.role]);
 
   const profileData = {
     image: person?.profileImageUrl,
     firstName: person?.firstName,
     lastName: person?.lastName,
-    role: user?.role || role,
+    role: role,
     country: person?.countryId,
     companyName: person?.companyName,
     jopTitle: person?.jobTitle,
@@ -89,7 +114,7 @@ export default function Profile() {
   const encoded = encodeURIComponent(JSON.stringify(person));
   currentURL.searchParams.set("data", encoded);
   currentURL.searchParams.set("share", "true");
-  currentURL.searchParams.set("role", role || user?.role);
+  currentURL.searchParams.set("role", role);
 
   const finalURL = currentURL.toString();
 

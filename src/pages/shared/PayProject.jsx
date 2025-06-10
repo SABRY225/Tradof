@@ -6,7 +6,7 @@ import { getFreelancer } from "@/Util/Https/freelancerHttp";
 import { fatchProjectDetailes, createProjectRating } from "@/Util/Https/http";
 import Cookies from "js-cookie";
 import PhoneInput from "react-phone-number-input";
-import { useLoaderData } from "react-router-dom";
+import { Link, useLoaderData } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { stare, emptyStare } from "@/assets/paths.js";
 import { FadeLoader } from "react-spinners";
@@ -83,7 +83,7 @@ export default function PayProject() {
     }
   };
 
-  // console.log(project);
+  console.log(userData);
 
   return (
     <>
@@ -99,11 +99,18 @@ export default function PayProject() {
           </header>
           <div className="space-y-[20px] bg-card-color rounded-[8px] px-[20px] py-[20px] shadow">
             <div className="flex flex-wrap md:grid grid-cols-[max-content_1fr_1fr] gap-2 items-center">
-              <img
-                src={userData?.profileImageUrl}
-                alt="userData photo"
-                className="w-[50px] h-[50px] rounded-full object-cover"
-              />
+              <Link
+                to={`/user/profile?share=true&id=${userData?.userId || userData?.id}&role=${
+                  role === "Freelancer" ? "CompanyAdmin" : "Freelancer"
+                }`}
+                target="_blank"
+              >
+                <img
+                  src={userData?.profileImageUrl}
+                  alt="userData photo"
+                  className="w-[50px] h-[50px] rounded-full object-cover"
+                />
+              </Link>
               <div>
                 {userData?.companyName ? (
                   <>
