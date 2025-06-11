@@ -75,7 +75,7 @@ export default function DropList({ name, email, photoImage }) {
       style={{ boxShadow: "#5050504d 0px 0px 3px 1px" }}
     >
       <Link
-        to={`/user/profile/${user?.userId}`}
+        to={`/user/profile`}
         className="flex items-center gap-2 px-4 py-3"
       >
         <img
